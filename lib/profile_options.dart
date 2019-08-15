@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ProfileOptions extends StatefulWidget{
@@ -33,7 +34,8 @@ class _OptionsList extends State<ProfileOptions> {
           if (i.isOdd) return Divider(); /*2*/
           final index = i ~/ 2; /*3*/
           return _buildRow(_list[index]);
-        },itemCount: 5,);
+        },
+        itemCount: 5,);
   }
 
   Widget _buildRow(String key) {
@@ -68,7 +70,25 @@ class _OptionsList extends State<ProfileOptions> {
 
   Widget _displayHistory() {
     return new Scaffold(
-      body: Text("Wassssaaa"),
+      body: StreamBuilder(
+          stream: Firestore.instance.collection("visits").document("2019").collection("AUG").snapshots(),
+          builder: (context, snapshot) {
+            if(!snapshot.hasData) return const Text("Loading..");
+            return ListView.builder(
+                itemExtent: 80.0,
+                itemCount: snapshot.data.documents.length,
+                itemBuilder: (context, index) => _buildHistoryItem(context, snapshot.data.documents[index]),
+            );
+          }
+      )
+    );
+  }
+
+  Widget _buildHistoryItem(BuildContext context, DocumentSnapshot doc) {
+    return ListTile(
+      title: Text(
+          "Assistant: " + doc["ass_id"] + "   User: " + doc["user_id"],
+          style: _biggerFont,),
     );
   }
 }
