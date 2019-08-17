@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import 'custom_dialog.dart';
+
 class ProfileOptions extends StatefulWidget{
 
   @override
@@ -58,6 +60,17 @@ class _OptionsList extends State<ProfileOptions> {
       }
       case "Feedback": {
         _showSnackBar(key);
+        break;
+      }
+      case "About Us": {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) => CustomDialog(
+              title: "Header",
+              description: "LoReM IpSuM",
+              buttonText: "Got it!"),
+        );
+        break;
       }
     }
   }
