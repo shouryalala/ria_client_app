@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_widget.dart';
+import 'login.dart';
 
 void main() => runApp(App());
 
@@ -9,7 +10,8 @@ class App extends StatelessWidget{
   Widget build(BuildContext context) {
     return MaterialApp(
       title:"YoYoApp",
-      home:Home(),
+      //home:Home(),
+      home: OnboardingMainPage(),
     );
   }
 }
