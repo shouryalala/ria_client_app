@@ -17,7 +17,8 @@ class _OptionsList extends State<ProfileOptions> {
   final List<String> _list = [
     "History",
     "About Us",
-    "Feedback"
+    "Feedback",
+    "Sign In",
   ];
   @override
   Widget build(BuildContext context) {
@@ -37,7 +38,7 @@ class _OptionsList extends State<ProfileOptions> {
           final index = i ~/ 2; /*3*/
           return _buildRow(_list[index]);
         },
-        itemCount: 5,);
+        itemCount: 7,);
   }
 
   Widget _buildRow(String key) {
@@ -71,6 +72,10 @@ class _OptionsList extends State<ProfileOptions> {
               buttonText: "Got it!"),
         );
         break;
+      }
+      case "Sign In": {
+        Navigator.of(context).pop();
+        Navigator.of(context).pushReplacementNamed('/login');
       }
     }
   }

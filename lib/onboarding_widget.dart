@@ -108,7 +108,10 @@ class _OnboardingMainPageState extends State<OnboardingMainPage> {
                               child: Text('LOGIN',
                                 style: Theme.of(context).textTheme.button.copyWith(color: Colors.white),
                               ),
-                              onPressed: (){},
+                              onPressed: (){
+                                Navigator.of(context).pop();
+                                Navigator.of(context).pushReplacementNamed('/home');
+                              },
                               highlightColor: Colors.orange.withOpacity(0.5),
                               splashColor: Colors.orange.withOpacity(0.5),
                             ),
