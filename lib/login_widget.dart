@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sms_autofill/sms_autofill.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -9,8 +10,11 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   String phoneNo;
   String smsCode;
+  final phoneFieldController = TextEditingController();
   String verificationId;
+
   Future<void> verifyPhone() async {
+    await SmsAutoFill().listenForCode;
     final PhoneCodeAutoRetrievalTimeout autoRetrieve = (String verId) {
       this.verificationId = verId;
     };
@@ -31,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
     };
 
     await FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: this.phoneNo,
+        phoneNumber: this.phoneFieldController.text,
         codeAutoRetrievalTimeout: autoRetrieve,
         codeSent: smsCodeSent,
         timeout: const Duration(seconds: 5),
@@ -46,10 +50,16 @@ class _LoginPageState extends State<LoginPage> {
         builder: (BuildContext context) {
           return new AlertDialog(
             title: Text('Enter sms Code'),
-            content: TextField(
+            content: /*TextField(
               onChanged: (value) {
                 this.smsCode = value;
               },
+            ),*/
+            PinFieldAutoFill(
+              currentCode: "123456",
+              onCodeChanged: pinFieldCodeChanged,
+              onCodeSubmitted: pinFieldCodeSubmitted,
+              codeLength: 6,
             ),
             contentPadding: EdgeInsets.all(10.0),
             actions: <Widget>[
@@ -72,6 +82,14 @@ class _LoginPageState extends State<LoginPage> {
             ],
           );
         });
+  }
+
+  pinFieldCodeChanged(String otp) {
+    print("onCodeChanged Triggered!" + otp);
+  }
+
+  pinFieldCodeSubmitted(String otp) {
+    print("onCodeSubmitted Triggered!" + otp);
   }
 
   /*signIn() {
@@ -108,11 +126,17 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 TextField(
-                  decoration: InputDecoration(hintText: 'Enter Phone number'),
-                  onChanged: (value) {
-                    this.phoneNo = value;
-                  },
-                ),
+                controller: phoneFieldController,
+            ),
+//                PhoneFieldHint(
+//                controller: phoneFieldController,
+//              ),
+//                TextField(
+//                  decoration: InputDecoration(hintText: 'Enter Phone number'),
+//                  onChanged: (value) {
+//                    this.phoneNo = value;
+//                  },
+//                ),
                 SizedBox(height: 10.0),
                 RaisedButton(
                     onPressed: verifyPhone,
@@ -125,4 +149,11 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    phoneFieldController.dispose();
+  }
+
+
 }

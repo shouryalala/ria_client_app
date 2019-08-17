@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'home_widget.dart';
+import 'launcher_widget.dart';
 import 'onboarding_widget.dart';
 import 'login_widget.dart';
 
@@ -13,8 +14,9 @@ class App extends StatelessWidget{
     return MaterialApp(
       title:"YoYoApp",
       //home:Home(),
-      home: OnboardingMainPage(),
+      home: SplashScreen(),
       routes: <String, WidgetBuilder> {
+        '/launcher': (BuildContext context) => SplashScreen(),
         '/home': (BuildContext context) => Home(),
         '/onboarding':(BuildContext context) => OnboardingMainPage(),
         '/login': (BuildContext context) => LoginPage(),

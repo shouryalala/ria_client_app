@@ -19,6 +19,8 @@ environment:
 dependencies:
   cloud_firestore:
   firebase_auth:
+  sms_autofill:
+  path_provider:
   flutter:
     sdk: flutter
 
