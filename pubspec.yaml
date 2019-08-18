@@ -21,6 +21,7 @@ dependencies:
   firebase_auth:
   sms_autofill:
   path_provider:
+  morpheus:
   flutter:
     sdk: flutter
 

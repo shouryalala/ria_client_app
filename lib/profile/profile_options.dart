@@ -1,7 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
 import 'custom_dialog.dart';
+import 'history_widget.dart';
 
 class ProfileOptions extends StatefulWidget{
 
@@ -23,7 +22,7 @@ class _OptionsList extends State<ProfileOptions> {
   @override
   Widget build(BuildContext context) {
     if(isHistoryClicked) {
-      return _displayHistory();
+      return HistoryPage();
     }
     if(!isHistoryClicked) {
       return _buildSuggestions();
@@ -54,9 +53,12 @@ class _OptionsList extends State<ProfileOptions> {
   _routeOptionRequest(String key) {
     switch(key) {
       case "History": {
-        setState(() {
-          isHistoryClicked = true;
-        });
+        //Navigator.of(context).pushNamed('/history');
+        isHistoryClicked = true;
+        Navigator.of(context).popAndPushNamed('/home');
+//        setState(() {
+//
+//        });
         break;
       }
       case "Feedback": {
@@ -74,8 +76,8 @@ class _OptionsList extends State<ProfileOptions> {
         break;
       }
       case "Sign In": {
-        Navigator.of(context).pop();
-        Navigator.of(context).pushReplacementNamed('/login');
+        //Navigator.of(context).pop();
+        Navigator.of(context).pushNamed('/login');
       }
     }
   }
@@ -84,29 +86,5 @@ class _OptionsList extends State<ProfileOptions> {
       content: Text(key + " pressed!"),
     );
     Scaffold.of(context).showSnackBar(snackBar);
-  }
-
-  Widget _displayHistory() {
-    return new Scaffold(
-      body: StreamBuilder(
-          stream: Firestore.instance.collection("visits").document("2019").collection("AUG").snapshots(),
-          builder: (context, snapshot) {
-            if(!snapshot.hasData) return const Text("Loading..");
-            return ListView.builder(
-                itemExtent: 80.0,
-                itemCount: snapshot.data.documents.length,
-                itemBuilder: (context, index) => _buildHistoryItem(context, snapshot.data.documents[index]),
-            );
-          }
-      )
-    );
-  }
-
-  Widget _buildHistoryItem(BuildContext context, DocumentSnapshot doc) {
-    return ListTile(
-      title: Text(
-          "Assistant: " + doc["ass_id"] + "   User: " + doc["user_id"],
-          style: _biggerFont,),
-    );
   }
 }

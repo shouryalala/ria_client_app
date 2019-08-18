@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/placeholder_widget.dart';
-import 'package:flutter_app/profile_options.dart';
+import 'package:flutter_app/profile/profile_options.dart';
+import 'package:morpheus/morpheus.dart';
 
 class Home extends StatefulWidget{
   @override
@@ -23,7 +24,8 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: Text('My Flutter App'),
       ),
-      body: _children[_currentIndex], // new
+      body: MorpheusTabView(
+        child: _children[_currentIndex],), // new
       bottomNavigationBar: BottomNavigationBar(
        //currentIndex: 0, // this will be set when a new tab is tapped
         onTap: onTabTapped, // new
