@@ -5,7 +5,6 @@ import 'package:path_provider/path_provider.dart';
 class IOUtil {
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
-
     return directory.path;
   }
 
@@ -14,7 +13,7 @@ class IOUtil {
     return File('$path/onboarded.txt');
   }
 
-  Future<int> isOnboarded() async {
+  Future<int> isUserOnboarded() async {
     try {
       final file = await _localFile;
 

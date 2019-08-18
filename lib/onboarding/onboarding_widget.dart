@@ -1,11 +1,14 @@
-import 'dots_indicator.dart';
 import 'package:flutter/material.dart';
-import 'page1.dart';
-import 'page2.dart';
-import 'page3.dart';
+import 'package:flutter_app/ui/dots_indicator.dart';
+import 'package:flutter_app/onboarding/screens/page1.dart';
+import 'package:flutter_app/onboarding/screens/page2.dart';
+import 'package:flutter_app/onboarding/screens/page3.dart';
+import 'package:flutter_app/util/io_util.dart';
+import 'package:flutter_app/util/logger.dart';
 
 class _OnboardingMainPageState extends State<OnboardingMainPage> {
   final _controller = new PageController();
+  final Log log = new Log("OnboardingPage");
   final List<Widget> _pages = [
     Page1(),
     Page2(),
@@ -20,6 +23,8 @@ class _OnboardingMainPageState extends State<OnboardingMainPage> {
 
   @override
   Widget build(BuildContext context) {
+    log.debug("Setting Onboarding flag to true.");
+    new IOUtil().writeOnboardStatus(1);
     bool isDone = page == _pages.length - 1;
     return new Scaffold(
         backgroundColor: Colors.transparent,

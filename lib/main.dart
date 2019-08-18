@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'home_widget.dart';
 import 'launcher_widget.dart';
-import 'onboarding_widget.dart';
+import 'package:flutter_app/onboarding/onboarding_widget.dart';
 import 'login_widget.dart';
 
 void main() => runApp(App());
