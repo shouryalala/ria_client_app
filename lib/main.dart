@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/home_widget.dart';
 import 'package:flutter_app/profile/history_widget.dart';
+import 'package:flutter_app/z_app.dart';
 import 'launcher_widget.dart';
 import 'package:flutter_app/onboarding/onboarding_widget.dart';
 import 'package:flutter_app/profile/profile_options.dart';
@@ -14,7 +15,6 @@ class App extends StatelessWidget{
   Widget build(BuildContext context) {
     return MaterialApp(
       title:"Ria",
-      //home:Home(),
       home: SplashScreen(),
       routes: <String, WidgetBuilder> {
         '/launcher': (BuildContext context) => SplashScreen(),

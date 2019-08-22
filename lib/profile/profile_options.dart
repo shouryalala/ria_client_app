@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'custom_dialog.dart';
 import 'history_widget.dart';
+import 'package:flutter_app/nested-tab-navigator.dart';
 
 class ProfileOptions extends StatefulWidget{
-
+  ProfileOptions({this.onPush});
+  final ValueChanged<int> onPush;
   @override
   State createState() {
-    return _OptionsList();
+    return _OptionsList(onPush: onPush);
   }
 }
 
 class _OptionsList extends State<ProfileOptions> {
+  _OptionsList({this.onPush});
+  final ValueChanged<int> onPush;
   final _biggerFont = const TextStyle(fontSize: 18.0);
   bool isHistoryClicked = false;
   final List<String> _list = [
@@ -21,12 +25,12 @@ class _OptionsList extends State<ProfileOptions> {
   ];
   @override
   Widget build(BuildContext context) {
-    if(isHistoryClicked) {
-      return HistoryPage();
-    }
-    if(!isHistoryClicked) {
+//    if(isHistoryClicked) {
+//      return HistoryPage();
+//    }
+//    if(!isHistoryClicked) {
       return _buildSuggestions();
-    }
+//    }
   }
 
   Widget _buildSuggestions() {
@@ -54,11 +58,14 @@ class _OptionsList extends State<ProfileOptions> {
     switch(key) {
       case "History": {
         //Navigator.of(context).pushNamed('/history');
-        isHistoryClicked = true;
-        Navigator.of(context).popAndPushNamed('/home');
+//        isHistoryClicked = true;
+//        Navigator.of(context).popAndPushNamed('/home');
+
+
 //        setState(() {
 //
 //        });
+        onPush(30);
         break;
       }
       case "Feedback": {
