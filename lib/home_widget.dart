@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/placeholder_widget.dart';
 import 'package:flutter_app/profile/profile_options.dart';
-//import 'package:morpheus/morpheus.dart';
+import 'package:morpheus/widgets/morpheus_tab_view.dart';
 import 'nested-tab-navigator.dart';
-enum TabItem { Home, Subscribe, Profile }
 
 class Home extends StatefulWidget{
   @override
@@ -35,15 +34,15 @@ class _HomeState extends State<Home> {
     child:
     Scaffold(
       appBar: AppBar(
-        title: Text('My Flutter App'),
+        title: Text('\tRIA'),
       ),
-      body://_buildOffstageNavigator(_currentIndex),
+      body:MorpheusTabView( child:
       Stack(children: <Widget>[
         _buildOffstageNavigator(0),
         _buildOffstageNavigator(1),
         _buildOffstageNavigator(2),
       ]),
-      //MorpheusTabView(child: TabNavigator(navigatorKey: navigatorKey,),)
+      ),
       bottomNavigationBar: BottomNavigationBar(
        //currentIndex: 0, // this will be set when a new tab is tapped
         onTap: onTabTapped, // new

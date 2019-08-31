@@ -3,42 +3,45 @@ import 'package:flutter_app/profile/history_widget.dart';
 import 'package:flutter_app/placeholder_widget.dart';
 import 'package:flutter_app/profile/profile_options.dart';
 
-import 'home_widget.dart';
+import 'login_screen.dart';
+import 'login_widget.dart';
 
 class TabNavigatorRoutes {
   static const String root = '/home';
   static const String subscribe = '/subscribe';
   static const String profile = '/profile';
   static const String history = '/history';
+  static const String login = '/login';
+  static const String loginX = '/loginX';
 }
 
 class TabNavigator extends StatelessWidget {
   TabNavigator({this.navigatorKey, this.item});
   final GlobalKey<NavigatorState> navigatorKey;
-  //final MorpheusTabView tabItem;
   final int item;
 
-  void _push(BuildContext context) {
+  void _push(BuildContext context, String routeId) {
     var routeBuilders = _routeBuilders(context);
 
-    Navigator.push(context,MaterialPageRoute(
-        builder: (context) =>routeBuilders[TabNavigatorRoutes.history](context)
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context) =>routeBuilders[routeId](context)
       )
     );
   }
 
-  Map<String, WidgetBuilder> _routeBuilders(BuildContext context,
-      {int materialIndex: 500}) {
+  Map<String, WidgetBuilder> _routeBuilders(BuildContext context) {
     return {
       TabNavigatorRoutes.root: (context) => PlaceholderWidget(Colors.blueGrey),
       TabNavigatorRoutes.subscribe: (context) => PlaceholderWidget(Colors.amberAccent),
       TabNavigatorRoutes.profile: (context) => ProfileOptions(
 //        color: TabHelper.color(tabItem),
 //        title: TabHelper.description(tabItem),
-        onPush: (materialIndex) =>
-            _push(context),
+        onPush: (routeId) =>
+            _push(context, routeId),
       ),
       TabNavigatorRoutes.history: (context) => HistoryPage(),
+      TabNavigatorRoutes.login: (context) => LoginPage(),
+      TabNavigatorRoutes.loginX: (context) => LoginScreen(),
     };
   }
 

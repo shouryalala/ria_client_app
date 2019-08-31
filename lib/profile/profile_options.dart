@@ -5,7 +5,7 @@ import 'package:flutter_app/nested-tab-navigator.dart';
 
 class ProfileOptions extends StatefulWidget{
   ProfileOptions({this.onPush});
-  final ValueChanged<int> onPush;
+  final ValueChanged<String> onPush;
   @override
   State createState() {
     return _OptionsList(onPush: onPush);
@@ -14,7 +14,7 @@ class ProfileOptions extends StatefulWidget{
 
 class _OptionsList extends State<ProfileOptions> {
   _OptionsList({this.onPush});
-  final ValueChanged<int> onPush;
+  final ValueChanged<String> onPush;
   final _biggerFont = const TextStyle(fontSize: 18.0);
   bool isHistoryClicked = false;
   final List<String> _list = [
@@ -65,7 +65,7 @@ class _OptionsList extends State<ProfileOptions> {
 //        setState(() {
 //
 //        });
-        onPush(30);
+        onPush('/history');
         break;
       }
       case "Feedback": {
@@ -84,7 +84,9 @@ class _OptionsList extends State<ProfileOptions> {
       }
       case "Sign In": {
         //Navigator.of(context).pop();
-        Navigator.of(context).pushNamed('/login');
+        //Navigator.of(context).pushNamed('/login');
+        onPush('/loginX');
+        break;
       }
     }
   }

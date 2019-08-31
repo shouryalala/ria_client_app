@@ -116,9 +116,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('PhoneAuth'),
-      ),
       body: new Center(
         child: Container(
             padding: EdgeInsets.all(25.0),
