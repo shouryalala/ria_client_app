@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/home_screen.dart';
 import 'package:flutter_app/placeholder_widget.dart';
 import 'package:flutter_app/profile/profile_options.dart';
 import 'package:morpheus/widgets/morpheus_tab_view.dart';
@@ -21,7 +22,7 @@ class _HomeState extends State<Home> {
     2 : GlobalKey<NavigatorState>(),
   };
   final List<Widget> _children = [
-    PlaceholderWidget(Colors.white),
+    HomeScreen(),
     PlaceholderWidget(Colors.deepOrange),
     ProfileOptions()
   ];

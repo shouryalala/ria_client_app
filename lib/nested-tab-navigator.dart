@@ -3,6 +3,7 @@ import 'package:flutter_app/profile/history_widget.dart';
 import 'package:flutter_app/placeholder_widget.dart';
 import 'package:flutter_app/profile/profile_options.dart';
 
+import 'home_screen.dart';
 import 'login_screen.dart';
 import 'login_widget.dart';
 
@@ -31,7 +32,7 @@ class TabNavigator extends StatelessWidget {
 
   Map<String, WidgetBuilder> _routeBuilders(BuildContext context) {
     return {
-      TabNavigatorRoutes.root: (context) => PlaceholderWidget(Colors.blueGrey),
+      TabNavigatorRoutes.root: (context) => HomeScreen(),
       TabNavigatorRoutes.subscribe: (context) => PlaceholderWidget(Colors.amberAccent),
       TabNavigatorRoutes.profile: (context) => ProfileOptions(
 //        color: TabHelper.color(tabItem),

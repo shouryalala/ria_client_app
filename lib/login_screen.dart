@@ -66,9 +66,32 @@ class LoginScreenState extends State<LoginScreen>
         onWillPop: _onWillPop,
         child: new Scaffold(
           body: new Container(
+            child: Stack(
+              alignment: AlignmentDirectional.bottomCenter,
+              children: <Widget>[
+                new Positioned(child:
+                new FormContainer(),),
+                animationStatus == 0 ? new Positioned(
+                  //padding: const EdgeInsets.only(bottom: 20.0),
+                  child: new InkWell(
+                      onTap: () {
+                        setState(() {
+                          animationStatus = 1;
+                        });
+                        _playAnimation();
+                      },
+                      child: new SignIn()),
+                )
+                    : new StaggerAnimation(
+                    buttonController:  _loginButtonController.view
+                ),
+                // Max Size
+
+              ],
+            ),
               /*decoration: new BoxDecoration(
                 image: backgroundImage,
-              ),*/
+              ),*//*
               child: new Container(
                   decoration: new BoxDecoration(
                       gradient: new LinearGradient(
@@ -86,8 +109,17 @@ class LoginScreenState extends State<LoginScreen>
                       new Stack(
                         alignment: AlignmentDirectional.center,
                         children: <Widget>[
-                          animationStatus == 0 ? new Padding(
-                            padding: const EdgeInsets.only(top: 200.0, bottom: 20.0),
+                          new Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              //new Tick(image: tick),
+                              new FormContainer(),
+                              //new SignUp()
+                            ],
+                          ),
+                          animationStatus == 0 ? new Positioned(
+                            top: 150,
+                            //padding: const EdgeInsets.only(bottom: 20.0),
                             child: new InkWell(
                                 onTap: () {
                                   setState(() {
@@ -100,18 +132,12 @@ class LoginScreenState extends State<LoginScreen>
                               : new StaggerAnimation(
                               buttonController:  _loginButtonController.view
                           ),
-                          new Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: <Widget>[
-                              //new Tick(image: tick),
-                              new FormContainer(),
-                              //new SignUp()
-                            ],
-                          ),
                         ],
                       ),
+
                     ],
-                  ))),
+                  ))),*/
+          )
         )));
   }
 }

@@ -19,16 +19,16 @@ class InputFieldArea extends StatelessWidget {
       child: new TextFormField(
         obscureText: obscure,
         style: const TextStyle(
-          color: Colors.white,
+          color: Colors.black,
         ),
         decoration: new InputDecoration(
           icon: new Icon(
             icon,
-            color: Colors.white,
+            color: Colors.black,
           ),
           border: InputBorder.none,
           hintText: hint,
-          hintStyle: const TextStyle(color: Colors.white, fontSize: 15.0),
+          hintStyle: const TextStyle(color: Colors.black, fontSize: 15.0),
           contentPadding: const EdgeInsets.only(
               top: 30.0, right: 30.0, bottom: 30.0, left: 5.0),
         ),
