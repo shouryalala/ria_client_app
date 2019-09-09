@@ -1,3 +1,5 @@
+import 'package:card_settings/card_settings.dart';
+import 'package:card_settings/widgets/selection_fields/card_settings_multiselect.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/ui/custom_time_picker.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
@@ -10,13 +12,18 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String _date = "Not set";
   String _time = "Not set";
+  final GlobalKey<FormState> _hobbiesKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String title = "Spheria";
+  String author = "Cody Leet";
+  String url = "http://www.codyleet.com/spheria";
 
   @override
   void initState() {
     super.initState();
   }
 
-  @override
+  /*@override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
@@ -143,11 +150,98 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 color: Colors.white,
-              )
+              ),
             ],
           ),
         ),
       ),
     );
   }
+*/
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+    body: Form(
+      key: _formKey,
+      child: CardSettings(
+        children: <Widget>[
+          CardSettingsText(
+            label: 'Title',
+            initialValue: title,
+            validator: (value) {
+              if (value == null || value.isEmpty) return 'Title is required.';
+            },
+            onSaved: (value) => title = value,
+          ),
+          CardSettingsText(
+            label: 'URL',
+            initialValue: url,
+            validator: (value) {
+              if (!value.startsWith('http:')) return 'Must be a valid website.';
+            },
+            onSaved: (value) => url = value,
+          ),
+          _buildCardSettingsMultiselect(),
+        ],
+      ),
+    ),
+    );
+  }
+
+  CardSettingsMultiselect _buildCardSettingsMultiselect() {
+    List<String> hobbies = <String>[
+      'flying',
+      'singing',
+      'exploring',
+      'hiding',
+      'coloring'
+    ];
+
+    const List<String> allHobbies = <String>[
+      'running',
+      'flying',
+      'coloring',
+      'jumping',
+      'eating',
+      'hiding',
+      'exploring',
+      'singing',
+      'dancing',
+      'acting',
+      'cleaning',
+      'shopping',
+      'sewing',
+      'cooking',
+    ];
+    return CardSettingsMultiselect(
+      showMaterialIOS: false,
+      key: _hobbiesKey,
+      label: 'Hobbies',
+      initialValues: hobbies,
+      options: allHobbies,
+      autovalidate: false,
+      validator: (List<String> value) {
+        if (value == null || value.isEmpty)
+          return 'You must pick at least one hobby.';
+
+        return null;
+      },
+      onSaved: (value) => hobbies = value,
+      onChanged: (value) {
+        setState(() {
+          hobbies = value;
+        });
+        _showSnackBar('Hobbies' + value.toString());
+      },
+    );
+  }
+
+  _showSnackBar(String key) {
+    final snackBar = SnackBar(
+      content: Text(key),
+    );
+    Scaffold.of(context).showSnackBar(snackBar);
+  }
+
 }
