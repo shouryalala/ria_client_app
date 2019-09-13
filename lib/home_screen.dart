@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/ui/custom_time_picker.dart';
+import 'package:flutter_app/ui/mutli_select_chip.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -10,6 +11,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String _date = "Not set";
   String _time = "Not set";
+  List<String> serviceList = ["Cleaning", "Utensils", "Chores"];
+  List<String> selectedServiceList = List();
 
   @override
   void initState() {
@@ -26,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              RaisedButton(
+              /*RaisedButton(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0)),
                 elevation: 4.0,
@@ -85,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(
                 height: 20.0,
-              ),
+              ),*/
               RaisedButton(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0)),
@@ -95,13 +98,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       theme: DatePickerTheme(
                         containerHeight: 210.0,
                       ),
-                      showTitleActions: true,
-                      onConfirm: (time) {
-                        print('confirm $time');
-                        _time = '${time.hour} : ${time.minute}';
-                        setState(() {});
-                      },
-                      pickerModel: CustomTimePickerModel(DateTime.now(), LocaleType.en));
+                      showTitleActions: true, onConfirm: (time) {
+                    print('confirm $time');
+                    _time = '${time.hour} : ${time.minute}';
+                    setState(() {});
+                  },
+                      pickerModel:
+                          CustomTimePickerModel(DateTime.now(), LocaleType.en));
                   setState(() {});
                 },
                 child: Container(
@@ -143,7 +146,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 color: Colors.white,
-              )
+              ),
+              SizedBox(
+                height: 20.0,
+              ),
+              Container(
+                child: MultiSelectChip(
+                  serviceList,
+                  onSelectionChanged: (selectedList) {
+                    setState(() {
+                      selectedServiceList = selectedList;
+                    });
+                  },
+                ),
+              ),
             ],
           ),
         ),
