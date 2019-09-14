@@ -17,7 +17,8 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
-  cloud_firestore:
+  firebase_core: ^0.4.0+9
+  cloud_firestore: ^0.12.9+4
   firebase_auth:
   sms_autofill:
   path_provider:
