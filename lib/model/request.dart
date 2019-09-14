@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 class Request{
   final String service;
   final String user_id;
@@ -24,4 +26,18 @@ class Request{
     req_time: data['req_time'],
     timestamp: data['timestamp']
   );
+
+  toJson() {
+    return {
+      "service": service,
+      "user_id": user_id,
+      "date": date,
+      "address": address,
+      "society_id": society_id,
+      "asn_response": asn_response,
+      "status": status,
+      "req_time": req_time,
+      "timestamp": timestamp,
+    };
+  }
 }

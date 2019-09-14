@@ -1,7 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/model/request.dart';
 import 'package:flutter_app/ui/custom_time_picker.dart';
 import 'package:flutter_app/ui/mutli_select_chip.dart';
+import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:provider/provider.dart';
+
+import 'db_model.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -21,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final reqProvider = Provider.of<DBModel>(context);
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -29,69 +36,10 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              /*RaisedButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5.0)),
-                elevation: 4.0,
-                onPressed: () {
-                  DatePicker.showDatePicker(context,
-                      theme: DatePickerTheme(
-                        containerHeight: 210.0,
-                      ),
-                      showTitleActions: true,
-                      minTime: DateTime(2000, 1, 1),
-                      maxTime: DateTime(2022, 12, 31), onConfirm: (date) {
-                        print('confirm $date');
-                        _date = '${date.year} - ${date.month} - ${date.day}';
-                        setState(() {});
-                      }, currentTime: DateTime.now(), locale: LocaleType.en);
-                },
-                child: Container(
-                  alignment: Alignment.center,
-                  height: 50.0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Container(
-                            child: Row(
-                              children: <Widget>[
-                                Icon(
-                                  Icons.date_range,
-                                  size: 18.0,
-                                  color: Colors.teal,
-                                ),
-                                Text(
-                                  " $_date",
-                                  style: TextStyle(
-                                      color: Colors.teal,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18.0),
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                      Text(
-                        "  Change",
-                        style: TextStyle(
-                            color: Colors.teal,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18.0),
-                      ),
-                    ],
-                  ),
-                ),
-                color: Colors.white,
-              ),
-              SizedBox(
-                height: 20.0,
-              ),*/
               RaisedButton(
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5.0)),
+                    borderRadius: BorderRadius.circular(5.0)
+                ),
                 elevation: 4.0,
                 onPressed: () {
                   DatePicker.showPicker(context,
@@ -159,6 +107,29 @@ class _HomeScreenState extends State<HomeScreen> {
                     });
                   },
                 ),
+              ),
+              SizedBox(
+                height: 20.0,
+              ),
+              RaisedButton(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0)),
+                elevation: 4.0,
+                onPressed: () async {
+                  FirebaseUser fUser= await FirebaseAuth.instance.currentUser();
+                  if (fUser == null) {
+                    final snackBar = SnackBar(
+                      content: Text("Please sign in to proceed"),
+                    );
+                    Scaffold.of(context).showSnackBar(snackBar);
+                    return;
+                  }
+                  Request req = Request(user_id: "9986643444", date: 14, service: Constants.CLEANING_CDE, address: "Greta"
+                  , society_id: "bvx", asn_response: Constants.AST_RESPONSE_NIL, status: Constants.REQ_STATUS_UNASSIGNED,
+                  req_time: 15000, timestamp: DateTime.now().millisecondsSinceEpoch);
+                  reqProvider.pushRequest(req);
+                },
+                child: Text("ClickMe!"),
               ),
             ],
           ),
