@@ -4,8 +4,8 @@ import 'package:flutter_app/placeholder_widget.dart';
 import 'package:flutter_app/profile/profile_options.dart';
 
 import 'home_screen.dart';
-import 'login_screen.dart';
-import 'login_widget.dart';
+import 'login/login_screen.dart';
+import 'login/login_widget.dart';
 
 class TabNavigatorRoutes {
   static const String root = '/home';

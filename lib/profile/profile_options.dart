@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'custom_dialog.dart';
+import '../ui/custom_dialog.dart';
 import 'history_widget.dart';
 import 'package:flutter_app/nested-tab-navigator.dart';
 

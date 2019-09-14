@@ -5,14 +5,14 @@ import 'package:flutter_app/profile/profile_options.dart';
 import 'package:morpheus/widgets/morpheus_tab_view.dart';
 import 'nested-tab-navigator.dart';
 
-class Home extends StatefulWidget{
+class AppCanvas extends StatefulWidget{
   @override
   State createState() {
-    return _HomeState();
+    return _AppCanvasState();
   }
 }
 
-class _HomeState extends State<Home> {
+class _AppCanvasState extends State<AppCanvas> {
   int _currentIndex = 0;
   //TabItem currentItem = TabItem.Home;
   final navigatorKey = GlobalKey<NavigatorState>();
@@ -21,6 +21,8 @@ class _HomeState extends State<Home> {
     1 : GlobalKey<NavigatorState>(),
     2 : GlobalKey<NavigatorState>(),
   };
+
+  //not currently being used.. using navigator
   final List<Widget> _children = [
     HomeScreen(),
     PlaceholderWidget(Colors.deepOrange),
