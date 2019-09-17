@@ -16,4 +16,8 @@ class Api{
     ref.add(data);
   }
 
+  Future<DocumentSnapshot> getUserById(String id) {
+    ref = _db.collection(Constants.COLN_USERS);
+    return ref.document(id).get();
+  }
 }

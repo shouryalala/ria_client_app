@@ -162,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             req_time: 15000, timestamp: DateTime.now().millisecondsSinceEpoch);
                         reqProvider.pushRequest(req);
                       },
-                      child: Text("ClickMe!"),
+                      child: Text("Request!"),
                     ),
                   ],
                 ),
