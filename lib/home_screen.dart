@@ -4,10 +4,11 @@ import 'package:flutter_app/model/request.dart';
 import 'package:flutter_app/ui/custom_time_picker.dart';
 import 'package:flutter_app/ui/mutli_select_chip.dart';
 import 'package:flutter_app/util/constants.dart';
+import 'package:flutter_app/util/logger.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:provider/provider.dart';
 
-import 'db_model.dart';
+import 'model/db_model.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -18,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String _time = "Not set";
   static final String CLEANING = "Cleaning";
   static final String UTENSILS = "Utensils";
+  final Log log = new Log("HomeScreen");
   List<String> serviceList = [CLEANING, UTENSILS];
   List<String> selectedServiceList = List();
 
@@ -29,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final reqProvider = Provider.of<DBModel>(context);
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/ui/dots_indicator.dart';
 import 'package:flutter_app/onboarding/screens/page1.dart';
 import 'package:flutter_app/onboarding/screens/page2.dart';
 import 'package:flutter_app/onboarding/screens/page3.dart';
-import 'package:flutter_app/util/io_util.dart';
+import 'package:flutter_app/ui/dots_indicator.dart';
 import 'package:flutter_app/util/logger.dart';
+import 'package:provider/provider.dart';
+
+import '../model/local_db_model.dart';
 
 class _OnboardingMainPageState extends State<OnboardingMainPage> {
   final _controller = new PageController();
@@ -23,8 +25,7 @@ class _OnboardingMainPageState extends State<OnboardingMainPage> {
 
   @override
   Widget build(BuildContext context) {
-    log.debug("Setting Onboarding flag to true.");
-    new IOUtil().writeOnboardStatus(1);
+    final onboardProvider = Provider.of<LocalDBModel>(context);
     bool isDone = page == _pages.length - 1;
     return new Scaffold(
         backgroundColor: Colors.transparent,
@@ -114,6 +115,9 @@ class _OnboardingMainPageState extends State<OnboardingMainPage> {
                                 style: Theme.of(context).textTheme.button.copyWith(color: Colors.white),
                               ),
                               onPressed: (){
+                                //TODO
+                                log.debug("Setting Onboarding flag to true.");
+                                onboardProvider.saveOnboardStatus(true);
                                 Navigator.of(context).pop();
                                 Navigator.of(context).pushReplacementNamed('/home');
                               },
@@ -137,7 +141,12 @@ class _OnboardingMainPageState extends State<OnboardingMainPage> {
                               child: Text('SKIP',
                                 style: Theme.of(context).textTheme.button.copyWith(color: Colors.green),
                               ),
-                              onPressed: (){},
+                              onPressed: (){
+                                log.debug("Setting Onboarding flag to true.");
+                                onboardProvider.saveOnboardStatus(true);
+                                Navigator.of(context).pop();
+                                Navigator.of(context).pushReplacementNamed('/home');
+                              },
                               highlightColor: Colors.white30,
                               splashColor: Colors.white30,
                             ),

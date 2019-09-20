@@ -1,7 +1,10 @@
-import 'package:flutter_app/util/logger.dart';
 import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_app/util/io_util.dart';
+import 'package:flutter_app/util/logger.dart';
+import 'package:provider/provider.dart';
+
+import 'base_util.dart';
 
 class SplashScreen extends StatefulWidget {  
   @override State<StatefulWidget> createState() => LogoFadeIn();
@@ -24,8 +27,10 @@ class LogoFadeIn extends State<SplashScreen> {
   }
 
   initialize() {
-    new IOUtil().isUserOnboarded().then((flag) {
-        if(flag == 0) {
+    final onboardProvider = Provider.of<BaseUtil>(context);
+
+    //new IOUtil().isUserOnboarded().then((flag) {
+        if(!onboardProvider.isUserOnboarded) {
           log.debug("New user. Moving to Onboarding..");
           Navigator.of(context).pop();
           Navigator.of(context).pushReplacementNamed('/onboarding');
@@ -34,7 +39,7 @@ class LogoFadeIn extends State<SplashScreen> {
           Navigator.of(context).pop();
           Navigator.of(context).pushReplacementNamed('/home');
         }
-    });
+    //});
   }
 
   @override
