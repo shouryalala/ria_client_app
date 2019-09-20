@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:provider/provider.dart';
 
-import 'base_util.dart';
+import '../../base_util.dart';
 
 class SplashScreen extends StatefulWidget {  
   @override State<StatefulWidget> createState() => LogoFadeIn();

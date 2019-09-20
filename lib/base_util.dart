@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/model/local_db_model.dart';
+import 'package:flutter_app/core/model/local_db_model.dart';
 import 'package:flutter_app/util/locator.dart';
 
-import 'model/user.dart';
+import 'core/model/user.dart';
 
 class BaseUtil extends ChangeNotifier{
   LocalDBModel _lModel = locator<LocalDBModel>();

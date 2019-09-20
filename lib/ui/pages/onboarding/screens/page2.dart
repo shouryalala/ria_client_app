@@ -1,8 +1,10 @@
-import 'package:flutter_app/ui/circles_with_image.dart';
-import 'package:flutter_app/util/assets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/ui/elements/circles_with_image.dart';
+import 'package:flutter_app/util/assets.dart';
 
-class Page1 extends StatelessWidget {
+const double IMAGE_SIZE = 200.0;
+
+class Page2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Container(
@@ -11,9 +13,9 @@ class Page1 extends StatelessWidget {
       decoration: new BoxDecoration(
           gradient: LinearGradient(
               colors: [
-//                Colors.green[400],
-//                Colors.blue[600],
-//                Colors.blue[900],
+//                Colors.pink[400],
+//                Colors.deepPurple[600],
+//                Colors.deepPurple[900],
                 Colors.grey[50],
                 Colors.grey[50],
                 Colors.grey[100],
@@ -25,7 +27,7 @@ class Page1 extends StatelessWidget {
       child: Stack(
         children: <Widget>[
           new Positioned(
-            child: new CircleWithImage(Assets.pose1),
+            child: new CircleWithImage(Assets.pose2),
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
           ),
@@ -35,22 +37,21 @@ class Page1 extends StatelessWidget {
               children: <Widget>[
                 SizedBox(
                   child: Image(
-                    image: AssetImage(Assets.pose1),
+                    image: AssetImage(Assets.pose2),
                     fit: BoxFit.fitHeight,
                   ),
                   height: IMAGE_SIZE,
                   width: IMAGE_SIZE,
                 ),
                 new Padding(
-                  //padding: const EdgeInsets.all(18.0),
                   padding: const EdgeInsets.fromLTRB(18.0, 25, 18.0, 18.0),
-                  child: Text('Workout at home, outside or in the studio',
-                    style: Theme.of(context).textTheme.display1.copyWith(color: Colors.grey[800]),
+                  child: Text('Varied Workouts\nBuilt Skills',
+                    style: Theme.of(context).textTheme.display1.copyWith(color: Colors.white),
                     textAlign: TextAlign.center,
                   ),
                 ),
-                Text('Workout anywhere without any equipment!',
-                  style: Theme.of(context).textTheme.body1.copyWith(color: Colors.grey[800]),
+                Text('Take your workouts to the next level\nand become a BEAST!',
+                  style: Theme.of(context).textTheme.body1.copyWith(color: Colors.white),
                   textAlign: TextAlign.center,
                 )
               ],

@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/scheduler.dart' show timeDilation;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/animation.dart';
-import 'package:flutter_app/animation/login_animation.dart';
-import 'package:flutter_app/ui/sign_in_button.dart';
-import 'package:flutter_app/ui/sign_in_container.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart' show timeDilation;
+import 'package:flutter/services.dart';
+import 'package:flutter_app/ui/animation/login_animation.dart';
+import 'package:flutter_app/ui/elements/sign_in_button.dart';
+import 'package:flutter_app/ui/elements/sign_in_container.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key key}) : super(key: key);

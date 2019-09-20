@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import '../ui/custom_dialog.dart';
-import 'history_widget.dart';
-import 'package:flutter_app/nested-tab-navigator.dart';
+import 'package:flutter_app/ui/elements/custom_dialog.dart';
 
 class ProfileOptions extends StatefulWidget{
   ProfileOptions({this.onPush});

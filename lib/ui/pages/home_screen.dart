@@ -1,14 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/model/request.dart';
-import 'package:flutter_app/ui/custom_time_picker.dart';
-import 'package:flutter_app/ui/mutli_select_chip.dart';
+import 'package:flutter_app/core/model/request.dart';
+import 'package:flutter_app/ui/elements/custom_time_picker.dart';
+import 'package:flutter_app/ui/elements/mutli_select_chip.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:provider/provider.dart';
 
-import 'model/db_model.dart';
+import '../../core/model/db_model.dart';
 
 class HomeScreen extends StatefulWidget {
   @override

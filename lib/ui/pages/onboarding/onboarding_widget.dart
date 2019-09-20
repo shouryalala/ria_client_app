@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/onboarding/screens/page1.dart';
-import 'package:flutter_app/onboarding/screens/page2.dart';
-import 'package:flutter_app/onboarding/screens/page3.dart';
-import 'package:flutter_app/ui/dots_indicator.dart';
+import 'package:flutter_app/core/model/local_db_model.dart';
+import 'package:flutter_app/ui/elements/dots_indicator.dart';
+import 'package:flutter_app/ui/pages/onboarding/screens/page1.dart';
+import 'package:flutter_app/ui/pages/onboarding/screens/page2.dart';
+import 'package:flutter_app/ui/pages/onboarding/screens/page3.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:provider/provider.dart';
-
-import '../model/local_db_model.dart';
 
 class _OnboardingMainPageState extends State<OnboardingMainPage> {
   final _controller = new PageController();

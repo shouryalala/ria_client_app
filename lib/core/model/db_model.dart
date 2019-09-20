@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/model/request.dart';
+import 'package:flutter_app/core/model/request.dart';
+import 'package:flutter_app/core/service/api.dart';
 
-import '../service/api.dart';
-import '../util/locator.dart';
+import '../../util/locator.dart';
+import '../../util/logger.dart';
 import 'user.dart';
-import '../util/logger.dart';
 
 class DBModel extends ChangeNotifier{
   Api _api = locator<Api>();

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/ui/ui_constants.dart';
+import 'package:flutter_app/ui/elements/ui_constants.dart';
 
 class CustomDialog extends StatelessWidget {
   final String title, description, buttonText;

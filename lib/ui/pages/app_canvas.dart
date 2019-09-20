@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/home_screen.dart';
-import 'package:flutter_app/placeholder_widget.dart';
-import 'package:flutter_app/profile/profile_options.dart';
+import 'package:flutter_app/ui/pages/home_screen.dart';
+import 'package:flutter_app/ui/pages/placeholder_widget.dart';
+import 'package:flutter_app/ui/pages/profile/profile_options.dart';
 import 'package:morpheus/widgets/morpheus_tab_view.dart';
-import 'nested-tab-navigator.dart';
+import '../../nested-tab-navigator.dart';
 
 class AppCanvas extends StatefulWidget{
   @override

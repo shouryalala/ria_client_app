@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/core/service/local_api.dart';
 import 'package:flutter_app/util/locator.dart';
 import 'package:flutter_app/util/logger.dart';
 
-import '../service/local_api.dart';
 import 'user.dart';
 
 class LocalDBModel extends ChangeNotifier {

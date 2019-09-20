@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/profile/history_widget.dart';
-import 'package:flutter_app/placeholder_widget.dart';
-import 'package:flutter_app/profile/profile_options.dart';
+import 'package:flutter_app/ui/pages/placeholder_widget.dart';
+import 'package:flutter_app/ui/pages/login/login_screen.dart';
+import 'package:flutter_app/ui/pages/login/login_widget.dart';
+import 'package:flutter_app/ui/pages/profile/history_widget.dart';
+import 'package:flutter_app/ui/pages/profile/profile_options.dart';
 
-import 'home_screen.dart';
-import 'login/login_screen.dart';
-import 'login/login_widget.dart';
+import 'ui/pages/home_screen.dart';
 
 class TabNavigatorRoutes {
   static const String root = '/home';

@@ -1,6 +1,6 @@
-import 'package:flutter_app/ui/circles_with_image.dart';
-import 'package:flutter_app/util/assets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/ui/elements/circles_with_image.dart';
+import 'package:flutter_app/util/assets.dart';
 
 const double IMAGE_SIZE = 300.0;
 
