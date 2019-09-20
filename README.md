@@ -1,4 +1,4 @@
-# flutter_app
+# Project RIA
 
 A new Flutter application.
 
