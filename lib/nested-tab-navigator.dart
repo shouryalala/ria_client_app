@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/ui/pages/login/login_dialog.dart';
 import 'package:flutter_app/ui/pages/placeholder_widget.dart';
 import 'package:flutter_app/ui/pages/login/login_screen.dart';
 import 'package:flutter_app/ui/pages/login/login_widget.dart';
@@ -12,8 +13,9 @@ class TabNavigatorRoutes {
   static const String subscribe = '/subscribe';
   static const String profile = '/profile';
   static const String history = '/history';
+  //static const String loginS = '/loginS';
   static const String login = '/login';
-  static const String loginX = '/loginX';
+  //static const String loginX = '/loginX';
 }
 
 class TabNavigator extends StatelessWidget {
@@ -30,9 +32,26 @@ class TabNavigator extends StatelessWidget {
     );
   }
 
+  //TODO
+  /*
+  This is currently sending the login action which is showing up inside the tab navigator. We dont want that at all.
+  The login page should open without the bottom navigation pane
+  */
+  void _pushScreen(BuildContext context, String routeId) {
+    var routeBuilders = _routeBuilders(context);
+
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context) =>routeBuilders[routeId](context)
+      )
+    );
+  }
+
   Map<String, WidgetBuilder> _routeBuilders(BuildContext context) {
     return {
-      TabNavigatorRoutes.root: (context) => HomeScreen(),
+      TabNavigatorRoutes.root: (context) => HomeScreen(
+        onPushScreen: (routeId) =>
+            _pushScreen(context, routeId),
+      ),
       TabNavigatorRoutes.subscribe: (context) => PlaceholderWidget(Colors.amberAccent),
       TabNavigatorRoutes.profile: (context) => ProfileOptions(
 //        color: TabHelper.color(tabItem),
@@ -41,8 +60,9 @@ class TabNavigator extends StatelessWidget {
             _push(context, routeId),
       ),
       TabNavigatorRoutes.history: (context) => HistoryPage(),
-      TabNavigatorRoutes.login: (context) => LoginPage(),
-      TabNavigatorRoutes.loginX: (context) => LoginScreen(),
+      TabNavigatorRoutes.login: (context) => LoginDialog(),
+      //TabNavigatorRoutes.login: (context) => LoginDialog(),
+      //TabNavigatorRoutes.loginX: (context) => LoginScreen(),
     };
   }
 

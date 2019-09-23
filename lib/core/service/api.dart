@@ -13,7 +13,12 @@ class Api{
     //ref = _db.collection('request').document()
     CalendarUtil cal = CalendarUtil();
     ref = _db.collection(Constants.COLN_REQUESTS).document(cal.getCurrentYear()).collection(cal.getCurrentMonthCode());
-    ref.add(data);
+    return ref.add(data);
+  }
+
+  Future<DocumentReference> updateUserDocument(String docId, Map data) {
+    ref = _db.collection(Constants.COLN_USERS);
+    return ref.document(docId).setData(data, merge: true);
   }
 
   Future<DocumentSnapshot> getUserById(String id) {

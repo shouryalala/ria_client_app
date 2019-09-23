@@ -13,8 +13,7 @@ class LoginScreen extends StatefulWidget {
   LoginScreenState createState() => new LoginScreenState();
 }
 
-class LoginScreenState extends State<LoginScreen>
-    with TickerProviderStateMixin {
+class LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin {
   AnimationController _loginButtonController;
   var animationStatus = 0;
   @override
@@ -29,6 +28,7 @@ class LoginScreenState extends State<LoginScreen>
     _loginButtonController.dispose();
     super.dispose();
   }
+
 
   Future<Null> _playAnimation() async {
     try {

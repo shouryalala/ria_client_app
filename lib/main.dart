@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/model/db_model.dart';
+import 'package:flutter_app/ui/pages/login/login_dialog.dart';
 import 'package:flutter_app/ui/pages/login/login_widget.dart';
 import 'package:flutter_app/ui/pages/onboarding/onboarding_widget.dart';
 import 'package:flutter_app/ui/pages/profile/history_widget.dart';
@@ -34,7 +35,7 @@ class App extends StatelessWidget{
           '/launcher': (BuildContext context) => SplashScreen(),
           '/home': (BuildContext context) => AppCanvas(),
           '/onboarding':(BuildContext context) => OnboardingMainPage(),
-          '/login': (BuildContext context) => LoginPage(),
+          '/login': (BuildContext context) => LoginDialog(),
           '/history': (BuildContext context) => HistoryPage(),
           '/profile': (BuildContext context) => ProfileOptions(),
         },

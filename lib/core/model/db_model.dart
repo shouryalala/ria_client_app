@@ -20,4 +20,10 @@ class DBModel extends ChangeNotifier{
     return User.fromMap(doc.data, id);
   }
 
+  Future updateUser(User user) async{
+    String id = user.mobile;
+    _api.updateUserDocument(id, user.toJson());
+    return ;
+  }
+
 }

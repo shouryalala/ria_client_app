@@ -33,7 +33,6 @@ class User{
         data[fldSociety_id], data[fldSector], data[fldDistrict], data[fldClient_token], data
   );
 
-
   String get mobile => _mobile;
 
   set mobile(String value) {

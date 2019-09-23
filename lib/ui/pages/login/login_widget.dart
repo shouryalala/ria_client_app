@@ -74,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
                     } else {
                       print("Signing in...");
                       Navigator.of(context).pop();
-                      signIn();
+                      //authenticateUser(verificationId, smsCode);
                     }
                   });
                 },
@@ -125,15 +125,15 @@ class _LoginPageState extends State<LoginPage> {
                 TextField(
                 controller: phoneFieldController,
             ),
-//                PhoneFieldHint(
-//                controller: phoneFieldController,
-//              ),
-//                TextField(
-//                  decoration: InputDecoration(hintText: 'Enter Phone number'),
-//                  onChanged: (value) {
-//                    this.phoneNo = value;
-//                  },
-//                ),
+                PhoneFieldHint(
+                controller: phoneFieldController,
+              ),
+                TextField(
+                  decoration: InputDecoration(hintText: 'Enter Phone number'),
+                  onChanged: (value) {
+                    this.phoneNo = value;
+                  },
+                ),
                 SizedBox(height: 10.0),
                 RaisedButton(
                     onPressed: verifyPhone,

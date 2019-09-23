@@ -9,13 +9,20 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/model/db_model.dart';
+import 'login/login_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
+  final ValueChanged<String> onPushScreen;
+  HomeScreen({this.onPushScreen});
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _HomeScreenState createState() {
+    return _HomeScreenState(onPushScreen: onPushScreen);
+  }
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final ValueChanged<String> onPushScreen;
+  _HomeScreenState({this.onPushScreen});
   String _time = "Not set";
   static final String CLEANING = "Cleaning";
   static final String UTENSILS = "Utensils";
@@ -56,7 +63,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Text('LOGIN',
                       style: Theme.of(context).textTheme.button.copyWith(color: Colors.green),
                     ),
-                    onPressed: (){},
+                    onPressed: (){
+//                      Navigator.of(context).pop();
+//                      Navigator.of(context).pushReplacementNamed('/login');
+                        onPushScreen('/login');
+                    },
                     highlightColor: Colors.white30,
                     splashColor: Colors.white30,
                   ),
