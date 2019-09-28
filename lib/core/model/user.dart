@@ -83,6 +83,11 @@ class User{
     return oContent.toString();
   }
 
+  bool hasIncompleteDetails() {
+    return ((_name?.isEmpty??true) || (_email?.isEmpty??true) || (_bhk == null || bhk < 1) || (_flat_no?.isEmpty??true)
+        || (_society_id?.isEmpty??true) || (_sector == null ) || (_district?.isEmpty??true));
+  }
+
   String get name => _name;
 
   set name(String value) {

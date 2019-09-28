@@ -46,6 +46,7 @@ class _LoginDialogState extends State<LoginDialog> {
     final PhoneCodeSent smsCodeSent = (String verId, [int forceCodeResend]) {
       this.verificationId = verId;
       log.debug("User mobile number format verified. Sending otp and verifying");
+      //move to otp screen
       _controller.animateToPage(1, duration: Duration(milliseconds: 300), curve: Curves.easeIn);
     };
 
@@ -54,6 +55,7 @@ class _LoginDialogState extends State<LoginDialog> {
       authProvider.authenticateUser(user).then((flag) {
           if(flag){
             log.debug("User signed in successfully");
+            onSignInSuccess();
           }
           else{
             log.error("User auto sign in didnt work");
@@ -69,7 +71,7 @@ class _LoginDialogState extends State<LoginDialog> {
         phoneNumber: this.verificationId,
         codeAutoRetrievalTimeout: autoRetrieve,
         codeSent: smsCodeSent,
-        timeout: const Duration(seconds: 5),
+        timeout: const Duration(seconds: 35),
         verificationCompleted: verifiedSuccess,
         verificationFailed: veriFailed);
   }
@@ -222,21 +224,7 @@ class _LoginDialogState extends State<LoginDialog> {
         if(otp != null && otp.isNotEmpty) {
           authProvider.authenticateUser(authProvider.generateAuthCredential(verificationId, otp)).then((flag) {
             if(flag) {
-              log.debug("User authenticated. Now check if details previously available.");
-              dbProvider.getUser(verificationId.substring(3)).then((user) {
-                if(user == null) {
-                  log.debug("No existing user details found. Move to details page");
-                  _controller.animateToPage(2, duration: Duration(milliseconds: 300), curve: Curves.easeIn);
-                }
-                else{
-                  log.debug("User details available: Name: " + user.name + "\nAddress: " + user.flat_no);
-                  log.debug("Storing details in the local db and moving to complete signup process");
-                  authProvider.myUser = user;
-                  authProvider.myUser.mobile = verificationId.substring(3);
-                  localDbProvider.saveUser(authProvider.myUser);
-                  //TODO move back to the home screen
-                }
-              });
+              onSignInSuccess();
             }
             else{
               //TODO
@@ -280,5 +268,33 @@ class _LoginDialogState extends State<LoginDialog> {
       }
     }
     return null;
+  }
+
+  void onSignInSuccess() {
+    log.debug("User authenticated. Now check if details previously available.");
+    //FirebaseAuth.instance.currentUser().then((fUser) => authProvider.firebaseUser);
+    FirebaseAuth.instance.currentUser().then((fUser) {
+      authProvider.firebaseUser = fUser;
+      log.debug("User is set: " + fUser.uid);
+    });
+    dbProvider.getUser(verificationId.substring(3)).then((user) {
+      if(user == null || (user != null && user.hasIncompleteDetails())) {
+        log.debug("No existing user details found or found incomplete details for user. Moving to details page");
+        //Move to name input page
+        if(user != null) {
+          authProvider.myUser = user;
+          authProvider.myUser.mobile = verificationId.substring(3);
+        }
+        _controller.animateToPage(2, duration: Duration(milliseconds: 300), curve: Curves.easeIn);
+      }
+      else{
+        log.debug("User details available: Name: " + user.name + "\nAddress: " + user.flat_no);
+        log.debug("Storing details in the local db and moving to complete signup process");
+        authProvider.myUser = user;
+        authProvider.myUser.mobile = verificationId.substring(3);
+        localDbProvider.saveUser(authProvider.myUser);
+        //TODO move back to the home screen
+      }
+    });
   }
 }
