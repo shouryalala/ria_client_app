@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/ui/pages/availability_dialog.dart';
+import 'package:flutter_app/util/logger.dart';
 
 class MobileInputScreen extends StatefulWidget {
   final mobileInputScreenState = _MobileInputScreenState();
@@ -14,6 +16,7 @@ class MobileInputScreen extends StatefulWidget {
 class _MobileInputScreenState extends State<MobileInputScreen> {
   String _phoneNo;
   bool _validate = true;
+  Log log = new Log("MobileInputScreen");
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +56,9 @@ class _MobileInputScreenState extends State<MobileInputScreen> {
                   style: Theme.of(context).textTheme.button.copyWith(color: Colors.green),
                 ),
                 onPressed: (){
-
+                  showDialog(context: context,
+                    builder: (BuildContext context) => LocationAvailabilityDialog()
+                  );
                 },
                 highlightColor: Colors.white30,
                 splashColor: Colors.white30,
