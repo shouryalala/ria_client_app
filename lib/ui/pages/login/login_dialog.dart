@@ -22,18 +22,21 @@ class _LoginDialogState extends State<LoginDialog> {
   static BaseUtil authProvider;
   static DBModel dbProvider;
   static LocalDBModel localDbProvider;
+  String userMobile;
   static final mobileInScreen = MobileInputScreen();
   static final otpInScreen = OtpInputScreen();
   static final nameInScreen = NameInputScreen();
   static final addressInScreen = AddressInputScreen();
+  static const int PHONE_SCREEN = 0;
+  static const int OTP_SCREEN = 1;
+  static const int NAME_SCREEN = 2;
+  static const int ADDRESS_SCREEN = 3;
   String verificationId;
   final List<Widget> _pages = [
     mobileInScreen,
     otpInScreen,
     nameInScreen,
     addressInScreen,
-//    Page2(),
-//    Page3(),
   ];
   int page = 0;
 
@@ -47,7 +50,7 @@ class _LoginDialogState extends State<LoginDialog> {
       this.verificationId = verId;
       log.debug("User mobile number format verified. Sending otp and verifying");
       //move to otp screen
-      _controller.animateToPage(1, duration: Duration(milliseconds: 300), curve: Curves.easeIn);
+      _controller.animateToPage(OTP_SCREEN, duration: Duration(milliseconds: 300), curve: Curves.easeIn);
     };
 
     final PhoneVerificationCompleted verifiedSuccess = (AuthCredential user) {
@@ -206,12 +209,13 @@ class _LoginDialogState extends State<LoginDialog> {
 
   processScreenInput(int currentPage) {
     switch(currentPage) {
-      case 0: {
+      case PHONE_SCREEN: {
         //in mobile input screen. Get and set mobile/ set error interface if not correct
         String id = mobileInScreen.getMobile();
         if(formatMobileNumber(id) != null) {
-          this.verificationId = "+91" + formatMobileNumber(id);
-          //TODO add a progress bar untill smsCode sent
+          this.userMobile =  formatMobileNumber(id);
+          this.verificationId = "+91" + this.userMobile;
+          //TODO add a progress bar until smsCode sent
           verifyPhone();
         }
         else{
@@ -219,7 +223,7 @@ class _LoginDialogState extends State<LoginDialog> {
         }
         break;
       }
-      case 1: {
+      case OTP_SCREEN: {
         String otp = otpInScreen.getOtp();
         if(otp != null && otp.isNotEmpty) {
           authProvider.authenticateUser(authProvider.generateAuthCredential(verificationId, otp)).then((flag) {
@@ -236,7 +240,7 @@ class _LoginDialogState extends State<LoginDialog> {
         }
         break;
       }
-      case 2: {
+      case NAME_SCREEN: {
         String name = nameInScreen.getName();
         String email = nameInScreen.getEmail();
         //TODO check if name, email already available in the local db
@@ -244,12 +248,16 @@ class _LoginDialogState extends State<LoginDialog> {
           nameInScreen.setNameInvalid();
         }
         else {
-          _controller.animateToPage(3, duration: Duration(milliseconds: 300), curve: Curves.easeIn);
+          authProvider.myUser.name = name;
+          if(email != null && email.isNotEmpty) {
+            authProvider.myUser.email = email;
+          }
+          _controller.animateToPage(ADDRESS_SCREEN, duration: Duration(milliseconds: 300), curve: Curves.easeIn);
         }
         break;
       }
-      case 3: {
-
+      case ADDRESS_SCREEN: {
+          onSignUpComplete();
       }
     }
   }
@@ -276,25 +284,29 @@ class _LoginDialogState extends State<LoginDialog> {
     FirebaseAuth.instance.currentUser().then((fUser) {
       authProvider.firebaseUser = fUser;
       log.debug("User is set: " + fUser.uid);
-    });
-    dbProvider.getUser(verificationId.substring(3)).then((user) {
-      if(user == null || (user != null && user.hasIncompleteDetails())) {
-        log.debug("No existing user details found or found incomplete details for user. Moving to details page");
-        //Move to name input page
-        if(user != null) {
+      dbProvider.getUser(this.userMobile).then((user) {
+        if(user == null || (user != null && user.hasIncompleteDetails())) {
+          log.debug("No existing user details found or found incomplete details for user. Moving to details page");
+          //Move to name input page
+          if(user != null) {
+            authProvider.myUser = user;
+            authProvider.myUser.mobile = this.userMobile;
+          }
+          _controller.animateToPage(NAME_SCREEN, duration: Duration(milliseconds: 300), curve: Curves.easeIn);
+        }
+        else{
+          log.debug("User details available: Name: " + user.name + "\nAddress: " + user.flat_no);
+          log.debug("Storing details in the local db and moving to complete signup process");
           authProvider.myUser = user;
           authProvider.myUser.mobile = verificationId.substring(3);
+          onSignUpComplete();
         }
-        _controller.animateToPage(2, duration: Duration(milliseconds: 300), curve: Curves.easeIn);
-      }
-      else{
-        log.debug("User details available: Name: " + user.name + "\nAddress: " + user.flat_no);
-        log.debug("Storing details in the local db and moving to complete signup process");
-        authProvider.myUser = user;
-        authProvider.myUser.mobile = verificationId.substring(3);
-        localDbProvider.saveUser(authProvider.myUser);
-        //TODO move back to the home screen
-      }
+      });
     });
+  }
+
+  void onSignUpComplete() {
+    localDbProvider.saveUser(authProvider.myUser);
+    //TODO
   }
 }

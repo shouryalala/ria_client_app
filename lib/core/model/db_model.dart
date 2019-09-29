@@ -19,8 +19,13 @@ class DBModel extends ChangeNotifier {
   }
 
   Future<User> getUser(String id) async {
-    var doc = await _api.getUserById(id);
-    return User.fromMap(doc.data, id);
+    try {
+      var doc = await _api.getUserById(id);
+      return User.fromMap(doc.data, id);
+    }catch(e) {
+      log.error("Error fetch User details: " + e.toString());
+      return null;
+    }
   }
 
   Future updateUser(User user) async {
