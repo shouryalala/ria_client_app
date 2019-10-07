@@ -12,14 +12,18 @@ import 'package:provider/provider.dart';
 import '../../../base_util.dart';
 
 class LoginDialog extends StatefulWidget{
+  final int initPage;
+  LoginDialog({this.initPage});
   @override
-  State<StatefulWidget> createState() => _LoginDialogState();
+  State<StatefulWidget> createState() => _LoginDialogState(initPage);
 }
 
 class _LoginDialogState extends State<LoginDialog> {
-  final _controller = new PageController();
   final Log log = new Log("LoginDialog");
-  static BaseUtil authProvider;
+  final int initPage;
+  _LoginDialogState(this.initPage);
+  PageController _controller;
+  static BaseUtil baseProvider;
   static DBModel dbProvider;
   static LocalDBModel localDbProvider;
   String userMobile;
@@ -38,7 +42,7 @@ class _LoginDialogState extends State<LoginDialog> {
     nameInScreen,
     addressInScreen,
   ];
-  int page = 0;
+  int page;
 
   Future<void> verifyPhone() async {
     //await SmsAutoFill().listenForCode;
@@ -55,7 +59,7 @@ class _LoginDialogState extends State<LoginDialog> {
 
     final PhoneVerificationCompleted verifiedSuccess = (AuthCredential user) {
       print('verified');
-      authProvider.authenticateUser(user).then((flag) {
+      baseProvider.authenticateUser(user).then((flag) {
           if(flag){
             log.debug("User signed in successfully");
             onSignInSuccess();
@@ -79,9 +83,17 @@ class _LoginDialogState extends State<LoginDialog> {
         verificationFailed: veriFailed);
   }
 
+
+  @override
+  void initState() {
+    super.initState();
+    page = (initPage != null)?initPage:0;
+    _controller = new PageController(initialPage: page);
+  }
+
   @override
   Widget build(BuildContext context) {
-    authProvider = Provider.of<BaseUtil>(context);
+    baseProvider = Provider.of<BaseUtil>(context);
     dbProvider = Provider.of<DBModel>(context);
     localDbProvider = Provider.of<LocalDBModel>(context);
     return Scaffold(
@@ -99,24 +111,6 @@ class _LoginDialogState extends State<LoginDialog> {
   dialogContent(BuildContext context) {
     return Stack(
       children: <Widget>[
-//        Container(
-//          margin: EdgeInsets.only(
-//              top: UiConsts.padding,
-//              bottom: UiConsts.padding,
-//          ),
-//          decoration: new BoxDecoration(
-//            color: Colors.white,
-//            shape: BoxShape.rectangle,
-//            borderRadius: BorderRadius.circular(UiConsts.padding),
-//            boxShadow: [
-//              BoxShadow(
-//                color: Colors.black26,
-//                blurRadius: 10.0,
-//                offset: const Offset(0.0, 10.0),
-//              ),
-//            ],
-//          ),
-//        ),
         new Positioned.fill(
           child: new PageView.builder(
             physics: new NeverScrollableScrollPhysics(),
@@ -226,7 +220,7 @@ class _LoginDialogState extends State<LoginDialog> {
       case OTP_SCREEN: {
         String otp = otpInScreen.getOtp();
         if(otp != null && otp.isNotEmpty) {
-          authProvider.authenticateUser(authProvider.generateAuthCredential(verificationId, otp)).then((flag) {
+          baseProvider.authenticateUser(baseProvider.generateAuthCredential(verificationId, otp)).then((flag) {
             if(flag) {
               onSignInSuccess();
             }
@@ -248,9 +242,9 @@ class _LoginDialogState extends State<LoginDialog> {
           nameInScreen.setNameInvalid();
         }
         else {
-          authProvider.myUser.name = name;
+          baseProvider.myUser.name = name;
           if(email != null && email.isNotEmpty) {
-            authProvider.myUser.email = email;
+            baseProvider.myUser.email = email;
           }
           _controller.animateToPage(ADDRESS_SCREEN, duration: Duration(milliseconds: 300), curve: Curves.easeIn);
         }
@@ -280,25 +274,25 @@ class _LoginDialogState extends State<LoginDialog> {
 
   void onSignInSuccess() {
     log.debug("User authenticated. Now check if details previously available.");
-    //FirebaseAuth.instance.currentUser().then((fUser) => authProvider.firebaseUser);
+    //FirebaseAuth.instance.currentUser().then((fUser) => baseProvider.firebaseUser);
     FirebaseAuth.instance.currentUser().then((fUser) {
-      authProvider.firebaseUser = fUser;
+      baseProvider.firebaseUser = fUser;
       log.debug("User is set: " + fUser.uid);
       dbProvider.getUser(this.userMobile).then((user) {
         if(user == null || (user != null && user.hasIncompleteDetails())) {
           log.debug("No existing user details found or found incomplete details for user. Moving to details page");
           //Move to name input page
           if(user != null) {
-            authProvider.myUser = user;
-            authProvider.myUser.mobile = this.userMobile;
+            baseProvider.myUser = user;
+            baseProvider.myUser.mobile = this.userMobile;
           }
           _controller.animateToPage(NAME_SCREEN, duration: Duration(milliseconds: 300), curve: Curves.easeIn);
         }
         else{
           log.debug("User details available: Name: " + user.name + "\nAddress: " + user.flat_no);
           log.debug("Storing details in the local db and moving to complete signup process");
-          authProvider.myUser = user;
-          authProvider.myUser.mobile = verificationId.substring(3);
+          baseProvider.myUser = user;
+          baseProvider.myUser.mobile = verificationId.substring(3);
           onSignUpComplete();
         }
       });
@@ -306,7 +300,7 @@ class _LoginDialogState extends State<LoginDialog> {
   }
 
   void onSignUpComplete() {
-    localDbProvider.saveUser(authProvider.myUser);
+    localDbProvider.saveUser(baseProvider.myUser);
     //TODO
   }
 }

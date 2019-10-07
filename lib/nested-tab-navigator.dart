@@ -19,12 +19,19 @@ class TabNavigatorRoutes {
 }
 
 class TabNavigator extends StatelessWidget {
-  TabNavigator({this.navigatorKey, this.item});
+  //TabNavigator({this.navigatorKey, this.item});
   final GlobalKey<NavigatorState> navigatorKey;
   final int item;
+  final BuildContext context;
+  static Map<String, WidgetBuilder> routeBuilders;
+
+
+  TabNavigator({this.navigatorKey, this.item, this.context}){
+    routeBuilders = _routeBuilders(context);
+  }
 
   void _push(BuildContext context, String routeId) {
-    var routeBuilders = _routeBuilders(context);
+    //var routeBuilders = _routeBuilders(context);
 
     Navigator.push(context, MaterialPageRoute(
         builder: (context) =>routeBuilders[routeId](context)
@@ -37,20 +44,20 @@ class TabNavigator extends StatelessWidget {
   This is currently sending the login action which is showing up inside the tab navigator. We dont want that at all.
   The login page should open without the bottom navigation pane
   */
-  void _pushScreen(BuildContext context, String routeId) {
-    var routeBuilders = _routeBuilders(context);
+  void _pushLoginScreen(BuildContext context, int pageNo) {
+    //var routeBuilders = _routeBuilders(context);
 
     Navigator.push(context, MaterialPageRoute(
-        builder: (context) =>routeBuilders[routeId](context)
-      )
+        builder: (context) => LoginDialog(initPage: pageNo)
+      ),
     );
   }
 
   Map<String, WidgetBuilder> _routeBuilders(BuildContext context) {
     return {
       TabNavigatorRoutes.root: (context) => HomeScreen(
-        onPushScreen: (routeId) =>
-            _pushScreen(context, routeId),
+        onLoginRequest: (pageNo) =>
+            _pushLoginScreen(context, pageNo),
       ),
       TabNavigatorRoutes.subscribe: (context) => PlaceholderWidget(Colors.amberAccent),
       TabNavigatorRoutes.profile: (context) => ProfileOptions(
@@ -76,7 +83,7 @@ class TabNavigator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var routeBuilders = _routeBuilders(context);
+    //var routeBuilders = _routeBuilders(context);
 
     return Navigator(
         key: navigatorKey,

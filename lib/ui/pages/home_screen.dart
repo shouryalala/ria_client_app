@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/base_util.dart';
 import 'package:flutter_app/core/model/request.dart';
 import 'package:flutter_app/ui/elements/custom_time_picker.dart';
 import 'package:flutter_app/ui/elements/mutli_select_chip.dart';
@@ -9,36 +10,38 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/model/db_model.dart';
-import 'login/login_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
-  final ValueChanged<String> onPushScreen;
-  HomeScreen({this.onPushScreen});
+  final ValueChanged<int> onLoginRequest;
+  HomeScreen({this.onLoginRequest});
   @override
   _HomeScreenState createState() {
-    return _HomeScreenState(onPushScreen: onPushScreen);
+    return _HomeScreenState(onLoginRequest: onLoginRequest);
   }
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final ValueChanged<String> onPushScreen;
-  _HomeScreenState({this.onPushScreen});
+  final ValueChanged<int> onLoginRequest;
+  _HomeScreenState({this.onLoginRequest});
   String _time = "Not set";
-  static final String CLEANING = "Cleaning";
-  static final String UTENSILS = "Utensils";
+  static const String CLEANING = "Cleaning";
+  static const String UTENSILS = "Utensils";
   final Log log = new Log("HomeScreen");
   List<String> serviceList = [CLEANING, UTENSILS];
   List<String> selectedServiceList = List();
+  DBModel reqProvider;
+  BaseUtil baseProvider;
 
   @override
   void initState() {
     super.initState();
+
   }
 
   @override
   Widget build(BuildContext context) {
-    final reqProvider = Provider.of<DBModel>(context);
-
+    reqProvider = Provider.of<DBModel>(context);
+    baseProvider = Provider.of<BaseUtil>(context);
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -48,34 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               color: Colors.white10,
             ),
-            Align(
-              alignment: Alignment.topRight,
-              child: Container(
-                width: 100.0,
-                height: 40.0,
-                decoration: BoxDecoration(
-                  borderRadius: new BorderRadius.circular(30.0),
-                  border: Border.all(color: Colors.green, width: 1.0),
-                  color: Colors.transparent,
-                ),
-                child: new Material(
-                  child: MaterialButton(
-                    child: Text('LOGIN',
-                      style: Theme.of(context).textTheme.button.copyWith(color: Colors.green),
-                    ),
-                    onPressed: (){
-//                      Navigator.of(context).pop();
-//                      Navigator.of(context).pushReplacementNamed('/login');
-                        onPushScreen('/login');
-                    },
-                    highlightColor: Colors.white30,
-                    splashColor: Colors.white30,
-                  ),
-                  color: Colors.transparent,
-                  borderRadius: new BorderRadius.circular(30.0),
-                ),
-              ),
-            ),
+            buildLoginButton(),
             Align(
               alignment: Alignment.center,
               child: Container(
@@ -192,5 +168,53 @@ class _HomeScreenState extends State<HomeScreen> {
     if(selectedServiceList.contains(CLEANING) && selectedServiceList.contains(UTENSILS)) return Constants.CLEAN_UTENSIL_CDE;
     else if(selectedServiceList.contains(CLEANING)) return Constants.CLEANING_CDE;
     else return Constants.UTENSILS_CDE;
+  }
+
+  Widget buildLoginButton() {
+    if(baseProvider.firebaseUser == null || baseProvider.myUser.hasIncompleteDetails()) {
+      String btnText = "LOGIN";
+      int pageNo = 2; //mobile no page
+      if(baseProvider.firebaseUser != null ) {
+        //user logged in but has incomplete details
+        btnText = "Confirm Details";
+        pageNo = 2; //name input page
+      }
+      Align loginBtn =
+      Align(
+        alignment: Alignment.topRight,
+        child: Container(
+          width: 100.0,
+          height: 40.0,
+          decoration: BoxDecoration(
+            borderRadius: new BorderRadius.circular(30.0),
+            border: Border.all(color: Colors.green, width: 1.0),
+            color: Colors.transparent,
+          ),
+          child: new Material(
+            child: MaterialButton(
+              child: Text(btnText,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .button
+                    .copyWith(color: Colors.green),
+              ),
+              onPressed: () {
+//                      Navigator.of(context).pop();
+//                      Navigator.of(context).pushReplacementNamed('/login');
+                onLoginRequest(pageNo);
+              },
+              highlightColor: Colors.white30,
+              splashColor: Colors.white30,
+            ),
+            color: Colors.transparent,
+            borderRadius: new BorderRadius.circular(30.0),
+          ),
+        ),
+      );
+      return loginBtn;
+    }
+    //user already logged in and all important user details already available
+    return new Container(width: 0, height: 0,);
   }
 }

@@ -41,9 +41,9 @@ class _AppCanvasState extends State<AppCanvas> {
       ),
       body:MorpheusTabView( child:
       Stack(children: <Widget>[
-        _buildOffstageNavigator(0),
-        _buildOffstageNavigator(1),
-        _buildOffstageNavigator(2),
+        _buildOffstageNavigator(0, context),
+        _buildOffstageNavigator(1, context),
+        _buildOffstageNavigator(2, context),
       ]),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -75,12 +75,13 @@ class _AppCanvasState extends State<AppCanvas> {
     });
   }
 
-  Widget _buildOffstageNavigator(int index) {
+  Widget _buildOffstageNavigator(int index, BuildContext context) {
     return Offstage(
       offstage: _currentIndex != index,
       child: TabNavigator(
         navigatorKey: navigatorKeys[index],
         item: index,
+        context: context,
       ),
     );
   }
