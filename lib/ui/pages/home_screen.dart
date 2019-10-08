@@ -171,9 +171,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget buildLoginButton() {
-    if(baseProvider.firebaseUser == null || baseProvider.myUser.hasIncompleteDetails()) {
+    if(baseProvider.firebaseUser == null || baseProvider.myUser == null || baseProvider.myUser.hasIncompleteDetails()) {
       String btnText = "LOGIN";
-      int pageNo = 2; //mobile no page
+      int pageNo = 0; //mobile no page
       if(baseProvider.firebaseUser != null ) {
         //user logged in but has incomplete details
         btnText = "Confirm Details";

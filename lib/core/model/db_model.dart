@@ -28,10 +28,15 @@ class DBModel extends ChangeNotifier {
     }
   }
 
-  Future updateUser(User user) async {
-    String id = user.mobile;
-    _api.updateUserDocument(id, user.toJson());
-    return;
+  Future<bool> updateUser(User user) async {
+    try {
+      String id = user.mobile;
+      _api.updateUserDocument(id, user.toJson());
+      return true;
+    }catch(e) {
+      log.error("Failed to update user object: " + e.toString());
+      return false;
+    }
   }
 
   //Assumes city = New Delhi, district = Dwarka

@@ -1,7 +1,11 @@
+import 'dart:ui';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/model/db_model.dart';
 import 'package:flutter_app/core/model/local_db_model.dart';
+import 'package:flutter_app/core/model/society.dart';
+import 'package:flutter_app/core/model/user.dart';
 import 'package:flutter_app/ui/pages/login/screens/address_input_screen.dart';
 import 'package:flutter_app/ui/pages/login/screens/mobile_input_screen.dart';
 import 'package:flutter_app/ui/pages/login/screens/name_input_screen.dart';
@@ -47,7 +51,7 @@ class _LoginDialogState extends State<LoginDialog> {
   Future<void> verifyPhone() async {
     //await SmsAutoFill().listenForCode;
     final PhoneCodeAutoRetrievalTimeout autoRetrieve = (String verId) {
-      this.verificationId = verId;
+      //this.verificationId = verId;
     };
 
     final PhoneCodeSent smsCodeSent = (String verId, [int forceCodeResend]) {
@@ -58,7 +62,8 @@ class _LoginDialogState extends State<LoginDialog> {
     };
 
     final PhoneVerificationCompleted verifiedSuccess = (AuthCredential user) {
-      print('verified');
+      log.debug("Verified automagically!");
+      offerSnacks("OTP received!");
       baseProvider.authenticateUser(user).then((flag) {
           if(flag){
             log.debug("User signed in successfully");
@@ -242,6 +247,10 @@ class _LoginDialogState extends State<LoginDialog> {
           nameInScreen.setNameInvalid();
         }
         else {
+          if(baseProvider.myUser == null) {
+            //firebase user should never be null at this point
+            baseProvider.myUser = User.newUser(formatMobileNumber(baseProvider.firebaseUser.phoneNumber));
+          }
           baseProvider.myUser.name = name;
           if(email != null && email.isNotEmpty) {
             baseProvider.myUser.email = email;
@@ -251,7 +260,31 @@ class _LoginDialogState extends State<LoginDialog> {
         break;
       }
       case ADDRESS_SCREEN: {
-          onSignUpComplete();
+        Society selSociety = addressInScreen.getSociety();
+        String selFlatNo = addressInScreen.getFlatNo();
+        int selBhk = addressInScreen.getBhk();
+        if(selSociety == null) {
+          offerSnacks("Please select your appt");
+          return;
+        }
+        if(selFlatNo == null || selFlatNo.isEmpty) {
+          addressInScreen.setFlatNoInvalid();
+          return;
+        }
+        if(selBhk == null) {
+          offerSnacks("Please select your house size");
+          return;
+        }
+        //if nothing was invalid:
+        dbProvider.updateUser(baseProvider.myUser).then((flag) {
+          if(flag){
+            log.debug("User object saved successfully");
+            onSignUpComplete();
+          }
+          else{
+            //TODO signup failed! YIKES please try again later
+          }
+        });
       }
     }
   }
@@ -279,20 +312,17 @@ class _LoginDialogState extends State<LoginDialog> {
       baseProvider.firebaseUser = fUser;
       log.debug("User is set: " + fUser.uid);
       dbProvider.getUser(this.userMobile).then((user) {
+        //user variable is pre cast into User object
         if(user == null || (user != null && user.hasIncompleteDetails())) {
           log.debug("No existing user details found or found incomplete details for user. Moving to details page");
+          baseProvider.myUser = (user != null)?user:User.newUser(this.userMobile);
           //Move to name input page
-          if(user != null) {
-            baseProvider.myUser = user;
-            baseProvider.myUser.mobile = this.userMobile;
-          }
           _controller.animateToPage(NAME_SCREEN, duration: Duration(milliseconds: 300), curve: Curves.easeIn);
         }
         else{
           log.debug("User details available: Name: " + user.name + "\nAddress: " + user.flat_no);
-          log.debug("Storing details in the local db and moving to complete signup process");
           baseProvider.myUser = user;
-          baseProvider.myUser.mobile = verificationId.substring(3);
+          baseProvider.myUser.mobile = userMobile;
           onSignUpComplete();
         }
       });
@@ -300,7 +330,22 @@ class _LoginDialogState extends State<LoginDialog> {
   }
 
   void onSignUpComplete() {
-    localDbProvider.saveUser(baseProvider.myUser);
+    localDbProvider.saveUser(baseProvider.myUser).then((flag) {
+      if (flag) {
+        log.debug("User object saved locally");
+      }
+      //process complete
+      //move to home through animation
+      Navigator.of(context).pushReplacementNamed('/home');
+    });
     //TODO
+  }
+
+  void offerSnacks(String message) {
+    final snackBar = SnackBar(
+      content: Text(message),
+    );
+    Scaffold.of(context).showSnackBar(snackBar);
+    return;
   }
 }

@@ -20,21 +20,17 @@ class NameInputScreen extends StatefulWidget{
 class _NameInputScreenState extends State<NameInputScreen> {
   String _name;
   String _email;
+  bool _isInitialized = false;
   bool _validate = true;
   TextEditingController _nameFieldController;
   TextEditingController _emailFieldController;
   static BaseUtil authProvider;
   Log log = new Log("NameInputScreen");
 
-  /*@override
+  @override
   void initState() {
     super.initState();
-    authProvider = Provider.of<BaseUtil>(context);
-    _nameFieldController = (authProvider.myUser != null && authProvider.myUser.name != null)?
-    new TextEditingController(text: authProvider.myUser.name):new TextEditingController();
-    _emailFieldController = (authProvider.myUser != null && authProvider.myUser.email != null)?
-    new TextEditingController(text: authProvider.myUser.email):new TextEditingController();
-  }*/
+  }
 
 
   /*@override
@@ -46,10 +42,20 @@ class _NameInputScreenState extends State<NameInputScreen> {
 */
   @override
   Widget build(BuildContext context) {
+    if(!_isInitialized) {
+      _isInitialized = true;
+      authProvider = Provider.of<BaseUtil>(context);
+      _nameFieldController = (authProvider.myUser != null && authProvider.myUser.name != null)?
+      new TextEditingController(text: authProvider.myUser.name):new TextEditingController();
+      _emailFieldController = (authProvider.myUser != null && authProvider.myUser.email != null)?
+      new TextEditingController(text: authProvider.myUser.email):new TextEditingController();
+    }
     return Scaffold(
         backgroundColor: Colors.transparent,
         body: Center(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 18.0),

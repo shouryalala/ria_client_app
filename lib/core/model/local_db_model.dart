@@ -20,8 +20,14 @@ class LocalDBModel extends ChangeNotifier {
     }
   }
 
-  Future saveUser(User user) async{
-   return _api.writeUserFile(user.toFileString());
+  Future<bool> saveUser(User user) async{
+    try {
+      _api.writeUserFile(user.toFileString());
+      return true;
+    }catch(e) {
+      log.error("Failed to store user details in local db: " + e.toString());
+      return false;
+    }
   }
 
   Future<int> isUserOnboarded() async {

@@ -28,6 +28,8 @@ class User{
   static List<String> fldList = [ fldEmail, fldName, fldBhk, fldFlat_no, fldSector, fldSociety_id,
   fldDistrict, fldClient_token];
 
+  User.newUser(String mobile) : this(mobile, null, null, null, null, null, null, null, null);
+
   User.fromMap(Map<String, dynamic> data, String id) :
     this(id, data[fldName], data[fldEmail], data[fldBhk], data[fldFlat_no],
         data[fldSociety_id], data[fldSector], data[fldDistrict], data[fldClient_token], data
