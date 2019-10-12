@@ -24,21 +24,23 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final Log log = new Log("HomeScreen");
   final ValueChanged<int> onLoginRequest;
   _HomeScreenState({this.onLoginRequest});
   String _time = null;
+  DateTime reqTime = new DateTime.now();
   static const String CLEANING = "Cleaning";
   static const String UTENSILS = "Utensils";
-  final Log log = new Log("HomeScreen");
   List<String> serviceList = [CLEANING, UTENSILS];
   List<String> selectedServiceList = [CLEANING];
   DBModel reqProvider;
   BaseUtil baseProvider;
+  CalendarUtil cUtil;
 
   @override
   void initState() {
     super.initState();
-
+    cUtil = new CalendarUtil();
   }
 
   @override
@@ -85,16 +87,20 @@ class _HomeScreenState extends State<HomeScreen> {
                           borderRadius: BorderRadius.circular(5.0)),
                       elevation: 4.0,
                       onPressed: () async {
-                        if(baseProvider.firebaseUser == null || baseProvider.myUser == null || baseProvider.myUser.hasIncompleteDetails()) {
+                        if(baseProvider.firebaseUser == null || baseProvider.myUser == null
+                            || baseProvider.myUser.hasIncompleteDetails() || selectedServiceList.isEmpty) {
+                          //validation message to be assigned on priority basis: Not signed in -- Incomplete details -- Service not selected
+                          String message = (baseProvider.firebaseUser == null)? "Please sign in to continue":
+                          ((selectedServiceList.isNotEmpty)?"Please complete your details":"Please select atleast one service");
                           final snackBar = SnackBar(
-                            content: Text("Please sign in to proceed"),
+                            content: Text(message),
                           );
                           Scaffold.of(context).showSnackBar(snackBar);
                           return;
                         }
-                        Request req = Request(user_id: "9986643444", date: 14, service: decodeMultiChip(), address: "Greta"
-                            , society_id: "bvx", asn_response: Constants.AST_RESPONSE_NIL, status: Constants.REQ_STATUS_UNASSIGNED,
-                            req_time: 15000, timestamp: DateTime.now().millisecondsSinceEpoch);
+                        Request req = Request(user_id: baseProvider.myUser.mobile, date: cUtil.now.day, service: decodeMultiChip(), address: baseProvider.myUser.flat_no
+                            , society_id: baseProvider.myUser.society_id, asn_response: Constants.AST_RESPONSE_NIL, status: Constants.REQ_STATUS_UNASSIGNED,
+                            req_time: baseProvider.encodeTimeRequest(reqTime), timestamp: DateTime.now().millisecondsSinceEpoch);
                         reqProvider.pushRequest(req);
                       },
                       child: Text("Request!"),
@@ -179,6 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
               print('confirm $time');
               setState(() {
                 _time = '${time.hour} : ${time.minute}';
+                reqTime = time;
               });
             },
             pickerModel:CustomPicker(currentTime: DateTime.now(), locale: LocaleType.en));

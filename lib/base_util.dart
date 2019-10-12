@@ -62,6 +62,10 @@ class BaseUtil extends ChangeNotifier{
     });
   }
 
+  int encodeTimeRequest(DateTime time) {
+    return ((time.hour * 3600) + (time.minute * 60));
+  }
+
   User get myUser => _myUser;
 
   set myUser(User value) {
