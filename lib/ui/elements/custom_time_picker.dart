@@ -9,4 +9,5 @@ class CustomTimePickerModel extends TimePickerModel {
 
   @override
   List<int> layoutProportions() => [100, 100, 1];
+
 }

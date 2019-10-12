@@ -30,6 +30,10 @@ class App extends StatelessWidget{
       ],
       child: MaterialApp(
         title:"Ria",
+        color: Colors.greenAccent,
+        theme: ThemeData(
+          primaryColor: Colors.greenAccent[400]
+        ),
         home: SplashScreen(),
         routes: <String, WidgetBuilder> {
           '/launcher': (BuildContext context) => SplashScreen(),

@@ -1,12 +1,8 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/model/db_model.dart';
 import 'package:flutter_app/core/model/society.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../base_util.dart';
 
 class AddressInputScreen extends StatefulWidget{
   final addressInputScreenState = _AddressInputScreenState();
