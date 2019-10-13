@@ -11,8 +11,7 @@ class LocalDBModel extends ChangeNotifier {
 
   Future<User> getUser() async {
     try{
-      final file = await _api.userFile;
-      List<String> contents = await file.readAsLines();
+      List<String> contents = await _api.readUserFile();
       return User.parseFile(contents);
     }catch(e) {
       log.error("Unable to fetch user from local store." + e);
@@ -22,7 +21,7 @@ class LocalDBModel extends ChangeNotifier {
 
   Future<bool> saveUser(User user) async{
     try {
-      _api.writeUserFile(user.toFileString());
+      await _api.writeUserFile(user.toFileString());
       return true;
     }catch(e) {
       log.error("Failed to store user details in local db: " + e.toString());

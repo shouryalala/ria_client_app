@@ -130,11 +130,10 @@ class _OnboardingMainPageState extends State<OnboardingMainPage> {
                                 style: Theme.of(context).textTheme.button.copyWith(color: Colors.white),
                               ),
                               onPressed: (){
-                                //TODO
                                 log.debug("Setting Onboarding flag to true.");
                                 onboardProvider.saveOnboardStatus(true);
                                 Navigator.of(context).pop();
-                                Navigator.of(context).pushReplacementNamed('/home');
+                                Navigator.of(context).pushReplacementNamed('/login');
                               },
                               highlightColor: Colors.orange.withOpacity(0.5),
                               splashColor: Colors.orange.withOpacity(0.5),

@@ -23,6 +23,11 @@ class LocalApi{
     return File('$path/userdetails.txt');
   }
 
+  Future<List<String>> readUserFile() async{
+    final file = await userFile;
+    return file.readAsLines();
+  }
+
   Future<File> writeUserFile(String content) async{
     final file = await userFile;
     return file.writeAsString(content);

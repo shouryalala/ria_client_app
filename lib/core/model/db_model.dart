@@ -31,7 +31,7 @@ class DBModel extends ChangeNotifier {
   Future<bool> updateUser(User user) async {
     try {
       String id = user.mobile;
-      _api.updateUserDocument(id, user.toJson());
+      await _api.updateUserDocument(id, user.toJson());
       return true;
     }catch(e) {
       log.error("Failed to update user object: " + e.toString());

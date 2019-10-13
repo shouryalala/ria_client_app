@@ -41,6 +41,7 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
   Widget build(BuildContext context) {
     if(!_isInitialised) {
       _isInitialised = true;
+      //TODO add fields if already available!
       dbProvider = Provider.of<DBModel>(context);
       dbProvider.getServicingApptList().then((map) {
         setState(() {

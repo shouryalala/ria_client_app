@@ -28,7 +28,6 @@ class LogoFadeIn extends State<SplashScreen> {
 
   initialize() {
     final onboardProvider = Provider.of<BaseUtil>(context);
-
     //new IOUtil().isUserOnboarded().then((flag) {
         if(!onboardProvider.isUserOnboarded) {
           log.debug("New user. Moving to Onboarding..");

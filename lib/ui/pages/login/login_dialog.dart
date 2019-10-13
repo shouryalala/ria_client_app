@@ -64,6 +64,7 @@ class _LoginDialogState extends State<LoginDialog> {
     final PhoneVerificationCompleted verifiedSuccess = (AuthCredential user) {
       log.debug("Verified automagically!");
       offerSnacks("OTP received!");
+      //TODO add more stuff like a psinner which says detecting OTP and all
       baseProvider.authenticateUser(user).then((flag) {
           if(flag){
             log.debug("User signed in successfully");
@@ -108,8 +109,10 @@ class _LoginDialogState extends State<LoginDialog> {
 //      elevation: 0.0,
 //      backgroundColor: Colors.transparent,
 //      child: dialogContent(context),
-      backgroundColor: Colors.transparent,
-      body: dialogContent(context),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: dialogContent(context),
+      ),
     );
   }
 
@@ -275,6 +278,10 @@ class _LoginDialogState extends State<LoginDialog> {
           offerSnacks("Please select your house size");
           return;
         }
+        baseProvider.myUser.flat_no = selFlatNo;
+        baseProvider.myUser.society_id = selSociety.sId;
+        baseProvider.myUser.sector = selSociety.sector;
+        baseProvider.myUser.bhk = selBhk;
         //if nothing was invalid:
         dbProvider.updateUser(baseProvider.myUser).then((flag) {
           if(flag){
@@ -322,7 +329,7 @@ class _LoginDialogState extends State<LoginDialog> {
         else{
           log.debug("User details available: Name: " + user.name + "\nAddress: " + user.flat_no);
           baseProvider.myUser = user;
-          baseProvider.myUser.mobile = userMobile;
+          //baseProvider.myUser.mobile = userMobile;
           onSignUpComplete();
         }
       });
@@ -333,10 +340,11 @@ class _LoginDialogState extends State<LoginDialog> {
     localDbProvider.saveUser(baseProvider.myUser).then((flag) {
       if (flag) {
         log.debug("User object saved locally");
+        Navigator.of(context).pop();
+        Navigator.of(context).pushReplacementNamed('/home');
       }
       //process complete
       //move to home through animation
-      Navigator.of(context).pushReplacementNamed('/home');
     });
     //TODO
   }

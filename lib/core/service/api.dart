@@ -18,7 +18,7 @@ class Api{
     return ref.add(data);
   }
 
-  Future<DocumentReference> updateUserDocument(String docId, Map data) {
+  Future<void> updateUserDocument(String docId, Map data) {
     ref = _db.collection(Constants.COLN_USERS);
     return ref.document(docId).setData(data, merge: true);
   }

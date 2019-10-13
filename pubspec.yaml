@@ -22,11 +22,12 @@ dependencies:
   firebase_auth: ^0.14.0+5
   provider: ^3.1.0
   get_it: ^1.0.3+2
-  sms_autofill:
+  sms_autofill: #Not really using this actually
   path_provider:
   morpheus: ^1.0.2
   flutter_datetime_picker: ^1.2.6
   firebase_messaging: ^5.0.2
+  flutter_spinkit: ^4.0.0
   flutter:
     sdk: flutter
 
