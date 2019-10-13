@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/model/local_db_model.dart';
 import 'package:flutter_app/ui/elements/dots_indicator.dart';
@@ -20,6 +22,19 @@ class _OnboardingMainPageState extends State<OnboardingMainPage> {
   @override
   void initState() {
     super.initState();
+    Timer.periodic(Duration(seconds: 5), (Timer timer) {
+      if (page < 2) {
+        page++;
+      } else {
+        page = 0;
+      }
+
+      _controller.animateToPage(
+        page,
+        duration: Duration(milliseconds: 350),
+        curve: Curves.easeIn,
+      );
+    });
   }
 
   @override
@@ -45,7 +60,7 @@ class _OnboardingMainPageState extends State<OnboardingMainPage> {
                 },
               ),
             ),
-            new Positioned(
+            /*new Positioned(
               top: 0.0,
               left: 0.0,
               right: 0.0,
@@ -67,9 +82,9 @@ class _OnboardingMainPageState extends State<OnboardingMainPage> {
                   ],
                 ),
               ),
-            ),
+            ),*/
             new Positioned(
-              bottom: 10.0,
+              bottom: 30.0,
               left: 0.0,
               right: 0.0,
               child: new SafeArea(
@@ -89,6 +104,7 @@ class _OnboardingMainPageState extends State<OnboardingMainPage> {
                         },
                       ),
                     ),
+                    SizedBox(height: 5.0),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[

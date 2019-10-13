@@ -7,7 +7,7 @@ class DotsIndicator extends AnimatedWidget {
     this.controller,
     this.itemCount,
     this.onPageSelected,
-    this.color: Colors.blueGrey,
+    this.color: Colors.green,
   }) : super(listenable: controller);
 
   /// The PageController that this DotsIndicator is representing.
@@ -45,7 +45,7 @@ class DotsIndicator extends AnimatedWidget {
       width: _kDotSpacing,
       child: new Center(
         child: new Material(
-          color: color,
+          color: Colors.grey[350],
           type: MaterialType.circle,
           child: new Container(
             width: _kDotSize * zoom,

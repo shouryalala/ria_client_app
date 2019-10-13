@@ -44,12 +44,12 @@ class Page1 extends StatelessWidget {
                 new Padding(
                   //padding: const EdgeInsets.all(18.0),
                   padding: const EdgeInsets.fromLTRB(18.0, 25, 18.0, 18.0),
-                  child: Text('Workout at home, outside or in the studio',
+                  child: Text('Ria gets you an assitant, when you need her',
                     style: Theme.of(context).textTheme.display1.copyWith(color: Colors.grey[800]),
                     textAlign: TextAlign.center,
                   ),
                 ),
-                Text('Workout anywhere without any equipment!',
+                Text('Dude obviously this is still dummy text',
                   style: Theme.of(context).textTheme.body1.copyWith(color: Colors.grey[800]),
                   textAlign: TextAlign.center,
                 )

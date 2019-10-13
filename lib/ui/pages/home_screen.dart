@@ -1,8 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/base_util.dart';
 import 'package:flutter_app/core/model/request.dart';
-import 'package:flutter_app/ui/elements/custom_time_picker.dart';
 import 'package:flutter_app/ui/elements/mutli_select_chip.dart';
 import 'package:flutter_app/ui/elements/time_picker_model.dart';
 import 'package:flutter_app/util/calendar_util.dart';
@@ -27,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final Log log = new Log("HomeScreen");
   final ValueChanged<int> onLoginRequest;
   _HomeScreenState({this.onLoginRequest});
-  String _time = null;
+  String _time;
   DateTime reqTime = new DateTime.now();
   static const String CLEANING = "Cleaning";
   static const String UTENSILS = "Utensils";
