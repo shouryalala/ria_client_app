@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/ui/pages/login/login_dialog.dart';
 import 'package:flutter_app/ui/pages/placeholder_widget.dart';
-import 'package:flutter_app/ui/pages/login/login_screen.dart';
-import 'package:flutter_app/ui/pages/login/login_widget.dart';
 import 'package:flutter_app/ui/pages/profile/history_widget.dart';
 import 'package:flutter_app/ui/pages/profile/profile_options.dart';
 

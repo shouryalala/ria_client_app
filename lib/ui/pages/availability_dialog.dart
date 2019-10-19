@@ -4,6 +4,8 @@ import 'package:flutter_app/core/model/db_model.dart';
 import 'package:flutter_app/core/model/society.dart';
 import 'package:flutter_app/ui/elements/ui_constants.dart';
 import 'package:flutter_app/util/logger.dart';
+import 'package:flutter_app/util/ui_constants.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
 class LocationAvailabilityDialog extends StatefulWidget{
@@ -23,7 +25,7 @@ class _LocationAvailabilityDialogState extends State<LocationAvailabilityDialog>
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(UiConsts.padding),
+        borderRadius: BorderRadius.circular(UiConstants.dialogRadius),
       ),
       elevation: 0.0,
       backgroundColor: Colors.transparent,
@@ -33,15 +35,28 @@ class _LocationAvailabilityDialogState extends State<LocationAvailabilityDialog>
 
   dialogContent(BuildContext context) {
     _dbProvider = Provider.of<DBModel>(context);
-    return Scaffold(
-        backgroundColor: Colors.white,
-        body: Padding(
+    return Container(
+      height: 400,  //TODO has to be dynamic
+        decoration: new BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.circular(UiConstants.dialogRadius),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 10.0,
+              offset: const Offset(0.0, 10.0),
+            ),
+          ],
+        ),
+        //backgroundColor: Colors.white,
+        child: Padding(
           padding: const EdgeInsets.fromLTRB(18.0, 25, 18.0, 18.0),
           child: Column(
             children: <Widget>[
               Text(
                 'We are currently only servicing the following societies',
-                style: Theme.of(context).textTheme.display1.copyWith(color: Colors.grey[800]),
+                style: Theme.of(context).textTheme.headline.copyWith(color: Colors.grey[800]),
                 textAlign: TextAlign.center,
               ),
               Padding(
@@ -61,6 +76,14 @@ class _LocationAvailabilityDialogState extends State<LocationAvailabilityDialog>
 
   Widget _societyList() {
     if(!isSocietyListFetched) {
+      this.bodyWidget = new Padding(
+          padding: const EdgeInsets.fromLTRB(25.0, 25.0, 25.0, 25.0),
+          child: SpinKitDoubleBounce(
+            color: UiConstants.spinnerColor,
+            size: 50.0,
+            //controller: AnimationController(vsync: this, duration: const Duration(milliseconds: 1200)),
+          ),
+      );
       _dbProvider.getServicingApptList().then((sMap) {
         log.debug("Entered fetched societies then clause");
         isSocietyListFetched = true;
@@ -85,7 +108,7 @@ class _LocationAvailabilityDialogState extends State<LocationAvailabilityDialog>
           });
         }
         setState(() {
-          if (sMap == null) {
+          if (sMap == null ||sMap.isEmpty) {
             log.error("Data fetch failed");
             this.bodyWidget = new Text("Unable to fetch data. Try again later.");
             this.bodyWidgetAdded = true;
@@ -97,11 +120,6 @@ class _LocationAvailabilityDialogState extends State<LocationAvailabilityDialog>
           }
         });
       });
-    }else{
-      if(!this.bodyWidgetAdded) {
-        //TODO doesnt do anything.. cleanup required
-        this.bodyWidget = new Text("Loading...");
-      }
     }
     return this.bodyWidget;
   }

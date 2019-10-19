@@ -63,8 +63,8 @@ class _LoginDialogState extends State<LoginDialog> {
 
     final PhoneVerificationCompleted verifiedSuccess = (AuthCredential user) {
       log.debug("Verified automagically!");
-      offerSnacks("OTP received!");
-      //TODO add more stuff like a psinner which says detecting OTP and all
+      offerSnacks("Mobile verified!");
+      otpInScreen.onOtpReceived();
       baseProvider.authenticateUser(user).then((flag) {
           if(flag){
             log.debug("User signed in successfully");
@@ -230,6 +230,7 @@ class _LoginDialogState extends State<LoginDialog> {
         if(otp != null && otp.isNotEmpty) {
           baseProvider.authenticateUser(baseProvider.generateAuthCredential(verificationId, otp)).then((flag) {
             if(flag) {
+              otpInScreen.onOtpReceived();
               onSignInSuccess();
             }
             else{

@@ -28,6 +28,6 @@ class CalendarUtil{
 
   String getRoundedTime() {
     if(now == null)now = DateTime.now();
-    return " " + now.hour.toString() + " : " + now.minute.toString();
+    return " " + now.hour.toString() + " : " + now.minute.toString().padLeft(2,"0");
   }
 }

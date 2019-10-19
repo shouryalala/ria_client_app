@@ -182,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onConfirm: (time) {
               print('confirm $time');
               setState(() {
-                _time = '${time.hour} : ${time.minute}';
+                _time = '${time.hour} : ' + '${time.minute}'.padLeft(2,"0");
                 reqTime = time;
               });
             },

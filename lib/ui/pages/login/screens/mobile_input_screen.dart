@@ -32,6 +32,7 @@ class _MobileInputScreenState extends State<MobileInputScreen> {
                     hintText: 'Enter Phone number',
                     errorText: _validate ? null : "Invalid!",
                 ),
+                keyboardType: TextInputType.number,
                 onChanged: (value) {
                   this._phoneNo = value;
                   if(!_validate) setState(() {
@@ -41,7 +42,6 @@ class _MobileInputScreenState extends State<MobileInputScreen> {
               ),
             ),
           ),
-          //TODO add limited availability warning
           Container(
             width: 150.0,
             height: 50.0,
