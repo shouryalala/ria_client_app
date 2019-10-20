@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/model/db_model.dart';
 import 'package:flutter_app/core/model/society.dart';
-import 'package:flutter_app/ui/elements/ui_constants.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:flutter_app/util/ui_constants.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';

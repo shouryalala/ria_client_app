@@ -5,7 +5,7 @@ import 'package:flutter_app/core/model/db_model.dart';
 import 'package:flutter_app/core/model/local_db_model.dart';
 import 'package:flutter_app/util/locator.dart';
 import 'package:flutter_app/util/logger.dart';
-
+import 'dart:io' show Platform;
 import 'core/model/user.dart';
 
 class BaseUtil extends ChangeNotifier{
@@ -23,7 +23,6 @@ class BaseUtil extends ChangeNotifier{
 
   init() async {
     //fetch onboarding status and User details
-    _fcm = FirebaseMessaging();
     firebaseUser = await FirebaseAuth.instance.currentUser();
     isUserOnboarded = await _lModel.isUserOnboarded()==1;
     try {
@@ -31,15 +30,48 @@ class BaseUtil extends ChangeNotifier{
     }catch(e) {
       log.error("No file found");
     }
+    await _setupFcm();
+  }
+
+  Future<FirebaseMessaging> _setupFcm() async {
+    _fcm = FirebaseMessaging();
+    _fcm.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        log.debug("onMessage recieved: " + message.toString());
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        log.debug("onLaunch recieved: " + message.toString());
+      },
+      onResume: (Map<String, dynamic> message) async {
+        log.debug("onResume recieved: " + message.toString());
+      },
+    );
+    //TODO to be tested
+    if(Platform.isIOS) {
+      _fcm.requestNotificationPermissions(
+          const IosNotificationSettings(sound: true, badge: true, alert: true));
+      _fcm.onIosSettingsRegistered
+          .listen((IosNotificationSettings settings) {
+        print("Settings registered: $settings");
+      });
+    }
+
+    if(_myUser != null)await _saveDeviceToken();
+    return _fcm;
   }
 
   _saveDeviceToken() async {
+    bool flag = true;
     String fcmToken = await _fcm.getToken();
 
-    if (fcmToken != null && _myUser != null && _myUser.mobile != null) {
+    if (fcmToken != null && _myUser != null && _myUser.mobile != null
+        && (_myUser.client_token == null || (_myUser.client_token != null && _myUser.client_token != fcmToken))) {
+      log.debug("Updating FCM token to local and server db");
       _myUser.client_token = fcmToken;
-      _dbModel.updateUser(_myUser);
+      flag = await _dbModel.updateUser(_myUser);
+      if(flag)await _lModel.saveUser(_myUser);
     }
+    return flag;
   }
 
   isSignedIn() =>  (firebaseUser != null && myUser != null);

@@ -54,6 +54,7 @@ class User{
       fldSector: _sector,
       fldSociety_id: _society_id,
       fldDistrict: _district,
+      fldClient_token: _client_token
     };
   }
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/ui/elements/ui_constants.dart';
+import 'package:flutter_app/util/ui_constants.dart';
 
 class CustomDialog extends StatelessWidget {
   final String title, description, buttonText;
@@ -16,7 +16,7 @@ class CustomDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(UiConsts.padding),
+        borderRadius: BorderRadius.circular(UiConstants.padding),
       ),
       elevation: 0.0,
       backgroundColor: Colors.transparent,
@@ -30,16 +30,16 @@ class CustomDialog extends StatelessWidget {
         //...bottom card part,
         Container(
           padding: EdgeInsets.only(
-            top: UiConsts.avatarRadius + UiConsts.padding,
-            bottom: UiConsts.padding,
-            left: UiConsts.padding,
-            right: UiConsts.padding,
+            top: UiConstants.avatarRadius + UiConstants.padding,
+            bottom: UiConstants.padding,
+            left: UiConstants.padding,
+            right: UiConstants.padding,
           ),
-          margin: EdgeInsets.only(top: UiConsts.avatarRadius),
+          margin: EdgeInsets.only(top: UiConstants.avatarRadius),
           decoration: new BoxDecoration(
             color: Colors.white,
             shape: BoxShape.rectangle,
-            borderRadius: BorderRadius.circular(UiConsts.padding),
+            borderRadius: BorderRadius.circular(UiConstants.padding),
             boxShadow: [
               BoxShadow(
                 color: Colors.black26,
@@ -81,11 +81,11 @@ class CustomDialog extends StatelessWidget {
         ),
         //...top circlular image part,
         Positioned(
-          left: UiConsts.padding,
-          right: UiConsts.padding,
+          left: UiConstants.padding,
+          right: UiConstants.padding,
           child: CircleAvatar(
             backgroundColor: Colors.blueAccent,
-            radius: UiConsts.avatarRadius,
+            radius: UiConstants.avatarRadius,
           ),
         ),
       ],
