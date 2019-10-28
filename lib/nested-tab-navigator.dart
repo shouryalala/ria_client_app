@@ -3,6 +3,7 @@ import 'package:flutter_app/ui/pages/login/login_dialog.dart';
 import 'package:flutter_app/ui/pages/placeholder_widget.dart';
 import 'package:flutter_app/ui/pages/profile/history_widget.dart';
 import 'package:flutter_app/ui/pages/profile/profile_options.dart';
+import 'package:flutter_app/ui/pages/profile/update_address.dart';
 
 import 'ui/pages/home_screen.dart';
 
@@ -13,6 +14,7 @@ class TabNavigatorRoutes {
   static const String history = '/history';
   //static const String loginS = '/loginS';
   static const String login = '/login';
+  static const String upAddress = '/updateaddress';
   //static const String loginX = '/loginX';
 }
 
@@ -66,6 +68,7 @@ class TabNavigator extends StatelessWidget {
       ),
       TabNavigatorRoutes.history: (context) => HistoryPage(),
       TabNavigatorRoutes.login: (context) => LoginDialog(),
+      TabNavigatorRoutes.upAddress: (context) => UpdateAddressScreen(),
       //TabNavigatorRoutes.login: (context) => LoginDialog(),
       //TabNavigatorRoutes.loginX: (context) => LoginScreen(),
     };

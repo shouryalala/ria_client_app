@@ -12,4 +12,12 @@ class UiConstants{
   static const double padding = 16.0;
   static const double avatarRadius = 66.0;
 
+  static offerSnacks(BuildContext context, String message) {
+    final snackBar = SnackBar(
+      content: Text(message),
+    );
+    Scaffold.of(context).showSnackBar(snackBar);
+    return;
+  }
+
 }

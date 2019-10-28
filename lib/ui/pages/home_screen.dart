@@ -31,86 +31,164 @@ class _HomeScreenState extends State<HomeScreen> {
   static const String UTENSILS = "Utensils";
   List<String> serviceList = [CLEANING, UTENSILS];
   List<String> selectedServiceList = [CLEANING];
+  int homeState = Constants.DEFAULT_HOME_STATE;
   DBModel reqProvider;
   BaseUtil baseProvider;
   CalendarUtil cUtil;
+  /**
+   * Possible UI States
+   * - Deafult Home screen
+   * - Assistant matched and enroute
+   * - Visit ongoing
+   * */
 
   @override
   void initState() {
     super.initState();
     cUtil = new CalendarUtil();
+    //TODO get home ui state
+    homeState = 2;
   }
 
   @override
   Widget build(BuildContext context) {
     reqProvider = Provider.of<DBModel>(context);
     baseProvider = Provider.of<BaseUtil>(context);
+    switch(homeState) {
+      case Constants.DEFAULT_HOME_STATE: {
+       return buildHomeLayout();
+      }
+      case Constants.UPCOMING_VISIT_STATE:{
+        return buildUpcomingVisitLayout();
+      }
+      case Constants.ONGOING_VISIT_STATE:{
+        return buildHomeLayout();
+      }
+      default:{
+        return buildHomeLayout();
+      }
+    }
+  }
+
+  onAssistantMatched() {
+
+  }
+
+  Widget buildHomeLayout() {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Stack(
-          alignment: Alignment.center,
-          children: <Widget>[
-            Container(
-              color: Colors.white10,
-            ),
-            buildLoginButton(),
-            Align(
+        body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Stack(
               alignment: Alignment.center,
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    buildTimeButton(),
-                    SizedBox(
-                      height: 20.0,
-                    ),
-                    Container(
-                      child: MultiSelectChip(
-                        serviceList,
-                        selectedServiceList,
-                        onSelectionChanged: (selectedList) {
-                          setState(() {
-                            selectedServiceList = selectedList;
-                          });
-                        },
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20.0,
-                    ),
-                    RaisedButton(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5.0)),
-                      elevation: 4.0,
-                      onPressed: () async {
-                        if(baseProvider.firebaseUser == null || baseProvider.myUser == null
-                            || baseProvider.myUser.hasIncompleteDetails() || selectedServiceList.isEmpty) {
-                          //validation message to be assigned on priority basis: Not signed in -- Incomplete details -- Service not selected
-                          String message = (baseProvider.firebaseUser == null)? "Please sign in to continue":
-                          ((selectedServiceList.isNotEmpty)?"Please complete your details":"Please select atleast one service");
-                          final snackBar = SnackBar(
-                            content: Text(message),
-                          );
-                          Scaffold.of(context).showSnackBar(snackBar);
-                          return;
-                        }
-                        Request req = Request(user_id: baseProvider.myUser.mobile, date: cUtil.now.day, service: decodeMultiChip(), address: baseProvider.myUser.flat_no
-                            , society_id: baseProvider.myUser.society_id, asn_response: Constants.AST_RESPONSE_NIL, status: Constants.REQ_STATUS_UNASSIGNED,
-                            req_time: baseProvider.encodeTimeRequest(reqTime), timestamp: DateTime.now().millisecondsSinceEpoch);
-                        reqProvider.pushRequest(req);
-                      },
-                      child: Text("Request!"),
-                    ),
-                  ],
+              children: <Widget>[
+                Container(
+                  color: Colors.white10,
                 ),
-              ),
+                buildLoginButton(),
+                Align(
+                  alignment: Alignment.center,
+                  child: Container(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        buildTimeButton(),
+                        SizedBox(
+                          height: 20.0,
+                        ),
+                        Container(
+                          child: MultiSelectChip(
+                            serviceList,
+                            selectedServiceList,
+                            onSelectionChanged: (selectedList) {
+                              setState(() {
+                                selectedServiceList = selectedList;
+                              });
+                            },
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20.0,
+                        ),
+                        RaisedButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0)),
+                          elevation: 4.0,
+                          onPressed: () async {
+                            if (baseProvider.firebaseUser == null ||
+                                baseProvider.myUser == null
+                                || baseProvider.myUser.hasIncompleteDetails() ||
+                                selectedServiceList.isEmpty) {
+                              //validation message to be assigned on priority basis: Not signed in -- Incomplete details -- Service not selected
+                              String message = (baseProvider.firebaseUser ==
+                                  null) ? "Please sign in to continue" :
+                              ((selectedServiceList.isNotEmpty)
+                                  ? "Please complete your details"
+                                  : "Please select atleast one service");
+                              final snackBar = SnackBar(
+                                content: Text(message),
+                              );
+                              Scaffold.of(context).showSnackBar(snackBar);
+                              return;
+                            }
+                            Request req = Request(user_id: baseProvider.myUser
+                                .mobile,
+                                date: cUtil.now.day,
+                                service: decodeMultiChip(),
+                                address: baseProvider.myUser.flat_no
+                                ,
+                                society_id: baseProvider.myUser.society_id,
+                                asn_response: Constants.AST_RESPONSE_NIL,
+                                status: Constants.REQ_STATUS_UNASSIGNED,
+                                req_time: baseProvider.encodeTimeRequest(
+                                    reqTime),
+                                timestamp: DateTime
+                                    .now()
+                                    .millisecondsSinceEpoch);
+                            reqProvider.pushRequest(req);
+                          },
+                          child: Text("Request!"),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
             )
-          ],
         )
-      ),
     );
+  }
+
+  Widget buildUpcomingVisitLayout() {
+     return Scaffold(
+       body:  Padding(
+           padding: const EdgeInsets.all(16.0),
+           child: Stack(
+             alignment: Alignment.center,
+             children: <Widget>[
+               Container(
+                 color: Colors.white10,
+               ),
+               Align(
+                 alignment: Alignment.center,
+                 child: Container(
+                   child: Column(
+                     mainAxisSize: MainAxisSize.max,
+                     mainAxisAlignment: MainAxisAlignment.center,
+                     children: <Widget>[
+                       ///time
+                       ///photo
+                       ///name
+                       ///rating
+
+                     ],
+                   ),
+                 ),
+               )
+             ],
+           )
+       )
+     );
   }
 
   String decodeMultiChip() {

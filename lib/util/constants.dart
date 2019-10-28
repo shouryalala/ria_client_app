@@ -83,4 +83,9 @@ class Constants {
   static final String DEFAULT_TIME = "10:12am";
   static final String DEFAULT_SERVICE = "Cleaning";
   static final String DEFAULT_ADDRESS = "3/202\n Beverly Park Appt\n Sector-22";
+
+  //IN-APP CONSTANTS
+  static const int DEFAULT_HOME_STATE = 0;
+  static const int UPCOMING_VISIT_STATE = 1;
+  static const int ONGOING_VISIT_STATE = 2;
 }

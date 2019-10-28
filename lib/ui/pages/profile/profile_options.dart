@@ -20,6 +20,7 @@ class _OptionsList extends State<ProfileOptions> {
     "About Us",
     "Feedback",
     "Sign In",
+    "Update Address"
   ];
   @override
   Widget build(BuildContext context) {
@@ -84,6 +85,10 @@ class _OptionsList extends State<ProfileOptions> {
         //Navigator.of(context).pop();
         //Navigator.of(context).pushNamed('/login');
         onPush('/loginX');
+        break;
+      }
+      case "Update Address": {
+        onPush('/updateaddress');
         break;
       }
     }

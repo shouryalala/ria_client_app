@@ -11,6 +11,7 @@ import 'package:flutter_app/ui/pages/login/screens/mobile_input_screen.dart';
 import 'package:flutter_app/ui/pages/login/screens/name_input_screen.dart';
 import 'package:flutter_app/ui/pages/login/screens/otp_input_screen.dart';
 import 'package:flutter_app/util/logger.dart';
+import 'package:flutter_app/util/ui_constants.dart';
 import 'package:provider/provider.dart';
 
 import '../../../base_util.dart';
@@ -63,7 +64,7 @@ class _LoginDialogState extends State<LoginDialog> {
 
     final PhoneVerificationCompleted verifiedSuccess = (AuthCredential user) {
       log.debug("Verified automagically!");
-      offerSnacks("Mobile verified!");
+      UiConstants.offerSnacks(context, "Mobile verified!");
       otpInScreen.onOtpReceived();
       baseProvider.authenticateUser(user).then((flag) {
           if(flag){
@@ -268,7 +269,7 @@ class _LoginDialogState extends State<LoginDialog> {
         String selFlatNo = addressInScreen.getFlatNo();
         int selBhk = addressInScreen.getBhk();
         if(selSociety == null) {
-          offerSnacks("Please select your appt");
+          UiConstants.offerSnacks(context, "Please select your appt");
           return;
         }
         if(selFlatNo == null || selFlatNo.isEmpty) {
@@ -276,7 +277,7 @@ class _LoginDialogState extends State<LoginDialog> {
           return;
         }
         if(selBhk == null) {
-          offerSnacks("Please select your house size");
+          UiConstants.offerSnacks(context, "Please select your house size");
           return;
         }
         baseProvider.myUser.flat_no = selFlatNo;
@@ -348,13 +349,5 @@ class _LoginDialogState extends State<LoginDialog> {
       //move to home through animation
     });
     //TODO
-  }
-
-  void offerSnacks(String message) {
-    final snackBar = SnackBar(
-      content: Text(message),
-    );
-    Scaffold.of(context).showSnackBar(snackBar);
-    return;
   }
 }
