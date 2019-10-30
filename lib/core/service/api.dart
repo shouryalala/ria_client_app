@@ -32,4 +32,13 @@ class Api{
     ref = _db.collection(Constants.COLN_SOCIETIES);
     return ref.getDocuments();
   }
+
+  /**
+   * return Doc:: status:  {visit_id: xyz, visit_status: VISIT_CDE}
+   * */
+  Future<DocumentSnapshot> getUserActivityDocument(String id) {
+    String activityDocKey = "status"; //fixed document key where we're storing the status
+    ref = _db.collection(Constants.COLN_USERS).document(id).collection(Constants.SUBCOLN_USER_ACTIVITY);
+    return ref.document(activityDocKey).get();
+  }
 }

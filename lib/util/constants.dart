@@ -9,6 +9,9 @@ class Constants {
   static final String COLN_VISITS = "visits";
   static final String COLN_FEEDBACK = "feedback";
 
+  //Sub-collections
+  static final String SUBCOLN_USER_ACTIVITY = "activity";
+
   static final int RETROFIT_NETWORK_ERROR = 11;
   static final int FIREBASE_LOGIN_ERROR = 22;
   static final int FIREBASE_FETCH_ERROR = 33;
@@ -59,11 +62,12 @@ class Constants {
   static final int SERVICE_UTENSILS_DURATION = 900;
 
   //Visit decodes
-  static final int VISIT_STATUS_FAILED = -1;
-  static final int VISIT_STATUS_CANCELLED = 0;
-  static final int VISIT_STATUS_COMPLETED = 1;
-  static final int VISIT_STATUS_ONGOING = 2;
-  static final int VISIT_STATUS_UPCOMING = 3;
+  static const int VISIT_STATUS_FAILED = -1;
+  static const int VISIT_STATUS_CANCELLED = 0;
+  static const int VISIT_STATUS_COMPLETED = 1;
+  static const int VISIT_STATUS_ONGOING = 2;
+  static const int VISIT_STATUS_UPCOMING = 3;
+  static const int VISIT_STATUS_NONE = 4;
 
   //Shared Preferences
   static final String SP_TOKEN = "client_token";

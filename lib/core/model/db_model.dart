@@ -39,6 +39,17 @@ class DBModel extends ChangeNotifier {
     }
   }
 
+  Future<Map> getUserActivityStatus(User user) async{
+    try{
+      String id = user.mobile;
+      var doc = await _api.getUserActivityDocument(id);
+      return doc.data;
+    }catch(e) {
+      log.error("Failed to fetch user activity status: " + e.toString());
+      return null;
+    }
+  }
+
   //Assumes city = New Delhi, district = Dwarka
   //ONLY ITERATES ON DWARKA SOCIETIES!
   //cause thats all we need rn

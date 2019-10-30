@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/model/db_model.dart';
 import 'package:flutter_app/core/model/local_db_model.dart';
+import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/locator.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'dart:io' show Platform;
@@ -31,6 +32,24 @@ class BaseUtil extends ChangeNotifier{
       log.error("No file found");
     }
     await _setupFcm();
+    await _retrieveCurrentStatus();
+  }
+
+  _retrieveCurrentStatus() async {
+    Map<String, dynamic> res = await _dbModel.getUserActivityStatus(_myUser);
+    if(res['visit_status'] != null){
+      final key = int.parse(res['visit_status']);
+      switch(key) {
+        case Constants.VISIT_STATUS_NONE:
+          break;
+        case Constants.VISIT_STATUS_UPCOMING:
+          break;
+        case Constants.VISIT_STATUS_ONGOING:
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   Future<FirebaseMessaging> _setupFcm() async {
