@@ -11,6 +11,8 @@ class Constants {
 
   //Sub-collections
   static final String SUBCOLN_USER_ACTIVITY = "activity";
+  static final String SUBCOLN_USER_FCM = "fcm";
+  static final String DOC_USER_FCM_TOKEN = "client_token";
 
   static final int RETROFIT_NETWORK_ERROR = 11;
   static final int FIREBASE_LOGIN_ERROR = 22;

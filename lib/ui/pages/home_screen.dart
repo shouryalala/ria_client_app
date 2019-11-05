@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/base_util.dart';
 import 'package:flutter_app/core/model/request.dart';
@@ -131,20 +132,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               Scaffold.of(context).showSnackBar(snackBar);
                               return;
                             }
-                            Request req = Request(user_id: baseProvider.myUser
-                                .mobile,
+                            Request req = Request(
+                                user_id: baseProvider.myUser.mobile,
                                 date: cUtil.now.day,
                                 service: decodeMultiChip(),
-                                address: baseProvider.myUser.flat_no
-                                ,
+                                address: baseProvider.myUser.flat_no,
                                 society_id: baseProvider.myUser.society_id,
                                 asn_response: Constants.AST_RESPONSE_NIL,
                                 status: Constants.REQ_STATUS_UNASSIGNED,
-                                req_time: baseProvider.encodeTimeRequest(
-                                    reqTime),
-                                timestamp: DateTime
-                                    .now()
-                                    .millisecondsSinceEpoch);
+                                req_time: baseProvider.encodeTimeRequest(reqTime),
+                                timestamp: FieldValue.serverTimestamp());
                             reqProvider.pushRequest(req);
                           },
                           child: Text("Request!"),

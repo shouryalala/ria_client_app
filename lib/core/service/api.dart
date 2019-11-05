@@ -21,11 +21,16 @@ class Api{
   Future<void> updateUserDocument(String docId, Map data) {
     ref = _db.collection(Constants.COLN_USERS);
     return ref.document(docId).setData(data, merge: true);
-  }
+  } 
 
   Future<DocumentSnapshot> getUserById(String id) {
     ref = _db.collection(Constants.COLN_USERS);
     return ref.document(id).get();
+  }
+  
+  Future<void> updateUserClientToken(String userId, Map data) {
+    ref = _db.collection(Constants.COLN_USERS).document(userId).collection(Constants.SUBCOLN_USER_FCM);
+    return ref.document(Constants.DOC_USER_FCM_TOKEN).setData(data);
   }
 
   Future<QuerySnapshot> getSocietyColn() {

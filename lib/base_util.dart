@@ -26,25 +26,26 @@ class BaseUtil extends ChangeNotifier{
     //fetch onboarding status and User details
     firebaseUser = await FirebaseAuth.instance.currentUser();
     isUserOnboarded = await _lModel.isUserOnboarded()==1;
-    try {
-      _myUser = await _lModel.getUser();
-    }catch(e) {
-      log.error("No file found");
+    _myUser = await _lModel.getUser();
+    if(_myUser != null && _myUser.mobile != null) {
+      await _setupFcm();
+      await _retrieveCurrentStatus();
     }
-    await _setupFcm();
-    await _retrieveCurrentStatus();
   }
 
   _retrieveCurrentStatus() async {
     Map<String, dynamic> res = await _dbModel.getUserActivityStatus(_myUser);
     if(res['visit_status'] != null){
-      final key = int.parse(res['visit_status']);
+      final int key = res['visit_status'];
       switch(key) {
         case Constants.VISIT_STATUS_NONE:
+          log.debug("Visit Status: NONE activated");
           break;
         case Constants.VISIT_STATUS_UPCOMING:
+          log.debug("Visit Status: UPCOMING activated");
           break;
         case Constants.VISIT_STATUS_ONGOING:
+          log.debug("Visit Status: ONGOING activated");
           break;
         default:
           break;
@@ -87,8 +88,8 @@ class BaseUtil extends ChangeNotifier{
         && (_myUser.client_token == null || (_myUser.client_token != null && _myUser.client_token != fcmToken))) {
       log.debug("Updating FCM token to local and server db");
       _myUser.client_token = fcmToken;
-      flag = await _dbModel.updateUser(_myUser);
-      if(flag)await _lModel.saveUser(_myUser);
+      flag = await _dbModel.updateClientToken(_myUser, fcmToken);
+      if(flag)await _lModel.saveUser(_myUser);  //user cache has client token field available
     }
     return flag;
   }

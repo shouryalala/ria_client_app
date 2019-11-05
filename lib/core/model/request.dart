@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Request{
   final String service;
@@ -9,7 +9,7 @@ class Request{
   final String asn_response;
   final String status;
   final int req_time;
-  final int timestamp;
+  final FieldValue timestamp;
 
   const Request({this.service, this.user_id, this.date, this.address, this.society_id,
       this.asn_response, this.status, this.req_time, this.timestamp});

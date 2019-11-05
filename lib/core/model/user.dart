@@ -11,7 +11,7 @@ class User{
   String _society_id;
   int _sector;
   String _district;
-  String _client_token;
+  String _client_token;   //fetched from a subcollection
   static final String fldId = "mID";
   static final String fldEmail = "mEmail";
   static final String fldName = "mName";
@@ -21,11 +21,9 @@ class User{
   static final String fldSector = "mSector";
   static final String fldDistrict = "mDistrict";
   static final String fldClient_token = "mClientToken";
-  //final Map<String, dynamic> userMap;
+
   static final Log log = new Log("OnboardingPage");
 
-//  User(this._mobile, this._name, this._email, this._bhk, this._flat_no,
-//    this._society_id, this._sector, this._district, this._client_token,[this.userMap]);
   User(this._mobile, this._name, this._email, this._bhk, this._flat_no,
       this._society_id, this._sector, this._district, this._client_token);
 
@@ -34,10 +32,9 @@ class User{
 
   User.newUser(String mobile) : this(mobile, null, null, null, null, null, null, null, null);
 
-  User.fromMap(Map<String, dynamic> data, String id) :
+  User.fromMap(Map<String, dynamic> data, String id, [String client_token]) :
     this(id, data[fldName], data[fldEmail], data[fldBhk], data[fldFlat_no],
-        data[fldSociety_id], data[fldSector], data[fldDistrict], data[fldClient_token]
-  );
+        data[fldSociety_id], data[fldSector], data[fldDistrict], client_token);
 
   String get mobile => _mobile;
 
@@ -45,6 +42,7 @@ class User{
     _mobile = value;
   }
 
+  //to send to server
   toJson() {
     return {
       fldName: _name,
@@ -54,16 +52,21 @@ class User{
       fldSector: _sector,
       fldSociety_id: _society_id,
       fldDistrict: _district,
-      fldClient_token: _client_token
     };
   }
 
+  //to compile from cache
   static User parseFile(List<String> contents) {
     Map<String, dynamic> gData = new HashMap();
     String id;
+    String client_token;
     for(String line in contents){
       if(line.contains(fldId)) {
         id =  line.split("\$")[1];
+        continue;
+      }
+      if(line.contains(fldClient_token)) {
+        client_token =  line.split("\$")[1];
         continue;
       }
       else if(line.contains(fldBhk) || line.contains(fldSector)) {
@@ -80,15 +83,16 @@ class User{
           if (line.contains(fld)) {
             gData.putIfAbsent(fld, () {
               String res = line.split("\$")[1];
-              return (res != null && res.length > 0) ? res : " ";
+              return (res != null && res.length > 0) ? res : "";
             });
           }
         });
       }
     };
-    return User.fromMap(gData, id);
+    return User.fromMap(gData, id, client_token);
   }
 
+  //to save in cache
   String toFileString() {
     StringBuffer oContent = new StringBuffer();
     oContent.writeln(fldId + "\$" + _mobile);
@@ -100,20 +104,12 @@ class User{
     if(_bhk != null)oContent.writeln(fldBhk + "\$" + _bhk.toString());
     if(_district != null)oContent.writeln(fldDistrict + "\$" + _district);
     if(_client_token != null)oContent.writeln(fldClient_token + "\$" + _client_token);
-//    fldList.forEach((fld) {
-//      if(this.userMap[fld] != null) {
-//        oContent.write(fld);
-//        oContent.write("\$");
-//        oContent.write(this.userMap[fld]);
-//        oContent.write("\n");
-//      }
-//    });
+
     log.debug("Generated FileWrite String: " + oContent.toString());
     return oContent.toString();
   }
 
   bool hasIncompleteDetails() {
-    //TODO removed email and district from complusion
     return ((_name?.isEmpty??true) || (_bhk == null || bhk < 1) || (_flat_no?.isEmpty??true)
         || (_society_id?.isEmpty??true) || (_sector == null ));
   }

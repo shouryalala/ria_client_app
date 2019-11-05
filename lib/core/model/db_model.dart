@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/model/society.dart';
 import 'package:flutter_app/core/model/request.dart';
@@ -47,6 +48,21 @@ class DBModel extends ChangeNotifier {
     }catch(e) {
       log.error("Failed to fetch user activity status: " + e.toString());
       return null;
+    }
+  }
+
+  Future<bool> updateClientToken(User user, String token) async{
+    try{
+      String id = user.mobile;
+      var dMap = {
+        'token': token,
+        'timestamp': FieldValue.serverTimestamp()
+      };
+      await _api.updateUserClientToken(id, dMap);
+      return true;
+    }catch(e) {
+      log.error("Failed to update User Client Token: " + e.toString());
+      return false;
     }
   }
 
