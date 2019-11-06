@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:flutter_app/util/logger.dart';
 
 class User{
+  static Log log = new Log("User");
   String _mobile;
   String _name;
   String _email;
@@ -21,8 +22,6 @@ class User{
   static final String fldSector = "mSector";
   static final String fldDistrict = "mDistrict";
   static final String fldClient_token = "mClientToken";
-
-  static final Log log = new Log("OnboardingPage");
 
   User(this._mobile, this._name, this._email, this._bhk, this._flat_no,
       this._society_id, this._sector, this._district, this._client_token);
@@ -57,39 +56,44 @@ class User{
 
   //to compile from cache
   static User parseFile(List<String> contents) {
-    Map<String, dynamic> gData = new HashMap();
-    String id;
-    String client_token;
-    for(String line in contents){
-      if(line.contains(fldId)) {
-        id =  line.split("\$")[1];
-        continue;
+    try {
+      Map<String, dynamic> gData = new HashMap();
+      String id;
+      String client_token;
+      for (String line in contents) {
+        if (line.contains(fldId)) {
+          id = line.split("\$")[1];
+          continue;
+        }
+        if (line.contains(fldClient_token)) {
+          client_token = line.split("\$")[1];
+          continue;
+        }
+        else if (line.contains(fldBhk) || line.contains(fldSector)) {
+          String key = line.split("\$")[0];
+          String xFld = line.split("\$")[1];
+          int yFld = (xFld != null) ? int.parse(xFld) : -1;
+          gData.putIfAbsent(key, () {
+            return (yFld != -1) ? yFld : null;
+          });
+          continue;
+        }
+        else {
+          fldList.forEach((fld) {
+            if (line.contains(fld)) {
+              gData.putIfAbsent(fld, () {
+                String res = line.split("\$")[1];
+                return (res != null && res.length > 0) ? res : "";
+              });
+            }
+          });
+        }
       }
-      if(line.contains(fldClient_token)) {
-        client_token =  line.split("\$")[1];
-        continue;
-      }
-      else if(line.contains(fldBhk) || line.contains(fldSector)) {
-        String key = line.split("\$")[0];
-        String xFld = line.split("\$")[1];
-        int yFld = (xFld != null)?int.parse(xFld):-1;
-        gData.putIfAbsent(key, () {
-          return (yFld != -1)?yFld:null;
-        });
-        continue;
-      }
-      else {
-        fldList.forEach((fld) {
-          if (line.contains(fld)) {
-            gData.putIfAbsent(fld, () {
-              String res = line.split("\$")[1];
-              return (res != null && res.length > 0) ? res : "";
-            });
-          }
-        });
-      }
-    };
-    return User.fromMap(gData, id, client_token);
+      return User.fromMap(gData, id, client_token);
+    }catch(e) {
+      log.error("Caught Exception while parsing local User file: " + e.toString());
+      return null;
+    }
   }
 
   //to save in cache

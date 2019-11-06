@@ -33,4 +33,19 @@ class LocalApi{
     return file.writeAsString(content);
   }
 
+  Future<File> get visitFile async {
+    final path = await _localPath;
+    return File('$path/currentvisit.txt');
+  }
+
+  Future<List<String>> readVisitFile() async{
+    final file = await visitFile;
+    return file.readAsLines();
+  }
+
+  Future<File> writeVisitFile(String content) async{
+    final file = await visitFile;
+    return file.writeAsString(content);
+  }
+
 }

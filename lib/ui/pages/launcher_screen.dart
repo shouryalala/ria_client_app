@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/core/fcm_handler.dart';
+import 'package:flutter_app/core/fcm_listener.dart';
+import 'package:flutter_app/util/locator.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:provider/provider.dart';
 
@@ -26,8 +29,9 @@ class LogoFadeIn extends State<SplashScreen> {
     });
   }
 
-  initialize() {
+  initialize() async{
     final onboardProvider = Provider.of<BaseUtil>(context);
+    await onboardProvider.init();
     //new IOUtil().isUserOnboarded().then((flag) {
         if(!onboardProvider.isUserOnboarded) {
           log.debug("New user. Moving to Onboarding..");

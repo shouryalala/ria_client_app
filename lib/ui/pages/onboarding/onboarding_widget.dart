@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/core/model/local_db_model.dart';
+import 'package:flutter_app/core/local_db_model.dart';
 import 'package:flutter_app/ui/elements/dots_indicator.dart';
 import 'package:flutter_app/ui/pages/onboarding/screens/page1.dart';
 import 'package:flutter_app/ui/pages/onboarding/screens/page2.dart';

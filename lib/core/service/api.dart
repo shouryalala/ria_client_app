@@ -45,5 +45,15 @@ class Api{
     String activityDocKey = "status"; //fixed document key where we're storing the status
     ref = _db.collection(Constants.COLN_USERS).document(id).collection(Constants.SUBCOLN_USER_ACTIVITY);
     return ref.document(activityDocKey).get();
+  } 
+
+  Future<DocumentSnapshot> getVisitByPath(String yearDoc, String monthSubColn, String id) {
+    ref = _db.collection(Constants.COLN_VISITS).document(yearDoc).collection(monthSubColn);
+    return ref.document(id).get();
+  }
+
+  Future<void> updateVisitDocument(String yearDoc, String monthSubColn, String id, Map data) {
+    ref = _db.collection(Constants.COLN_VISITS).document(yearDoc).collection(monthSubColn);
+    return ref.document(id).setData(data, merge: true);
   }
 }

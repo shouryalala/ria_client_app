@@ -6,9 +6,10 @@ import 'package:flutter_app/core/model/society.dart';
 import 'package:flutter_app/core/model/request.dart';
 import 'package:flutter_app/core/service/api.dart';
 
-import '../../util/locator.dart';
-import '../../util/logger.dart';
-import 'user.dart';
+import '../util/locator.dart';
+import '../util/logger.dart';
+import 'model/user.dart';
+import 'model/visit.dart';
 
 class DBModel extends ChangeNotifier {
   Api _api = locator<Api>();
@@ -62,6 +63,31 @@ class DBModel extends ChangeNotifier {
       return true;
     }catch(e) {
       log.error("Failed to update User Client Token: " + e.toString());
+      return false;
+    }
+  }
+
+  Future<Visit> getVisit(String path) async {
+    try {
+      List<String> vPath = path.split("/");
+      if(vPath[0] == null || vPath[1] == null || vPath[2] == null || vPath[3] == null)return null;
+      var doc = await _api.getVisitByPath(vPath[1], vPath[2], vPath[3]);
+      return Visit.fromMap(doc.data, path);
+    }catch(e) {
+      log.error("Error fetch visit details: " + e.toString());
+      return null;
+    }
+  }
+
+  Future<bool> updateVisit(Visit visit) async {
+    try {
+      String path = visit.path;
+      List<String> vPath = path.split("/");
+      if(vPath[0] == null || vPath[1] == null || vPath[2] == null || vPath[3] == null)return false;
+      await _api.updateVisitDocument(vPath[1], vPath[2], vPath[3], visit.toJson());
+      return true;
+    }catch(e) {
+      log.error("Failed to update visit object: " + e.toString());
       return false;
     }
   }

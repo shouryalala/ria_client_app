@@ -49,8 +49,8 @@ class Constants {
   static final String AST_RESPONSE_REJECT = "REJECT";
 
   //incoming data payload type
-  static final String COMMAND_WORK_REQUEST = "WRDP";
-  static final String  COMMAND_REQUEST_CONFIRMED = "RQDP";
+  static const String COMMAND_WORK_REQUEST = "WRDP";
+  static const String  COMMAND_REQUEST_CONFIRMED = "RQDP";
 
   //Service decodes
   static final String SERVICE_CLEANING = "Cx";
@@ -90,8 +90,4 @@ class Constants {
   static final String DEFAULT_SERVICE = "Cleaning";
   static final String DEFAULT_ADDRESS = "3/202\n Beverly Park Appt\n Sector-22";
 
-  //IN-APP CONSTANTS
-  static const int DEFAULT_HOME_STATE = 0;
-  static const int UPCOMING_VISIT_STATE = 1;
-  static const int ONGOING_VISIT_STATE = 2;
 }

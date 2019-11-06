@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/base_util.dart';
+import 'package:flutter_app/core/fcm_handler.dart';
 import 'package:flutter_app/core/model/request.dart';
+import 'package:flutter_app/core/model/visit.dart';
 import 'package:flutter_app/ui/elements/mutli_select_chip.dart';
 import 'package:flutter_app/ui/elements/time_picker_model.dart';
 import 'package:flutter_app/util/calendar_util.dart';
@@ -10,31 +12,32 @@ import 'package:flutter_app/util/logger.dart';
 import 'package:flutter_app/util/ui_constants.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:provider/provider.dart';
-
-import '../../core/model/db_model.dart';
+import '../../core/db_model.dart';
 
 class HomeScreen extends StatefulWidget {
   final ValueChanged<int> onLoginRequest;
-  HomeScreen({this.onLoginRequest});
+  int homeState;
+  HomeScreen({this.onLoginRequest, this.homeState});
   @override
   _HomeScreenState createState() {
-    return _HomeScreenState(onLoginRequest: onLoginRequest);
+    return _HomeScreenState(onLoginRequest: onLoginRequest, homeState: homeState);
   }
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   final Log log = new Log("HomeScreen");
   final ValueChanged<int> onLoginRequest;
-  _HomeScreenState({this.onLoginRequest});
+  int homeState;
+  _HomeScreenState({this.onLoginRequest, this.homeState});
   String _time;
   DateTime reqTime = new DateTime.now();
   static const String CLEANING = "Cleaning";
   static const String UTENSILS = "Utensils";
   List<String> serviceList = [CLEANING, UTENSILS];
   List<String> selectedServiceList = [CLEANING];
-  int homeState = Constants.DEFAULT_HOME_STATE;
   DBModel reqProvider;
   BaseUtil baseProvider;
+  FcmHandler handler;
   CalendarUtil cUtil;
   /**
    * Possible UI States
@@ -46,23 +49,28 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    homeState = (homeState == null)?Constants.VISIT_STATUS_NONE:homeState;
     cUtil = new CalendarUtil();
-    //TODO get home ui state
-    homeState = 2;
+    //register callback to allow handler to notify change in ui
   }
 
   @override
   Widget build(BuildContext context) {
     reqProvider = Provider.of<DBModel>(context);
     baseProvider = Provider.of<BaseUtil>(context);
+    handler = Provider.of<FcmHandler>(context);
+    if(handler != null) {
+      handler.setHomeScreenCallback(onAssistantAvailable: () => onAssistantAvailable());
+    }
     switch(homeState) {
-      case Constants.DEFAULT_HOME_STATE: {
+      case Constants.VISIT_STATUS_NONE: {
        return buildHomeLayout();
       }
-      case Constants.UPCOMING_VISIT_STATE:{
-        return buildUpcomingVisitLayout();
+      case Constants.VISIT_STATUS_UPCOMING:{
+        if(baseProvider.currentVisit == null) return buildHomeLayout();
+        return buildUpcomingVisitLayout(baseProvider.currentVisit);
       }
-      case Constants.ONGOING_VISIT_STATE:{
+      case Constants.VISIT_STATUS_ONGOING:{
         return buildHomeLayout();
       }
       default:{
@@ -71,8 +79,10 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  onAssistantMatched() {
-
+  onAssistantAvailable() {
+    setState(() {
+      homeState = Constants.VISIT_STATUS_UPCOMING;
+    });
   }
 
   Widget buildHomeLayout() {
@@ -156,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget buildUpcomingVisitLayout() {
+  Widget buildUpcomingVisitLayout(Visit upVisit) {
      return Scaffold(
        body:  Padding(
            padding: const EdgeInsets.all(16.0),
@@ -177,6 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
                        ///photo
                        ///name
                        ///rating
+                       Text(upVisit.toFileString()),
 
                      ],
                    ),

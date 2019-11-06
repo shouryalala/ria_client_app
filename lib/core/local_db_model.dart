@@ -3,7 +3,8 @@ import 'package:flutter_app/core/service/local_api.dart';
 import 'package:flutter_app/util/locator.dart';
 import 'package:flutter_app/util/logger.dart';
 
-import 'user.dart';
+import 'model/user.dart';
+import 'model/visit.dart';
 
 class LocalDBModel extends ChangeNotifier {
   LocalApi _api = locator<LocalApi>();
@@ -14,7 +15,7 @@ class LocalDBModel extends ChangeNotifier {
       List<String> contents = await _api.readUserFile();
       return User.parseFile(contents);
     }catch(e) {
-      log.error("Unable to fetch user from local store." + e);
+      log.error("Unable to fetch user from local store." + e.toString());
       return null;
     }
   }
@@ -32,7 +33,6 @@ class LocalDBModel extends ChangeNotifier {
   Future<int> isUserOnboarded() async {
     try {
       final file = await _api.onboardFile;
-
       String contents = await file.readAsString();
       return int.parse(contents);
     } catch (e) {
@@ -45,5 +45,25 @@ class LocalDBModel extends ChangeNotifier {
     // Write the file
     int status = (flag)?1:0;
     return _api.writeOnboardFile('$status');
+  }
+
+  Future<Visit> getVisit() async {
+    try{
+      List<String> contents = await _api.readVisitFile();
+      return Visit.parseFile(contents);
+    }catch(e) {
+      log.error("Unable to fetch visit from local store." + e.toString());
+      return null;
+    }
+  }
+
+  Future<bool> saveVisit(Visit visit) async {
+    try {
+      await _api.writeVisitFile(visit.toFileString());
+      return true;
+    }catch(e) {
+      log.error("Failed to store visit details in local db: " + e.toString());
+      return false;
+    }
   }
 }

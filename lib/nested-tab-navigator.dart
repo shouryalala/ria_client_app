@@ -4,7 +4,9 @@ import 'package:flutter_app/ui/pages/placeholder_widget.dart';
 import 'package:flutter_app/ui/pages/profile/history_widget.dart';
 import 'package:flutter_app/ui/pages/profile/profile_options.dart';
 import 'package:flutter_app/ui/pages/profile/update_address.dart';
+import 'package:provider/provider.dart';
 
+import 'base_util.dart';
 import 'ui/pages/home_screen.dart';
 
 class TabNavigatorRoutes {
@@ -24,9 +26,10 @@ class TabNavigator extends StatelessWidget {
   final int item;
   final BuildContext context;
   static Map<String, WidgetBuilder> routeBuilders;
-
+  static BaseUtil baseUtil;
 
   TabNavigator({this.navigatorKey, this.item, this.context}){
+    baseUtil = Provider.of<BaseUtil>(context);
     routeBuilders = _routeBuilders(context);
   }
 
@@ -58,6 +61,7 @@ class TabNavigator extends StatelessWidget {
       TabNavigatorRoutes.root: (context) => HomeScreen(
         onLoginRequest: (pageNo) =>
             _pushLoginScreen(context, pageNo),
+        homeState: baseUtil.homeState,
       ),
       TabNavigatorRoutes.subscribe: (context) => PlaceholderWidget(Colors.amberAccent),
       TabNavigatorRoutes.profile: (context) => ProfileOptions(
