@@ -31,9 +31,15 @@ class FcmListener extends ChangeNotifier{
       },
       onLaunch: (Map<String, dynamic> message) async {
         log.debug("onLaunch recieved: " + message.toString());
+        if(message['data'] != null) {
+          await _handler.handleMessage(message['data']);
+        }
       },
       onResume: (Map<String, dynamic> message) async {
         log.debug("onResume recieved: " + message.toString());
+        if(message['data'] != null) {
+          await _handler.handleMessage(message['data']);
+        }
       },
     );
     //TODO to be tested
