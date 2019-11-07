@@ -15,10 +15,6 @@ class FcmHandler extends ChangeNotifier {
 
   FcmHandler() {}
 
-  void testMe() {
-    log.debug("This is not a drill");
-  }
-
   Future<bool> handleMessage(Map data) async{
     log.debug("Data Message Recieved: " + data.toString());
     String command = data['command'];

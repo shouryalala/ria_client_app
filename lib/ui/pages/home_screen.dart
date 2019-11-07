@@ -144,7 +144,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               return;
                             }
                             Request req = Request(
-                                user_id: baseProvider.myUser.mobile,
+                                //user_id: baseProvider.myUser.mobile,
+                                user_id: baseProvider.myUser.uid,
                                 date: cUtil.now.day,
                                 service: decodeMultiChip(),
                                 address: baseProvider.myUser.flat_no,

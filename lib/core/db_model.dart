@@ -32,7 +32,8 @@ class DBModel extends ChangeNotifier {
 
   Future<bool> updateUser(User user) async {
     try {
-      String id = user.mobile;
+      //String id = user.mobile;
+      String id = user.uid;
       await _api.updateUserDocument(id, user.toJson());
       return true;
     }catch(e) {
@@ -43,7 +44,8 @@ class DBModel extends ChangeNotifier {
 
   Future<Map> getUserActivityStatus(User user) async{
     try{
-      String id = user.mobile;
+      //String id = user.mobile;
+      String id = user.uid;
       var doc = await _api.getUserActivityDocument(id);
       return doc.data;
     }catch(e) {
@@ -54,7 +56,8 @@ class DBModel extends ChangeNotifier {
 
   Future<bool> updateClientToken(User user, String token) async{
     try{
-      String id = user.mobile;
+      //String id = user.mobile;
+      String id = user.uid;
       var dMap = {
         'token': token,
         'timestamp': FieldValue.serverTimestamp()
