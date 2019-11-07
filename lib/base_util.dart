@@ -42,41 +42,46 @@ class BaseUtil extends ChangeNotifier{
    * -Sets the variable used to decide home layout(Default layout, upcoming visit, ongoing visit etc)
    * */
   Future<int> _setupCurrentState() async {
+    int status = Constants.VISIT_STATUS_NONE;
+    String vPath;
     Map<String, dynamic> res = await _dbModel.getUserActivityStatus(_myUser);
-    int status = res['visit_status'];
-    String vPath = res['visit_id'];
-    log.debug("Recieved Activity Status:: Status: " + status.toString() + " Visit ID Path: " + vPath);
-    if(status != null) {
-      if(status == Constants.VISIT_STATUS_NONE) {
-        //TODO clear existing cache visit object if present
+    try {
+      status = res['visit_status'];
+      vPath = res['visit_id'];
+    }catch(e) {
+      log.debug("Didnt find the activity subcollection. Defaulting values");
+      status = Constants.VISIT_STATUS_NONE;
+    }
+    log.debug("Recieved Activity Status:: Status: " + status.toString());
+    if(status == Constants.VISIT_STATUS_NONE) {
+      //TODO clear existing cache visit object if present
+      return Constants.VISIT_STATUS_NONE;
+    }
+    else if(status == Constants.VISIT_STATUS_UPCOMING) {
+      if(vPath == null){
+        log.error("Status in VISIT_STATUS_UPCOMING but no visit id found");
         return Constants.VISIT_STATUS_NONE;
       }
-      else if(status == Constants.VISIT_STATUS_UPCOMING) {
-        if(vPath == null){
-          log.error("Status in VISIT_STATUS_UPCOMING but no visit id found");
+      //Path of format: visits/YEAR/MONTH/ID
+      Visit lVisit = await _lModel.getVisit();
+      if(lVisit == null || lVisit.path != vPath) {
+        log.debug("No local saved visit object or expired visit object. Updation required");
+        Visit nVisit = await _dbModel.getVisit(vPath);
+        if(nVisit != null){
+          await _lModel.saveVisit(nVisit);
+          this.currentVisit = nVisit;
+          //done
+        }else{
           return Constants.VISIT_STATUS_NONE;
         }
-        //Path of format: visits/YEAR/MONTH/ID
-        Visit lVisit = await _lModel.getVisit();
-        if(lVisit == null || lVisit.path != vPath) {
-          log.debug("No local saved visit object or expired visit object. Updation required");
-          Visit nVisit = await _dbModel.getVisit(vPath);
-          if(nVisit != null){
-            await _lModel.saveVisit(nVisit);
-            this.currentVisit = nVisit;
-            //done
-          }else{
-            return Constants.VISIT_STATUS_NONE;
-          }
-        }else{
-          //visit available in local cache
-          this.currentVisit = lVisit;
-        }
-        return Constants.VISIT_STATUS_UPCOMING;
+      }else{
+        //visit available in local cache
+        this.currentVisit = lVisit;
       }
-      else{
-        return Constants.VISIT_STATUS_NONE;
-      }
+      return Constants.VISIT_STATUS_UPCOMING;
+    }
+    else{
+      return Constants.VISIT_STATUS_NONE;
     }
   }
 

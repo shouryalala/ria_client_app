@@ -254,7 +254,7 @@ class _LoginDialogState extends State<LoginDialog> {
         else {
           if(baseProvider.myUser == null) {
             //firebase user should never be null at this point
-            baseProvider.myUser = User.newUser(formatMobileNumber(baseProvider.firebaseUser.phoneNumber));
+            baseProvider.myUser = User.newUser(baseProvider.firebaseUser.uid, formatMobileNumber(baseProvider.firebaseUser.phoneNumber));
           }
           baseProvider.myUser.name = name;
           if(email != null && email.isNotEmpty) {
@@ -320,11 +320,12 @@ class _LoginDialogState extends State<LoginDialog> {
     FirebaseAuth.instance.currentUser().then((fUser) {
       baseProvider.firebaseUser = fUser;
       log.debug("User is set: " + fUser.uid);
-      dbProvider.getUser(this.userMobile).then((user) {
+      //dbProvider.getUser(this.userMobile).then((user) {
+      dbProvider.getUser(fUser.uid).then((user) {
         //user variable is pre cast into User object
         if(user == null || (user != null && user.hasIncompleteDetails())) {
           log.debug("No existing user details found or found incomplete details for user. Moving to details page");
-          baseProvider.myUser = (user != null)?user:User.newUser(this.userMobile);
+          baseProvider.myUser = (user != null)?user:User.newUser(fUser.uid, this.userMobile);
           //Move to name input page
           _controller.animateToPage(NAME_SCREEN, duration: Duration(milliseconds: 300), curve: Curves.easeIn);
         }
@@ -339,6 +340,7 @@ class _LoginDialogState extends State<LoginDialog> {
   }
 
   void onSignUpComplete() {
+    //TODO add client token fetch method here!!
     localDbProvider.saveUser(baseProvider.myUser).then((flag) {
       if (flag) {
         log.debug("User object saved locally");

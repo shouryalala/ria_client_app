@@ -4,6 +4,7 @@ import 'package:flutter_app/util/logger.dart';
 
 class User{
   static Log log = new Log("User");
+  String _uid;
   String _mobile;
   String _name;
   String _email;
@@ -14,6 +15,7 @@ class User{
   String _district;
   String _client_token;   //fetched from a subcollection
   static final String fldId = "mID";
+  static final String fldMobile = "mMobile";
   static final String fldEmail = "mEmail";
   static final String fldName = "mName";
   static final String fldBhk = "mBHK";
@@ -23,27 +25,22 @@ class User{
   static final String fldDistrict = "mDistrict";
   static final String fldClient_token = "mClientToken";
 
-  User(this._mobile, this._name, this._email, this._bhk, this._flat_no,
+  User(this._uid, this._mobile, this._name, this._email, this._bhk, this._flat_no,
       this._society_id, this._sector, this._district, this._client_token);
 
-  static List<String> fldList = [ fldEmail, fldName, fldBhk, fldFlat_no, fldSector, fldSociety_id,
+  static List<String> fldList = [ fldMobile, fldEmail, fldName, fldBhk, fldFlat_no, fldSector, fldSociety_id,
   fldDistrict, fldClient_token];
 
-  User.newUser(String mobile) : this(mobile, null, null, null, null, null, null, null, null);
+  User.newUser(String id, String mobile) : this(id, mobile, null, null, null, null, null, null, null, null);
 
   User.fromMap(Map<String, dynamic> data, String id, [String client_token]) :
-    this(id, data[fldName], data[fldEmail], data[fldBhk], data[fldFlat_no],
+    this(id, data[fldMobile], data[fldName], data[fldEmail], data[fldBhk], data[fldFlat_no],
         data[fldSociety_id], data[fldSector], data[fldDistrict], client_token);
-
-  String get mobile => _mobile;
-
-  set mobile(String value) {
-    _mobile = value;
-  }
 
   //to send to server
   toJson() {
     return {
+      fldMobile: _mobile,
       fldName: _name,
       fldEmail: _email,
       fldBhk: _bhk,
@@ -99,7 +96,8 @@ class User{
   //to save in cache
   String toFileString() {
     StringBuffer oContent = new StringBuffer();
-    oContent.writeln(fldId + "\$" + _mobile);
+    oContent.writeln(fldId + "\$" + _uid);
+    oContent.writeln(fldMobile + "\$" + _mobile);
     if(_email != null) oContent.writeln(fldEmail + "\$" +_email);
     if(_name != null) oContent.writeln(fldName + "\$" + _name);
     if(_flat_no != null)oContent.writeln(fldFlat_no + "\$" + _flat_no);
@@ -114,8 +112,15 @@ class User{
   }
 
   bool hasIncompleteDetails() {
-    return ((_name?.isEmpty??true) || (_bhk == null || bhk < 1) || (_flat_no?.isEmpty??true)
-        || (_society_id?.isEmpty??true) || (_sector == null ));
+    return ((_mobile?.isEmpty??true) || (_name?.isEmpty??true) || (_bhk == null || bhk < 1)
+        || (_flat_no?.isEmpty??true) || (_society_id?.isEmpty??true) || (_sector == null ));
+  }
+
+
+  String get uid => _uid;
+
+  set uid(String value) {
+    _uid = value;
   }
 
   String get name => _name;
@@ -164,5 +169,11 @@ class User{
 
   set client_token(String value) {
     _client_token = value;
+  }
+
+  String get mobile => _mobile;
+
+  set mobile(String value) {
+    _mobile = value;
   }
 }
