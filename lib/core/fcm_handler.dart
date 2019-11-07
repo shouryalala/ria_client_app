@@ -13,7 +13,13 @@ class FcmHandler extends ChangeNotifier {
   BaseUtil _baseUtil = locator<BaseUtil>();
   static VoidCallback aUpdate;
 
-  void handleMessage(Map<String, dynamic> data) {
+  FcmHandler() {}
+
+  void testMe() {
+    log.debug("This is not a drill");
+  }
+
+  Future<bool> handleMessage(Map data) async{
     log.debug("Data Message Recieved: " + data.toString());
     String command = data['command'];
     if(command != null && command.isNotEmpty) {
@@ -36,19 +42,22 @@ class FcmHandler extends ChangeNotifier {
             );
           }catch(error) {
             log.error("Caught exception trying to create Visit object from data message: " + error.toString());
+            return false;
           }
           if(recVisit != null && recVisit.path != null && recVisit.path.isNotEmpty) {
             //save visit
-            _lModel.saveVisit(recVisit);
+            await _lModel.saveVisit(recVisit);
             //refresh Home Screen UI if its available
             _baseUtil.currentVisit = recVisit;
             if(aUpdate != null) {
               aUpdate();
             }
           }
+          return true;
         }
       }
     }
+    return true;
   }
 
   setHomeScreenCallback({VoidCallback onAssistantAvailable}) {

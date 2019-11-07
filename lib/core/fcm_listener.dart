@@ -1,31 +1,32 @@
 import 'dart:io' show Platform;
+
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/base_util.dart';
 import 'package:flutter_app/core/fcm_handler.dart';
 import 'package:flutter_app/util/locator.dart';
 import 'package:flutter_app/util/logger.dart';
+
 import 'db_model.dart';
 import 'local_db_model.dart';
 
-class FcmListener{
+class FcmListener extends ChangeNotifier{
   Log log = new Log("FcmListener");
-  BaseUtil baseUtil = locator<BaseUtil>();
+  BaseUtil _baseUtil = locator<BaseUtil>();
   LocalDBModel _lModel = locator<LocalDBModel>();
   DBModel _dbModel = locator<DBModel>();
-  FcmHandler handler = locator<FcmHandler>();
+  FcmHandler _handler = locator<FcmHandler>();
   FirebaseMessaging _fcm;
   
-  FcmListener() {
-    _setupFcm();
-  }
+  FcmListener() {}
   
-  Future<FirebaseMessaging> _setupFcm() async {
+  Future<FirebaseMessaging> setupFcm() async {
     _fcm = FirebaseMessaging();
     _fcm.configure(
       onMessage: (Map<String, dynamic> message) async {
         log.debug("onMessage recieved: " + message.toString());
         if(message['data'] != null) {
-          handler.handleMessage(message['data']);
+          await _handler.handleMessage(message['data']);
         }
       },
       onLaunch: (Map<String, dynamic> message) async {
@@ -45,7 +46,7 @@ class FcmListener{
       });
     }
 
-    if(baseUtil.myUser != null && baseUtil.myUser.mobile != null)await _saveDeviceToken();
+    if(_baseUtil.myUser != null && _baseUtil.myUser.mobile != null)await _saveDeviceToken();
     return _fcm;
   }
 
@@ -53,12 +54,12 @@ class FcmListener{
     bool flag = true;
     String fcmToken = await _fcm.getToken();
 
-    if (fcmToken != null && baseUtil.myUser != null && baseUtil.myUser.mobile != null
-        && (baseUtil.myUser.client_token == null || (baseUtil.myUser.client_token != null && baseUtil.myUser.client_token != fcmToken))) {
+    if (fcmToken != null && _baseUtil.myUser != null && _baseUtil.myUser.mobile != null
+        && (_baseUtil.myUser.client_token == null || (_baseUtil.myUser.client_token != null && _baseUtil.myUser.client_token != fcmToken))) {
       log.debug("Updating FCM token to local and server db");
-      baseUtil.myUser.client_token = fcmToken;
-      flag = await _dbModel.updateClientToken(baseUtil.myUser, fcmToken);
-      if(flag)await _lModel.saveUser(baseUtil.myUser);  //user cache has client token field available
+      _baseUtil.myUser.client_token = fcmToken;
+      flag = await _dbModel.updateClientToken(_baseUtil.myUser, fcmToken);
+      if(flag)await _lModel.saveUser(_baseUtil.myUser);  //user cache has client token field available
     }
     return flag;
   }

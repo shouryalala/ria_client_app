@@ -61,15 +61,18 @@ class Visit{
   //to save to cache
   String toFileString() {
     StringBuffer oContent = new StringBuffer();
-    oContent.writeln(fldVID + "\$" + path);
-    if(aId != null)oContent.writeln(fldAID + "\$" + aId);
-    if(uId != null)oContent.writeln(fldUID + "\$" + uId);
-    if(service != null)oContent.writeln(fldService + "\$" + service);
+    oContent.writeln(fldVID + "\$" + path.trim());
+    if(aId != null)oContent.writeln(fldAID + "\$" + aId.trim());
+    if(uId != null)oContent.writeln(fldUID + "\$" + uId.trim());
+    if(service != null)oContent.writeln(fldService + "\$" + service.trim());
     if(status != null)oContent.writeln(fldStatus + "\$" + status.toString());
     if(date != null)oContent.writeln(fldDate + "\$" + date.toString());
     if(req_st_time != null)oContent.writeln(fldReqStTime + "\$" + req_st_time.toString());
     if(vis_st_time != null)oContent.writeln(fldVisStTime + "\$" + vis_st_time.toString());
     if(vis_en_time != null)oContent.writeln(fldVisEnTime + "\$" + vis_en_time.toString());
+
+    log.debug("Generated FileWrite String: " + oContent.toString());
+    return oContent.toString();
   }
 
   static Visit parseFile(List<String> contents) {

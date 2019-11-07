@@ -2,8 +2,8 @@ import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/core/model/society.dart';
 import 'package:flutter_app/core/model/request.dart';
+import 'package:flutter_app/core/model/society.dart';
 import 'package:flutter_app/core/service/api.dart';
 
 import '../util/locator.dart';

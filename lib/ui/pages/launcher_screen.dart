@@ -31,17 +31,19 @@ class LogoFadeIn extends State<SplashScreen> {
 
   initialize() async{
     final onboardProvider = Provider.of<BaseUtil>(context);
+    final fcmProvider = Provider.of<FcmListener>(context);
     await onboardProvider.init();
+    await fcmProvider.setupFcm();
     //new IOUtil().isUserOnboarded().then((flag) {
-        if(!onboardProvider.isUserOnboarded) {
-          log.debug("New user. Moving to Onboarding..");
-          Navigator.of(context).pop();
-          Navigator.of(context).pushReplacementNamed('/onboarding');
-        }else{
-          log.debug("Existing User. Moving to Home..");
-          Navigator.of(context).pop();
-          Navigator.of(context).pushReplacementNamed('/home');
-        }
+    if(!onboardProvider.isUserOnboarded) {
+      log.debug("New user. Moving to Onboarding..");
+      Navigator.of(context).pop();
+      Navigator.of(context).pushReplacementNamed('/onboarding');
+    }else{
+      log.debug("Existing User. Moving to Home..");
+      Navigator.of(context).pop();
+      Navigator.of(context).pushReplacementNamed('/home');
+    }
     //});
   }
 

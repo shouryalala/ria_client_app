@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 
 import 'base_util.dart';
 import 'core/fcm_handler.dart';
+import 'core/fcm_listener.dart';
 import 'core/local_db_model.dart';
 import 'ui/pages/app_canvas.dart';
 import 'ui/pages/launcher_screen.dart';
@@ -27,6 +28,7 @@ class App extends StatelessWidget{
         ChangeNotifierProvider(builder: (_) =>  locator<DBModel>()),
         ChangeNotifierProvider(builder: (_) =>  locator<LocalDBModel>()),
         ChangeNotifierProvider(builder: (_) =>  locator<BaseUtil>()),
+        ChangeNotifierProvider(builder: (_) =>  locator<FcmListener>()),
         ChangeNotifierProvider(builder: (_) =>  locator<FcmHandler>()),
       ],
       child: MaterialApp(

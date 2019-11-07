@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/db_model.dart';
 import 'package:flutter_app/core/local_db_model.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/locator.dart';
 import 'package:flutter_app/util/logger.dart';
+
 import 'core/model/user.dart';
 import 'core/model/visit.dart';
 
@@ -48,7 +48,7 @@ class BaseUtil extends ChangeNotifier{
     log.debug("Recieved Activity Status:: Status: " + status.toString() + " Visit ID Path: " + vPath);
     if(status != null) {
       if(status == Constants.VISIT_STATUS_NONE) {
-        //no processing required
+        //TODO clear existing cache visit object if present
         return Constants.VISIT_STATUS_NONE;
       }
       else if(status == Constants.VISIT_STATUS_UPCOMING) {
