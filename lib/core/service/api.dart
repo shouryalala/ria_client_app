@@ -56,4 +56,9 @@ class Api{
     ref = _db.collection(Constants.COLN_VISITS).document(yearDoc).collection(monthSubColn);
     return ref.document(id).setData(data, merge: true);
   }
+
+  Future<DocumentSnapshot> getAssistantById(String id) {
+    ref = _db.collection(Constants.COLN_ASSISTANTS);
+    return ref.document(id).get();
+  }
 }

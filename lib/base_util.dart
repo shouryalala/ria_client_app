@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/db_model.dart';
 import 'package:flutter_app/core/local_db_model.dart';
+import 'package:flutter_app/core/model/assistant.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/locator.dart';
 import 'package:flutter_app/util/logger.dart';
@@ -19,6 +20,7 @@ class BaseUtil extends ChangeNotifier{
   int homeState;
   User _myUser;
   Visit _currentVisit;
+  Assistant _currentAssistant;
 
   BaseUtil() {
     //init(); //init called in
@@ -52,37 +54,75 @@ class BaseUtil extends ChangeNotifier{
       log.debug("Didnt find the activity subcollection. Defaulting values");
       status = Constants.VISIT_STATUS_NONE;
     }
-    log.debug("Recieved Activity Status:: Status: " + status.toString());
-    if(status == Constants.VISIT_STATUS_NONE) {
-      //TODO clear existing cache visit object if present
-      return Constants.VISIT_STATUS_NONE;
-    }
-    else if(status == Constants.VISIT_STATUS_UPCOMING) {
-      if(vPath == null){
-        log.error("Status in VISIT_STATUS_UPCOMING but no visit id found");
-        return Constants.VISIT_STATUS_NONE;
+    log.debug("Recieved Activity Status:: Status: $status.toString()");
+    switch(status) {
+      case Constants.VISIT_STATUS_NONE: {
+        //TODO clear existing cache visit object if present
+        homeState = Constants.VISIT_STATUS_NONE;
+        break;
       }
-      //Path of format: visits/YEAR/MONTH/ID
-      Visit lVisit = await _lModel.getVisit();
-      if(lVisit == null || lVisit.path != vPath) {
-        log.debug("No local saved visit object or expired visit object. Updation required");
-        Visit nVisit = await _dbModel.getVisit(vPath);
-        if(nVisit != null){
-          await _lModel.saveVisit(nVisit);
-          this.currentVisit = nVisit;
-          //done
-        }else{
-          return Constants.VISIT_STATUS_NONE;
+      case Constants.VISIT_STATUS_UPCOMING: {
+        /**
+         * Retrieve Upcoming Visit. Ensure not null
+         * Retrieve Upcoming visit Assistant. Ensure not null
+         * */
+        homeState = Constants.VISIT_STATUS_UPCOMING;
+        if(vPath == null){
+          log.error("Status in VISIT_STATUS_UPCOMING but no visit id found");
+          homeState = Constants.VISIT_STATUS_NONE;
+          break;
         }
-      }else{
-        //visit available in local cache
-        this.currentVisit = lVisit;
+        this.currentVisit = await getUpcomingVisit(vPath);
+        if(this.currentVisit == null) {
+          log.error("Couldnt identify Upcoming visit. Defaulting HomeState");
+          homeState = Constants.VISIT_STATUS_NONE;
+          break;
+        }
+        this.currentAssistant = await getUpcomingAssistant(this.currentVisit.aId);
+        if(this.currentAssistant == null) {
+          log.error("Couldnt identify Upcoming Visit Assistant. Defaulting HomeState");
+          homeState = Constants.VISIT_STATUS_NONE;
+          break;
+        }
+        break;
       }
-      return Constants.VISIT_STATUS_UPCOMING;
+      case Constants.VISIT_STATUS_COMPLETED: {
+
+      }
     }
-    else{
-      return Constants.VISIT_STATUS_NONE;
+  }
+
+  //Path of format: visits/YEAR/MONTH/ID
+  Future<Visit> getUpcomingVisit(String vPath) async {
+    if(vPath == null) return null;
+    //first check in cache
+    Visit lVisit = await _lModel.getVisit();
+    if (lVisit == null || lVisit.path != vPath) {
+      log.debug("No local saved visit object or expired visit object. Updation required");
+      Visit nVisit = await _dbModel.getVisit(vPath);
+      if (nVisit != null) {
+        bool flag = await _lModel.saveVisit(nVisit);
+        log.debug("Saved fetched visit to local cache: $flag");
+        return nVisit;
+      }
     }
+    return lVisit;
+  }
+
+  Future<Assistant> getUpcomingAssistant(String aId) async{
+    if(aId == null)return null;
+    //first check the cache
+    Assistant lAssistant = await _lModel.getAssistant();
+    if(lAssistant == null || lAssistant.id != aId) {
+      log.debug("No local saved assistant object or expired assistant object. Updation required");
+      Assistant nAssistant = await _dbModel.getAssistant(aId);
+      if(nAssistant != null) {
+        bool flag = await _lModel.saveAssistant(nAssistant);
+        log.debug("Saved fetched assistant object to le cache: $flag");
+        return nAssistant;
+      }
+    }
+    return lAssistant;
   }
 
   isSignedIn() =>  (firebaseUser != null && myUser != null);
@@ -100,7 +140,7 @@ class BaseUtil extends ChangeNotifier{
       this.firebaseUser = res.user;
       return true;
     }).catchError((e) {
-      log.error("User Authentication failed with credential: Error: " + e);
+      log.error("User Authentication failed with credential: Error: " + e.toString());
       return false;
     });
   }
@@ -120,4 +160,11 @@ class BaseUtil extends ChangeNotifier{
   set currentVisit(Visit value) {
     _currentVisit = value;
   }
+
+  Assistant get currentAssistant => _currentAssistant;
+
+  set currentAssistant(Assistant value) {
+    _currentAssistant = value;
+  }
+
 }
