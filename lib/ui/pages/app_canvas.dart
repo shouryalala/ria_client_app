@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/ui/pages/home_screen.dart';
+import 'package:flutter_app/ui/pages/home/home_screen.dart';
 import 'package:flutter_app/ui/pages/placeholder_widget.dart';
 import 'package:flutter_app/ui/pages/profile/profile_options.dart';
 import 'package:morpheus/widgets/morpheus_tab_view.dart';

@@ -7,7 +7,7 @@ import 'package:flutter_app/ui/pages/profile/update_address.dart';
 import 'package:provider/provider.dart';
 
 import 'base_util.dart';
-import 'ui/pages/home_screen.dart';
+import 'ui/pages/home/home_screen.dart';
 
 class TabNavigatorRoutes {
   static const String root = '/home';

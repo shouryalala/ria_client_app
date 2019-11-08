@@ -13,7 +13,7 @@ import 'package:flutter_app/util/ui_constants.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/db_model.dart';
+import '../../../core/db_model.dart';
 
 class HomeScreen extends StatefulWidget {
   final ValueChanged<int> onLoginRequest;
