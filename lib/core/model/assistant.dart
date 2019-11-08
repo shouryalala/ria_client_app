@@ -10,6 +10,7 @@ class Assistant {
   int _comp_visits;
   int _age;
   double _rating;
+  String _url;  //generated from Firebase Storage
   //client token not needed
   static final String fldId = "id";
   static final String fldAge = "age";
@@ -17,6 +18,7 @@ class Assistant {
   static final String fldMobile = "mobile";
   static final String fldName = "name";
   static final String fldRating = "rating";
+  static final String fldDpUrl = "dp_url";
 
   Assistant(this._id, this._name, this._mobile, this._age, this._comp_visits, this._rating);
 
@@ -31,7 +33,7 @@ class Assistant {
     if(_age != null)oContent.writeln(fldAge + "\$" + _age.toString());
     if(_comp_visits != null)oContent.writeln(fldCmpVisits + "\$" + _comp_visits.toString());
     if(_rating != null)oContent.writeln(fldRating + "\$" + _rating.toString());
-
+    if(_url != null)oContent.writeln(fldDpUrl + "\$" + _url.toString());
     log.debug("Generated FileWrite String: " + oContent.toString());
     return oContent.toString();
   }
@@ -48,9 +50,7 @@ class Assistant {
         if (line.contains(fldRating)) {
           List<String> res = line.split("\$");
           gData.putIfAbsent(res[0], () {
-            return (res[1] != null && res[1].length > 0)
-                ? double.parse(res[1])
-                : "";
+            return (res[1] != null && res[1].length > 0)? double.parse(res[1]): "";
           });
           continue;
         }
@@ -74,7 +74,7 @@ class Assistant {
       return Assistant.fromMap(gData, id);
     } catch (e) {
       log.error(
-          "Caught Exception while parsing local Visit file: " + e.toString());
+          "Caught Exception while parsing local Assistant file: " + e.toString());
       return null;
     }
   }
@@ -113,6 +113,13 @@ class Assistant {
 
   set id(String value) {
     _id = value;
+  }
+
+
+  String get url => _url;
+
+  set url(String value) {
+    _url = value;
   }
 
   @override

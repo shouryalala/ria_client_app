@@ -48,6 +48,7 @@ class FcmHandler extends ChangeNotifier {
             _baseUtil.currentVisit = recVisit;
             _baseUtil.currentAssistant = await _baseUtil.getUpcomingAssistant(recVisit.aId);  //retrieve assistant
             if(_baseUtil.currentAssistant != null) {
+              _baseUtil.currentAssistant.url = await _baseUtil.getAssistantDpUrl(recVisit.aId);
               await _lModel.saveVisit(_baseUtil.currentVisit); //cache visit
               await _lModel.saveAssistant(_baseUtil.currentAssistant); //cache assistant
               if(aUpdate != null) {   //refresh Home Screen UI if its available

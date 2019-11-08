@@ -81,7 +81,7 @@ class LocalDBModel extends ChangeNotifier {
 
   Future<bool> saveAssistant(Assistant assistant) async {
     try {
-      await _api.writeVisitFile(assistant.toFileString());
+      await _api.writeAssistantFile(assistant.toFileString());
       return true;
     }catch(e) {
       log.error("Failed to store assistant details in local db: " + e.toString());

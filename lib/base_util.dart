@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/db_model.dart';
 import 'package:flutter_app/core/local_db_model.dart';
@@ -17,7 +18,7 @@ class BaseUtil extends ChangeNotifier{
   //FirebaseMessaging _fcm;
   FirebaseUser firebaseUser;
   bool isUserOnboarded = false;
-  int homeState;
+  int _homeState;
   User _myUser;
   Visit _currentVisit;
   Assistant _currentAssistant;
@@ -32,9 +33,9 @@ class BaseUtil extends ChangeNotifier{
     isUserOnboarded = await _lModel.isUserOnboarded()==1;
     _myUser = await _lModel.getUser();
     if(_myUser != null && _myUser.mobile != null) {
-      //homeState = await _retrieveCurrentStatus();
-      //homeState = (homeState == null)?Constants.VISIT_STATUS_NONE:homeState;
-      homeState = await _setupCurrentState();
+      //_homeState = await _retrieveCurrentStatus();
+      //_homeState = (_homeState == null)?Constants.VISIT_STATUS_NONE:_homeState;
+      await _setupCurrentState();
     }
   }
 
@@ -58,7 +59,7 @@ class BaseUtil extends ChangeNotifier{
     switch(status) {
       case Constants.VISIT_STATUS_NONE: {
         //TODO clear existing cache visit object if present
-        homeState = Constants.VISIT_STATUS_NONE;
+        _homeState = Constants.VISIT_STATUS_NONE;
         break;
       }
       case Constants.VISIT_STATUS_UPCOMING: {
@@ -66,22 +67,22 @@ class BaseUtil extends ChangeNotifier{
          * Retrieve Upcoming Visit. Ensure not null
          * Retrieve Upcoming visit Assistant. Ensure not null
          * */
-        homeState = Constants.VISIT_STATUS_UPCOMING;
+        _homeState = Constants.VISIT_STATUS_UPCOMING;
         if(vPath == null){
           log.error("Status in VISIT_STATUS_UPCOMING but no visit id found");
-          homeState = Constants.VISIT_STATUS_NONE;
+          _homeState = Constants.VISIT_STATUS_NONE;
           break;
         }
         this.currentVisit = await getUpcomingVisit(vPath);
         if(this.currentVisit == null) {
           log.error("Couldnt identify Upcoming visit. Defaulting HomeState");
-          homeState = Constants.VISIT_STATUS_NONE;
+          _homeState = Constants.VISIT_STATUS_NONE;
           break;
         }
         this.currentAssistant = await getUpcomingAssistant(this.currentVisit.aId);
         if(this.currentAssistant == null) {
           log.error("Couldnt identify Upcoming Visit Assistant. Defaulting HomeState");
-          homeState = Constants.VISIT_STATUS_NONE;
+          _homeState = Constants.VISIT_STATUS_NONE;
           break;
         }
         break;
@@ -117,12 +118,29 @@ class BaseUtil extends ChangeNotifier{
       log.debug("No local saved assistant object or expired assistant object. Updation required");
       Assistant nAssistant = await _dbModel.getAssistant(aId);
       if(nAssistant != null) {
-        bool flag = await _lModel.saveAssistant(nAssistant);
-        log.debug("Saved fetched assistant object to le cache: $flag");
+        nAssistant.url = await getAssistantDpUrl(aId);
+        if(nAssistant.url != null) { //for now
+          bool flag = await _lModel.saveAssistant(nAssistant);
+          log.debug("Saved fetched assistant object to le cache: $flag");
+        }
         return nAssistant;
       }
     }
     return lAssistant;
+  }
+  
+  Future<String> getAssistantDpUrl(String aid) async{
+    if(aid == null || aid.isEmpty)return null;
+    try {
+      var ref = FirebaseStorage.instance.ref().child(Constants.ASSISTANT_DP_PATH).child(aid + ".jpg");
+      log.debug(ref.path);
+      String uri = (await ref.getDownloadURL()).toString();
+      log.debug("Assistant DP Url fetched: $uri");
+      return uri.toString();
+    }catch(e) {
+      log.error("Failed to fetch Storage Download URL: " + e.toString());
+      return null;
+    }
   }
 
   isSignedIn() =>  (firebaseUser != null && myUser != null);
@@ -149,6 +167,16 @@ class BaseUtil extends ChangeNotifier{
     return ((time.hour * 3600) + (time.minute * 60));
   }
 
+  String decodeTime(int enTime) {
+    if(enTime == null) return Constants.DEFAULT_TIME;
+    //45000 = 12:30pm
+    int product = (enTime/60).truncate();
+    int hours = (product/60).truncate();
+    int minutes = (product%60);
+    String ap = (hours < 12) ? "am" : "pm";
+    return "$hours:$minutes $ap";
+  }
+
   User get myUser => _myUser;
 
   set myUser(User value) {
@@ -166,5 +194,12 @@ class BaseUtil extends ChangeNotifier{
   set currentAssistant(Assistant value) {
     _currentAssistant = value;
   }
+
+  int get homeState => _homeState;
+
+  set homeState(int value) {
+    _homeState = value;
+  }
+
 
 }
