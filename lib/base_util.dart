@@ -114,6 +114,7 @@ class BaseUtil extends ChangeNotifier{
 
   Future<Assistant> getUpcomingAssistant(String aId) async{
     if(aId == null)return null;
+    aId = aId.trim();
     //first check the cache
     Assistant lAssistant = await _cModel.getAssistant();
     if(lAssistant == null || lAssistant.id != aId) {
@@ -130,11 +131,11 @@ class BaseUtil extends ChangeNotifier{
     }
     return lAssistant;
   }
-  
+  //TODO code crashes in case ImageURL is null. Needs to be fixed
   Future<String> getAssistantDpUrl(String aid) async{
     if(aid == null || aid.isEmpty)return null;
     try {
-      var ref = FirebaseStorage.instance.ref().child(Constants.ASSISTANT_DP_PATH).child(aid + ".jpg");
+      var ref = FirebaseStorage.instance.ref().child(Constants.ASSISTANT_DP_PATH).child(aid.trim() + ".jpg");
       log.debug(ref.path);
       String uri = (await ref.getDownloadURL()).toString();
       log.debug("Assistant DP Url fetched: $uri");

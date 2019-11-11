@@ -27,7 +27,7 @@ class Visit{
   static final String fldService = "service";
   //static final String fldSocietyId = "society_id";
   static final String fldStatus = "status";
-  static List<String> _fldList = [ fldVID, fldAID, fldDate, fldReqStTime, fldVisStTime, fldVisEnTime, fldService, fldService, fldUID];
+  static List<String> _intFldList = [ fldDate, fldReqStTime, fldVisStTime, fldVisEnTime, fldStatus];
 
   Visit({this.path, this.aId, this.date, this.req_st_time, this.vis_st_time,
       this.vis_en_time, this.service, this.status, this.uId});
@@ -93,11 +93,11 @@ class Visit{
           continue;
         }
         else {
-          _fldList.forEach((fld) {
+          _intFldList.forEach((fld) {
             if(line.contains('$fld\$')) {
               gData.putIfAbsent(fld, () {
                 String res = line.split('\$')[1];
-                return (res != null && res.length > 0) ? res : '';
+                return (res != null && res.length > 0) ? int.parse(res) : '';
               });
             }
           });

@@ -42,19 +42,16 @@ class _HomeScreenState extends State<HomeScreen> {
   BaseUtil baseProvider;
   FcmHandler handler;
   CalendarUtil cUtil;
-  /**
-   * Possible UI States
-   * - Deafult Home screen
-   * - Assistant matched and enroute
-   * - Visit ongoing
-   * */
-
+  /// Possible UI States
+  /// - Default Home screen
+  /// - Assistant matched and enroute
+  /// - Visit ongoing
+  ///
   @override
   void initState() {
     super.initState();
     homeState = (homeState == null)?Constants.VISIT_STATUS_NONE:homeState;
     cUtil = new CalendarUtil();
-    //register callback to allow handler to notify change in ui
   }
 
   @override
@@ -63,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
     baseProvider = Provider.of<BaseUtil>(context);
     handler = Provider.of<FcmHandler>(context);
     if(handler != null) {
-      handler.setHomeScreenCallback(onAssistantAvailable: () => onAssistantAvailable());
+      handler.setHomeScreenCallback(onAssistantAvailable: () => onAssistantAvailable());  //register callback to allow handler to notify change in ui
     }
     switch(homeState) {
       case Constants.VISIT_STATUS_NONE: {
@@ -146,14 +143,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               return;
                             }
                             Request req = Request(
-                                //user_id: baseProvider.myUser.mobile,
                                 user_id: baseProvider.myUser.uid,
+                                user_mobile: baseProvider.myUser.mobile,
                                 date: cUtil.now.day,
                                 service: decodeMultiChip(),
                                 address: baseProvider.myUser.flat_no,
                                 society_id: baseProvider.myUser.society_id,
-                                asn_response: Constants.AST_RESPONSE_NIL,
-                                status: Constants.REQ_STATUS_UNASSIGNED,
                                 req_time: baseProvider.encodeTimeRequest(reqTime),
                                 timestamp: FieldValue.serverTimestamp());
                             reqProvider.pushRequest(req);
