@@ -7,8 +7,8 @@ import 'package:flutter_app/core/fcm_handler.dart';
 import 'package:flutter_app/util/locator.dart';
 import 'package:flutter_app/util/logger.dart';
 
-import 'db_model.dart';
-import 'local_db_model.dart';
+import 'db_ops.dart';
+import 'local_db_ops.dart';
 
 class FcmListener extends ChangeNotifier{
   Log log = new Log("FcmListener");

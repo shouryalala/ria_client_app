@@ -4,7 +4,7 @@ import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/locator.dart';
 import 'package:flutter_app/util/logger.dart';
 
-import 'local_db_model.dart';
+import 'local_db_ops.dart';
 import 'model/visit.dart';
 
 class FcmHandler extends ChangeNotifier {

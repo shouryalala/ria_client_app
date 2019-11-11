@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/core/db_model.dart';
-import 'package:flutter_app/core/local_db_model.dart';
+import 'package:flutter_app/core/db_ops.dart';
+import 'package:flutter_app/core/local_db_ops.dart';
 import 'package:flutter_app/core/model/assistant.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/locator.dart';

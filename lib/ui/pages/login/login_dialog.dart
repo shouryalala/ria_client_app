@@ -2,8 +2,8 @@ import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/core/db_model.dart';
-import 'package:flutter_app/core/local_db_model.dart';
+import 'package:flutter_app/core/db_ops.dart';
+import 'package:flutter_app/core/local_db_ops.dart';
 import 'package:flutter_app/core/model/society.dart';
 import 'package:flutter_app/core/model/user.dart';
 import 'package:flutter_app/ui/pages/login/screens/address_input_screen.dart';

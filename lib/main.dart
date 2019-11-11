@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/core/db_model.dart';
+import 'package:flutter_app/core/db_ops.dart';
 import 'package:flutter_app/ui/pages/login/login_dialog.dart';
 import 'package:flutter_app/ui/pages/onboarding/onboarding_widget.dart';
 import 'package:flutter_app/ui/pages/profile/history_widget.dart';
@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 import 'base_util.dart';
 import 'core/fcm_handler.dart';
 import 'core/fcm_listener.dart';
-import 'core/local_db_model.dart';
+import 'core/local_db_ops.dart';
 import 'ui/pages/app_canvas.dart';
 import 'ui/pages/launcher_screen.dart';
 

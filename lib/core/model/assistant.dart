@@ -25,15 +25,18 @@ class Assistant {
   Assistant.fromMap(Map<String, dynamic> data, String id)
       : this(id, data[fldName], data[fldMobile], data[fldAge], data[fldCmpVisits], data[fldRating]);
 
+  static List<String> _fldList = [ fldId, fldAge, fldCmpVisits, fldMobile, fldName, fldRating, fldDpUrl];
+
   toFileString() {
     StringBuffer oContent = new StringBuffer();
-    oContent.writeln(fldId + "\$" + _id.trim());
-    oContent.writeln(fldName + "\$" + _name.trim());
-    if(_mobile != null)oContent.writeln(fldMobile + "\$" + _mobile.trim());
-    if(_age != null)oContent.writeln(fldAge + "\$" + _age.toString());
-    if(_comp_visits != null)oContent.writeln(fldCmpVisits + "\$" + _comp_visits.toString());
-    if(_rating != null)oContent.writeln(fldRating + "\$" + _rating.toString());
-    if(_url != null)oContent.writeln(fldDpUrl + "\$" + _url.toString());
+    oContent.writeln(fldId + '\$' + _id.trim());
+    oContent.writeln(fldName + '\$' + _name.trim());
+    if(_mobile != null)oContent.writeln(fldMobile + '\$' + _mobile.trim());
+    if(_age != null)oContent.writeln(fldAge + '\$' + _age.toString());
+    if(_comp_visits != null)oContent.writeln(fldCmpVisits + '\$' + _comp_visits.toString());
+    if(_rating != null)oContent.writeln(fldRating + '\$' + _rating.toString());
+    if(_url != null)oContent.writeln(fldDpUrl + '\$' + _url.toString());
+
     log.debug("Generated FileWrite String: " + oContent.toString());
     return oContent.toString();
   }
@@ -43,19 +46,19 @@ class Assistant {
       Map<String, dynamic> gData = new HashMap();
       String id;
       for (String line in contents) {
-        if (line.contains(fldId)) {
-          id = line.split("\$")[1];
+        if (line.contains('$fldId\$')) {
+          id = line.split('\$')[1];
           continue;
         }
-        if (line.contains(fldRating)) {
-          List<String> res = line.split("\$");
+        if (line.contains('$fldRating\$')) {
+          List<String> res = line.split('\$');
           gData.putIfAbsent(res[0], () {
-            return (res[1] != null && res[1].length > 0)? double.parse(res[1]): "";
+            return (res[1] != null && res[1].length > 0)? double.parse(res[1]): '';
           });
           continue;
         }
-        else if (line.contains(fldCmpVisits) || line.contains(fldAge)) {
-          List<String> res = line.split("\$");
+        else if (line.contains('$fldCmpVisits\$') || line.contains('$fldAge\$')) {
+          List<String> res = line.split('\$');
           String key = res[0];
           int yFld = (res[1] != null) ? int.parse(res[1]) : -1;
           gData.putIfAbsent(key, () {
@@ -64,17 +67,20 @@ class Assistant {
           continue;
         }
         else {
-          List<String> res = line.split("\$");
-          gData.putIfAbsent(res[0], () {
-            return (res[1] != null && res[1].length > 0) ? res[1] : "";
+          _fldList.forEach((fld) {
+            if(line.contains('$fld\$')) {
+              gData.putIfAbsent(fld, () {
+                String res = line.split('\$')[1];
+                return (res != null && res.length > 0) ? res : '';
+              });
+            }
           });
           continue;
         }
       }
       return Assistant.fromMap(gData, id);
     } catch (e) {
-      log.error(
-          "Caught Exception while parsing local Assistant file: " + e.toString());
+      log.error("Caught Exception while parsing local Assistant file: " + e.toString());
       return null;
     }
   }

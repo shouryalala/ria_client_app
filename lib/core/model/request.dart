@@ -29,15 +29,15 @@ class Request{
 
   toJson() {
     return {
-      "service": service,
-      "user_id": user_id,
-      "date": date,
-      "address": address,
-      "society_id": society_id,
-      "asn_response": asn_response,
-      "status": status,
-      "req_time": req_time,
-      "timestamp": timestamp,
+      'service': service,
+      'user_id': user_id,
+      'date': date,
+      'address': address,
+      'society_id': society_id,
+      'asn_response': asn_response,
+      'status': status,
+      'req_time': req_time,
+      'timestamp': timestamp,
     };
   }
 }
