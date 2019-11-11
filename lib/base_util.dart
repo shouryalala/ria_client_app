@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/core/db_ops.dart';
-import 'package:flutter_app/core/local_db_ops.dart';
+import 'package:flutter_app/core/ops/cache_ops.dart';
+import 'package:flutter_app/core/ops/db_ops.dart';
+import 'package:flutter_app/core/ops/lcl_db_ops.dart';
 import 'package:flutter_app/core/model/assistant.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/locator.dart';
@@ -15,6 +16,7 @@ class BaseUtil extends ChangeNotifier{
   final Log log = new Log("BaseUtil");
   LocalDBModel _lModel = locator<LocalDBModel>();
   DBModel _dbModel = locator<DBModel>();
+  CacheModel _cModel = locator<CacheModel>();
   //FirebaseMessaging _fcm;
   FirebaseUser firebaseUser;
   bool isUserOnboarded = false;
@@ -97,12 +99,12 @@ class BaseUtil extends ChangeNotifier{
   Future<Visit> getUpcomingVisit(String vPath) async {
     if(vPath == null) return null;
     //first check in cache
-    Visit lVisit = await _lModel.getVisit();
+    Visit lVisit = await _cModel.getVisit();
     if (lVisit == null || lVisit.path != vPath) {
       log.debug("No local saved visit object or expired visit object. Updation required");
       Visit nVisit = await _dbModel.getVisit(vPath);
       if (nVisit != null) {
-        bool flag = await _lModel.saveVisit(nVisit);
+        bool flag = await _cModel.saveVisit(nVisit);
         log.debug("Saved fetched visit to local cache: $flag");
         return nVisit;
       }
@@ -113,14 +115,14 @@ class BaseUtil extends ChangeNotifier{
   Future<Assistant> getUpcomingAssistant(String aId) async{
     if(aId == null)return null;
     //first check the cache
-    Assistant lAssistant = await _lModel.getAssistant();
+    Assistant lAssistant = await _cModel.getAssistant();
     if(lAssistant == null || lAssistant.id != aId) {
       log.debug("No local saved assistant object or expired assistant object. Updation required");
       Assistant nAssistant = await _dbModel.getAssistant(aId);
       if(nAssistant != null) {
         nAssistant.url = await getAssistantDpUrl(aId);
         if(nAssistant.url != null) { //for now
-          bool flag = await _lModel.saveAssistant(nAssistant);
+          bool flag = await _cModel.saveAssistant(nAssistant);
           log.debug("Saved fetched assistant object to le cache: $flag");
         }
         return nAssistant;
