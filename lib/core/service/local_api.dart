@@ -48,4 +48,18 @@ class LocalApi{
     return file.writeAsString(content);
   }
 
+  Future<File> get assistantFile async{
+    final path = await _localPath;
+    return File('$path/vstastnt.txt');
+  }
+
+  Future<List<String>> readAssistantFile() async{
+    final file = await assistantFile;
+    return file.readAsLines();
+  }
+
+  Future<File> writeAssistantFile(String content) async{
+    final file = await assistantFile;
+    return file.writeAsString(content);
+  }
 }

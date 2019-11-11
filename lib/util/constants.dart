@@ -14,6 +14,9 @@ class Constants {
   static final String SUBCOLN_USER_FCM = "fcm";
   static final String DOC_USER_FCM_TOKEN = "client_token";
 
+  //Firebase Storage
+  static final String ASSISTANT_DP_PATH = "assistant_dp";
+
   static final int RETROFIT_NETWORK_ERROR = 11;
   static final int FIREBASE_LOGIN_ERROR = 22;
   static final int FIREBASE_FETCH_ERROR = 33;
@@ -75,18 +78,17 @@ class Constants {
   static final String SP_TOKEN = "client_token";
   static final String SP_TOKEN_PUSHED = "server_token_updated";
 
-
   //DECODES
-  static final String DUSTING_CDE = "Dx";
-  static final String CLEANING_CDE = "Cx";
-  static final String UTENSILS_CDE = "Ux";
-  static final String CHORE_CDE = "Chx";
-  static final String CLEAN_UTENSIL_CDE = "CUx";
+  static const String DUSTING_CDE = "Dx";
+  static const String CLEANING_CDE = "Cx";
+  static const String UTENSILS_CDE = "Ux";
+  static const String CHORE_CDE = "Chx";
+  static const String CLEAN_UTENSIL_CDE = "CUx";
   static final String PRIORITY_MIN = "Min";
 
   //DEFAULTS
   static final String DEFAULT = "X";
-  static final String DEFAULT_TIME = "10:12am";
+  static final String DEFAULT_TIME = "4:20 am";
   static final String DEFAULT_SERVICE = "Cleaning";
   static final String DEFAULT_ADDRESS = "3/202\n Beverly Park Appt\n Sector-22";
 

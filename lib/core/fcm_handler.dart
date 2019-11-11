@@ -21,8 +21,12 @@ class FcmHandler extends ChangeNotifier {
     if(command != null && command.isNotEmpty) {
       switch(command) {
         case Constants.COMMAND_REQUEST_CONFIRMED: {
-          log.debug("Request Confirmed!");
-          //create Visit object
+          /**
+           * Compile the received Visit object
+           * Cache the visit. Update current visit
+           * Cache the assistant. Update current assistant
+           * Trigger HomeScreen UI change
+           * */
           Visit recVisit;
           try {
             recVisit = new Visit(
@@ -34,20 +38,30 @@ class FcmHandler extends ChangeNotifier {
               vis_en_time: int.parse(data[Visit.fldVisEnTime]),
               date: int.parse(data[Visit.fldDate]),
               service: data[Visit.fldService],
-              status: int.parse(data[Visit.fldStatus]),
-            );
+              status: int.parse(data[Visit.fldStatus]),            );
           }catch(error) {
             log.error("Caught exception trying to create Visit object from data message: " + error.toString());
             return false;
           }
-          if(recVisit != null && recVisit.path != null && recVisit.path.isNotEmpty) {
-            //save visit
-            await _lModel.saveVisit(recVisit);
-            //refresh Home Screen UI if its available
+          if(recVisit != null && recVisit.path != null && recVisit.path.isNotEmpty
+            && recVisit.aId != null && recVisit.aId.isNotEmpty) {
             _baseUtil.currentVisit = recVisit;
-            if(aUpdate != null) {
-              aUpdate();
+            _baseUtil.currentAssistant = await _baseUtil.getUpcomingAssistant(recVisit.aId);  //retrieve assistant
+            if(_baseUtil.currentAssistant != null) {
+              _baseUtil.currentAssistant.url = await _baseUtil.getAssistantDpUrl(recVisit.aId);
+              await _lModel.saveVisit(_baseUtil.currentVisit); //cache visit
+              await _lModel.saveAssistant(_baseUtil.currentAssistant); //cache assistant
+              if(aUpdate != null) {   //refresh Home Screen UI if its available
+                aUpdate();
+              }
+              log.debug("Request Confirmed!");
+            }else{
+              log.error("Couldnt fetch upcoming visit assistant. Discarding message");
+              return false;
             }
+          }else{
+            log.error("Couldnt process newly created visit correctly. Discarding message.");
+            return false;
           }
           return true;
         }

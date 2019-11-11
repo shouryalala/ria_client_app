@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/base_util.dart';
 import 'package:flutter_app/core/fcm_handler.dart';
+import 'package:flutter_app/core/model/assistant.dart';
 import 'package:flutter_app/core/model/request.dart';
 import 'package:flutter_app/core/model/visit.dart';
 import 'package:flutter_app/ui/elements/mutli_select_chip.dart';
@@ -13,7 +15,7 @@ import 'package:flutter_app/util/ui_constants.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/db_model.dart';
+import '../../../core/db_model.dart';
 
 class HomeScreen extends StatefulWidget {
   final ValueChanged<int> onLoginRequest;
@@ -68,8 +70,8 @@ class _HomeScreenState extends State<HomeScreen> {
        return buildHomeLayout();
       }
       case Constants.VISIT_STATUS_UPCOMING:{
-        if(baseProvider.currentVisit == null) return buildHomeLayout();
-        return buildUpcomingVisitLayout(baseProvider.currentVisit);
+        if(baseProvider.currentVisit == null || baseProvider.currentAssistant == null) return buildHomeLayout();
+        return buildUpcomingVisitLayout(baseProvider.currentVisit, baseProvider.currentAssistant);
       }
       case Constants.VISIT_STATUS_ONGOING:{
         return buildHomeLayout();
@@ -168,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget buildUpcomingVisitLayout(Visit upVisit) {
+  Widget buildUpcomingVisitLayout(Visit upVisit, Assistant upAssistant) {
      return Scaffold(
        body:  Padding(
            padding: const EdgeInsets.all(16.0),
@@ -185,12 +187,40 @@ class _HomeScreenState extends State<HomeScreen> {
                      mainAxisSize: MainAxisSize.max,
                      mainAxisAlignment: MainAxisAlignment.center,
                      children: <Widget>[
-                       ///time
+                       //time
+                       Text(baseProvider.decodeTime(upVisit.vis_st_time),
+                         style: Theme.of(context).textTheme.body1.copyWith(color: Colors.grey[800]),
+                         textAlign: TextAlign.center,
+                       ),
+                       Text(decodeService(upVisit.service),
+                         style: Theme.of(context).textTheme.body1.copyWith(color: Colors.grey[800]),
+                         textAlign: TextAlign.center,
+                       ),
                        ///photo
+                       Center(
+                         child: Padding(
+                           padding: EdgeInsets.all(20.0),
+                           child: CachedNetworkImage(
+                             imageUrl: upAssistant.url,
+                             placeholder: (context, url) => new CircularProgressIndicator(),
+                             errorWidget: (context, url, error) => new Icon(Icons.error),
+                           ),
+                         ),
+                       ),
                        ///name
+                       Text(upAssistant.name + "," + upAssistant.age.toString(),
+                         style: Theme.of(context).textTheme.body1.copyWith(color: Colors.grey[800]),
+                         textAlign: TextAlign.center,
+                       ),
                        ///rating
-                       Text(upVisit.toFileString()),
-
+                       Text(upAssistant.rating.toString(),
+                         style: Theme.of(context).textTheme.headline.copyWith(color: Colors.grey[800]),
+                         textAlign: TextAlign.center,
+                       ),
+                       Text("Completed Visits: " + upAssistant.comp_visits.toString(),
+                         style: Theme.of(context).textTheme.body1.copyWith(color: Colors.grey[800]),
+                         textAlign: TextAlign.center,
+                       ),
                      ],
                    ),
                  ),
@@ -199,6 +229,16 @@ class _HomeScreenState extends State<HomeScreen> {
            )
        )
      );
+  }
+
+  String decodeService(String code) {
+    switch(code) {
+      case Constants.CLEANING_CDE: return CLEANING;
+      case Constants.UTENSILS_CDE: return UTENSILS;
+      case Constants.DUSTING_CDE: return "Dusting";
+      case Constants.CLEAN_UTENSIL_CDE: return "Cleaning and Utensils";
+      default: return code;
+    }
   }
 
   String decodeMultiChip() {

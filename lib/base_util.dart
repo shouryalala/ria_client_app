@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/db_model.dart';
 import 'package:flutter_app/core/local_db_model.dart';
+import 'package:flutter_app/core/model/assistant.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/locator.dart';
 import 'package:flutter_app/util/logger.dart';
@@ -16,9 +18,10 @@ class BaseUtil extends ChangeNotifier{
   //FirebaseMessaging _fcm;
   FirebaseUser firebaseUser;
   bool isUserOnboarded = false;
-  int homeState;
+  int _homeState;
   User _myUser;
   Visit _currentVisit;
+  Assistant _currentAssistant;
 
   BaseUtil() {
     //init(); //init called in
@@ -30,9 +33,9 @@ class BaseUtil extends ChangeNotifier{
     isUserOnboarded = await _lModel.isUserOnboarded()==1;
     _myUser = await _lModel.getUser();
     if(_myUser != null && _myUser.mobile != null) {
-      //homeState = await _retrieveCurrentStatus();
-      //homeState = (homeState == null)?Constants.VISIT_STATUS_NONE:homeState;
-      homeState = await _setupCurrentState();
+      //_homeState = await _retrieveCurrentStatus();
+      //_homeState = (_homeState == null)?Constants.VISIT_STATUS_NONE:_homeState;
+      await _setupCurrentState();
     }
   }
 
@@ -52,36 +55,91 @@ class BaseUtil extends ChangeNotifier{
       log.debug("Didnt find the activity subcollection. Defaulting values");
       status = Constants.VISIT_STATUS_NONE;
     }
-    log.debug("Recieved Activity Status:: Status: " + status.toString());
-    if(status == Constants.VISIT_STATUS_NONE) {
-      //TODO clear existing cache visit object if present
-      return Constants.VISIT_STATUS_NONE;
-    }
-    else if(status == Constants.VISIT_STATUS_UPCOMING) {
-      if(vPath == null){
-        log.error("Status in VISIT_STATUS_UPCOMING but no visit id found");
-        return Constants.VISIT_STATUS_NONE;
+    log.debug("Recieved Activity Status:: Status: $status.toString()");
+    switch(status) {
+      case Constants.VISIT_STATUS_NONE: {
+        //TODO clear existing cache visit object if present
+        _homeState = Constants.VISIT_STATUS_NONE;
+        break;
       }
-      //Path of format: visits/YEAR/MONTH/ID
-      Visit lVisit = await _lModel.getVisit();
-      if(lVisit == null || lVisit.path != vPath) {
-        log.debug("No local saved visit object or expired visit object. Updation required");
-        Visit nVisit = await _dbModel.getVisit(vPath);
-        if(nVisit != null){
-          await _lModel.saveVisit(nVisit);
-          this.currentVisit = nVisit;
-          //done
-        }else{
-          return Constants.VISIT_STATUS_NONE;
+      case Constants.VISIT_STATUS_UPCOMING: {
+        /**
+         * Retrieve Upcoming Visit. Ensure not null
+         * Retrieve Upcoming visit Assistant. Ensure not null
+         * */
+        _homeState = Constants.VISIT_STATUS_UPCOMING;
+        if(vPath == null){
+          log.error("Status in VISIT_STATUS_UPCOMING but no visit id found");
+          _homeState = Constants.VISIT_STATUS_NONE;
+          break;
         }
-      }else{
-        //visit available in local cache
-        this.currentVisit = lVisit;
+        this.currentVisit = await getUpcomingVisit(vPath);
+        if(this.currentVisit == null) {
+          log.error("Couldnt identify Upcoming visit. Defaulting HomeState");
+          _homeState = Constants.VISIT_STATUS_NONE;
+          break;
+        }
+        this.currentAssistant = await getUpcomingAssistant(this.currentVisit.aId);
+        if(this.currentAssistant == null) {
+          log.error("Couldnt identify Upcoming Visit Assistant. Defaulting HomeState");
+          _homeState = Constants.VISIT_STATUS_NONE;
+          break;
+        }
+        break;
       }
-      return Constants.VISIT_STATUS_UPCOMING;
+      case Constants.VISIT_STATUS_COMPLETED: {
+
+      }
     }
-    else{
-      return Constants.VISIT_STATUS_NONE;
+  }
+
+  //Path of format: visits/YEAR/MONTH/ID
+  Future<Visit> getUpcomingVisit(String vPath) async {
+    if(vPath == null) return null;
+    //first check in cache
+    Visit lVisit = await _lModel.getVisit();
+    if (lVisit == null || lVisit.path != vPath) {
+      log.debug("No local saved visit object or expired visit object. Updation required");
+      Visit nVisit = await _dbModel.getVisit(vPath);
+      if (nVisit != null) {
+        bool flag = await _lModel.saveVisit(nVisit);
+        log.debug("Saved fetched visit to local cache: $flag");
+        return nVisit;
+      }
+    }
+    return lVisit;
+  }
+
+  Future<Assistant> getUpcomingAssistant(String aId) async{
+    if(aId == null)return null;
+    //first check the cache
+    Assistant lAssistant = await _lModel.getAssistant();
+    if(lAssistant == null || lAssistant.id != aId) {
+      log.debug("No local saved assistant object or expired assistant object. Updation required");
+      Assistant nAssistant = await _dbModel.getAssistant(aId);
+      if(nAssistant != null) {
+        nAssistant.url = await getAssistantDpUrl(aId);
+        if(nAssistant.url != null) { //for now
+          bool flag = await _lModel.saveAssistant(nAssistant);
+          log.debug("Saved fetched assistant object to le cache: $flag");
+        }
+        return nAssistant;
+      }
+    }
+    return lAssistant;
+  }
+  
+  Future<String> getAssistantDpUrl(String aid) async{
+    if(aid == null || aid.isEmpty)return null;
+    try {
+      var ref = FirebaseStorage.instance.ref().child(Constants.ASSISTANT_DP_PATH).child(aid + ".jpg");
+      log.debug(ref.path);
+      String uri = (await ref.getDownloadURL()).toString();
+      log.debug("Assistant DP Url fetched: $uri");
+      return uri.toString();
+    }catch(e) {
+      log.error("Failed to fetch Storage Download URL: " + e.toString());
+      return null;
     }
   }
 
@@ -100,13 +158,23 @@ class BaseUtil extends ChangeNotifier{
       this.firebaseUser = res.user;
       return true;
     }).catchError((e) {
-      log.error("User Authentication failed with credential: Error: " + e);
+      log.error("User Authentication failed with credential: Error: " + e.toString());
       return false;
     });
   }
 
   int encodeTimeRequest(DateTime time) {
     return ((time.hour * 3600) + (time.minute * 60));
+  }
+
+  String decodeTime(int enTime) {
+    if(enTime == null) return Constants.DEFAULT_TIME;
+    //45000 = 12:30pm
+    int product = (enTime/60).truncate();
+    int hours = (product/60).truncate();
+    int minutes = (product%60);
+    String ap = (hours < 12) ? "am" : "pm";
+    return "$hours:$minutes $ap";
   }
 
   User get myUser => _myUser;
@@ -120,4 +188,18 @@ class BaseUtil extends ChangeNotifier{
   set currentVisit(Visit value) {
     _currentVisit = value;
   }
+
+  Assistant get currentAssistant => _currentAssistant;
+
+  set currentAssistant(Assistant value) {
+    _currentAssistant = value;
+  }
+
+  int get homeState => _homeState;
+
+  set homeState(int value) {
+    _homeState = value;
+  }
+
+
 }
