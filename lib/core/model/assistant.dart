@@ -20,10 +20,10 @@ class Assistant {
   static final String fldRating = "rating";
   static final String fldDpUrl = "dp_url";
 
-  Assistant(this._id, this._name, this._mobile, this._age, this._comp_visits, this._rating);
+  Assistant(this._id, this._name, this._mobile, this._age, this._comp_visits, this._rating, [this._url] );
 
   Assistant.fromMap(Map<String, dynamic> data, String id)
-      : this(id, data[fldName], data[fldMobile], data[fldAge], data[fldCmpVisits], data[fldRating]);
+      : this(id, data[fldName], data[fldMobile], data[fldAge], data[fldCmpVisits], data[fldRating], data[fldDpUrl]);
 
   static List<String> _fldList = [ fldId, fldAge, fldCmpVisits, fldMobile, fldName, fldRating, fldDpUrl];
 

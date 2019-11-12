@@ -53,9 +53,9 @@ class FcmHandler extends ChangeNotifier {
               await _cModel.saveVisit(_baseUtil.currentVisit); //cache visit
               await _cModel.saveAssistant(_baseUtil.currentAssistant); //cache assistant
               if(aUpdate != null) {   //refresh Home Screen UI if its available
+                log.debug("Refreshing Home Screen layout to Upcoming Visit Workflow");
                 aUpdate();
               }
-              log.debug("Request Confirmed!");
             }else{
               log.error("Couldnt fetch upcoming visit assistant. Discarding message");
               return false;

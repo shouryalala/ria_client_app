@@ -133,6 +133,7 @@ class BaseUtil extends ChangeNotifier{
   }
   //TODO code crashes in case ImageURL is null. Needs to be fixed
   Future<String> getAssistantDpUrl(String aid) async{
+    log.debug("Fetching DP url for assistant: $aid");
     if(aid == null || aid.isEmpty)return null;
     try {
       var ref = FirebaseStorage.instance.ref().child(Constants.ASSISTANT_DP_PATH).child(aid.trim() + ".jpg");
