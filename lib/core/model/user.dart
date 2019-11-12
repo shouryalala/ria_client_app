@@ -28,7 +28,7 @@ class User{
   User(this._uid, this._mobile, this._name, this._email, this._bhk, this._flat_no,
       this._society_id, this._sector, this._district, this._client_token);
 
-  static List<String> fldList = [ fldMobile, fldEmail, fldName, fldBhk, fldFlat_no, fldSector, fldSociety_id,
+  static List<String> _fldList = [ fldMobile, fldEmail, fldName, fldBhk, fldFlat_no, fldSector, fldSociety_id,
   fldDistrict, fldClient_token];
 
   User.newUser(String id, String mobile) : this(id, mobile, null, null, null, null, null, null, null, null);
@@ -58,17 +58,17 @@ class User{
       String id;
       String client_token;
       for (String line in contents) {
-        if (line.contains(fldId)) {
-          id = line.split("\$")[1];
+        if (line.contains('$fldId\$')) {
+          id = line.split('\$')[1];
           continue;
         }
-        if (line.contains(fldClient_token)) {
-          client_token = line.split("\$")[1];
+        if (line.contains('$fldClient_token\$')) {
+          client_token = line.split('\$')[1];
           continue;
         }
-        else if (line.contains(fldBhk) || line.contains(fldSector)) {
-          String key = line.split("\$")[0];
-          String xFld = line.split("\$")[1];
+        else if (line.contains('$fldBhk\$') || line.contains('$fldSector\$')) {
+          String key = line.split('\$')[0];
+          String xFld = line.split('\$')[1];
           int yFld = (xFld != null) ? int.parse(xFld) : -1;
           gData.putIfAbsent(key, () {
             return (yFld != -1) ? yFld : null;
@@ -76,11 +76,11 @@ class User{
           continue;
         }
         else {
-          fldList.forEach((fld) {
-            if (line.contains(fld)) {
+          _fldList.forEach((fld) {
+            if (line.contains('$fld\$')) {
               gData.putIfAbsent(fld, () {
-                String res = line.split("\$")[1];
-                return (res != null && res.length > 0) ? res : "";
+                String res = line.split('\$')[1];
+                return (res != null && res.length > 0) ? res : '';
               });
             }
           });
@@ -96,16 +96,16 @@ class User{
   //to save in cache
   String toFileString() {
     StringBuffer oContent = new StringBuffer();
-    oContent.writeln(fldId + "\$" + _uid);
-    oContent.writeln(fldMobile + "\$" + _mobile);
-    if(_email != null) oContent.writeln(fldEmail + "\$" +_email);
-    if(_name != null) oContent.writeln(fldName + "\$" + _name);
-    if(_flat_no != null)oContent.writeln(fldFlat_no + "\$" + _flat_no);
-    if(_society_id != null)oContent.writeln(fldSociety_id + "\$" + _society_id);
-    if(_sector != null)oContent.writeln(fldSector + "\$" + _sector.toString());
-    if(_bhk != null)oContent.writeln(fldBhk + "\$" + _bhk.toString());
-    if(_district != null)oContent.writeln(fldDistrict + "\$" + _district);
-    if(_client_token != null)oContent.writeln(fldClient_token + "\$" + _client_token);
+    oContent.writeln(fldId + '\$' + _uid.trim());
+    oContent.writeln(fldMobile + '\$' + _mobile.trim());
+    if(_email != null) oContent.writeln(fldEmail + '\$' +_email.trim());
+    if(_name != null) oContent.writeln(fldName + '\$' + _name.trim());
+    if(_flat_no != null)oContent.writeln(fldFlat_no + '\$' + _flat_no.trim());
+    if(_society_id != null)oContent.writeln(fldSociety_id + '\$' + _society_id.trim());
+    if(_sector != null)oContent.writeln(fldSector + '\$' + _sector.toString());
+    if(_bhk != null)oContent.writeln(fldBhk + '\$' + _bhk.toString());
+    if(_district != null)oContent.writeln(fldDistrict + '\$' + _district.trim());
+    if(_client_token != null)oContent.writeln(fldClient_token + '\$' + _client_token.trim());
 
     log.debug("Generated FileWrite String: " + oContent.toString());
     return oContent.toString();

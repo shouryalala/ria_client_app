@@ -1,15 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/base_util.dart';
+import 'package:flutter_app/core/ops/cache_ops.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/locator.dart';
 import 'package:flutter_app/util/logger.dart';
 
-import 'local_db_model.dart';
 import 'model/visit.dart';
 
 class FcmHandler extends ChangeNotifier {
   Log log = new Log("FcmHandler");
-  LocalDBModel _lModel = locator<LocalDBModel>();
+  //LocalDBModel _lModel = locator<LocalDBModel>();
+  CacheModel _cModel = locator<CacheModel>();
   BaseUtil _baseUtil = locator<BaseUtil>();
   static VoidCallback aUpdate;
 
@@ -49,12 +50,12 @@ class FcmHandler extends ChangeNotifier {
             _baseUtil.currentAssistant = await _baseUtil.getUpcomingAssistant(recVisit.aId);  //retrieve assistant
             if(_baseUtil.currentAssistant != null) {
               _baseUtil.currentAssistant.url = await _baseUtil.getAssistantDpUrl(recVisit.aId);
-              await _lModel.saveVisit(_baseUtil.currentVisit); //cache visit
-              await _lModel.saveAssistant(_baseUtil.currentAssistant); //cache assistant
+              await _cModel.saveVisit(_baseUtil.currentVisit); //cache visit
+              await _cModel.saveAssistant(_baseUtil.currentAssistant); //cache assistant
               if(aUpdate != null) {   //refresh Home Screen UI if its available
+                log.debug("Refreshing Home Screen layout to Upcoming Visit Workflow");
                 aUpdate();
               }
-              log.debug("Request Confirmed!");
             }else{
               log.error("Couldnt fetch upcoming visit assistant. Discarding message");
               return false;

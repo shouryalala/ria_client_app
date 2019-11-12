@@ -45,11 +45,11 @@ class Constants {
   static final String FIELD_VISIT_STATUS = "status";
 
   //Request obj fields
-  static final String REQ_STATUS_ASSIGNED = "ASN";
-  static final String REQ_STATUS_UNASSIGNED = "UNA";
-  static final String AST_RESPONSE_NIL = "NIL";
-  static final String AST_RESPONSE_ACCEPT = "ACCEPT";
-  static final String AST_RESPONSE_REJECT = "REJECT";
+  static const String REQ_STATUS_ASSIGNED = "ASN";
+  static const String REQ_STATUS_UNASSIGNED = "UNA";
+  static const String AST_RESPONSE_NIL = "NIL";
+  static const String AST_RESPONSE_ACCEPT = "ACCEPT";
+  static const String AST_RESPONSE_REJECT = "REJECT";
 
   //incoming data payload type
   static const String COMMAND_WORK_REQUEST = "WRDP";
