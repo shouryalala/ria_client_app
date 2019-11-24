@@ -39,7 +39,8 @@ class FcmHandler extends ChangeNotifier {
               vis_en_time: int.parse(data[Visit.fldVisEnTime]),
               date: int.parse(data[Visit.fldDate]),
               service: data[Visit.fldService],
-              status: int.parse(data[Visit.fldStatus]),            );
+              status: int.parse(data[Visit.fldStatus]),
+            );
           }catch(error) {
             log.error("Caught exception trying to create Visit object from data message: " + error.toString());
             return false;
@@ -63,6 +64,41 @@ class FcmHandler extends ChangeNotifier {
           }else{
             log.error("Couldnt process newly created visit correctly. Discarding message.");
             return false;
+          }
+          return true;
+        }
+        case Constants.COMMAND_VISIT_ONGOING: {
+          String visPath;
+          int status;
+          try {
+            visPath = data[Visit.fldVID];
+            status = int.parse(data[Visit.fldStatus]);
+          }catch(error){
+            log.error("Couldnt parse status int value: "+ error);
+          }
+          if(visPath == null || status != Constants.VISIT_STATUS_ONGOING) {
+            log.error("Couldnt parse visit Path/Invalid status recevied. Skipping");
+            return false;
+          }
+          if(_baseUtil.currentVisit.path == null || _baseUtil.currentVisit.path != visPath){
+            log.debug("Current Visit details not available to provide to ongoing visit workflow. Needs to be newly fetched");
+            _baseUtil.currentVisit = await _baseUtil.getVisit(visPath);
+          }
+          if(_baseUtil.currentVisit != null && _baseUtil.currentVisit.path != null && _baseUtil.currentVisit.path.isNotEmpty
+              && _baseUtil.currentVisit.aId != null && _baseUtil.currentVisit.aId.isNotEmpty) {
+            _baseUtil.currentAssistant = await _baseUtil.getUpcomingAssistant(_baseUtil.currentVisit.aId);  //retrieve assistant
+            if(_baseUtil.currentAssistant != null) {
+              //TODO could cleanup here
+              _baseUtil.currentAssistant.url = await _baseUtil.getAssistantDpUrl(_baseUtil.currentVisit.aId);
+              await _cModel.saveAssistant(_baseUtil.currentAssistant); //cache assistant
+              if(aUpdate != null) {   //refresh Home Screen UI if its available
+                log.debug("Refreshing Home Screen layout to Ongoing Visit Workflow");
+                aUpdate();
+              }
+            }else{
+              log.error("Couldnt fetch upcoming visit assistant. Discarding message");
+              return false;
+            }
           }
           return true;
         }

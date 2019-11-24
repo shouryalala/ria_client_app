@@ -53,7 +53,8 @@ class Constants {
 
   //incoming data payload type
   static const String COMMAND_WORK_REQUEST = "WRDP";
-  static const String  COMMAND_REQUEST_CONFIRMED = "RQDP";
+  static const String COMMAND_REQUEST_CONFIRMED = "RQDP";
+  static const String COMMAND_VISIT_ONGOING = "VISON";
 
   //Service decodes
   static final String SERVICE_CLEANING = "Cx";

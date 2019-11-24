@@ -71,7 +71,8 @@ class _HomeScreenState extends State<HomeScreen> {
         return buildUpcomingVisitLayout(baseProvider.currentVisit, baseProvider.currentAssistant);
       }
       case Constants.VISIT_STATUS_ONGOING:{
-        return buildHomeLayout();
+        if(baseProvider.currentVisit == null || baseProvider.currentAssistant == null) return buildHomeLayout();
+        return buildOngoingVisitLayout(baseProvider.currentVisit, baseProvider.currentAssistant);
       }
       default:{
         return buildHomeLayout();
@@ -224,6 +225,10 @@ class _HomeScreenState extends State<HomeScreen> {
            )
        )
      );
+  }
+
+  Widget buildOngoingVisitLayout(Visit onVisit, Assistant onAssistant) {
+
   }
 
   String decodeService(String code) {

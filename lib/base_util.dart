@@ -75,7 +75,7 @@ class BaseUtil extends ChangeNotifier{
           _homeState = Constants.VISIT_STATUS_NONE;
           break;
         }
-        this.currentVisit = await getUpcomingVisit(vPath);
+        this.currentVisit = await getVisit(vPath);
         if(this.currentVisit == null) {
           log.error("Couldnt identify Upcoming visit. Defaulting HomeState");
           _homeState = Constants.VISIT_STATUS_NONE;
@@ -96,7 +96,7 @@ class BaseUtil extends ChangeNotifier{
   }
 
   //Path of format: visits/YEAR/MONTH/ID
-  Future<Visit> getUpcomingVisit(String vPath) async {
+  Future<Visit> getVisit(String vPath) async {
     if(vPath == null) return null;
     //first check in cache
     Visit lVisit = await _cModel.getVisit();
