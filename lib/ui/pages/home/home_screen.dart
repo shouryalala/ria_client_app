@@ -228,7 +228,34 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget buildOngoingVisitLayout(Visit onVisit, Assistant onAssistant) {
-
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Stack(
+        alignment: Alignment.center,
+        children: <Widget>[
+          Container(
+            color: Colors.white10,
+          ),
+          Align(
+            alignment: Alignment.center,
+            child: Container(
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text('Your Visit is Ongoin! \n' + baseProvider.decodeTime(onVisit.vis_st_time) + ' to ' + baseProvider.decodeTime(onVisit.vis_en_time),
+                    style: Theme.of(context).textTheme.body1.copyWith(color: Colors.grey[800]),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            )
+          ),
+        ],
+       )
+      ),
+    );
   }
 
   String decodeService(String code) {
