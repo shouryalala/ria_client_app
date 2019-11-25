@@ -81,7 +81,7 @@ class BaseUtil extends ChangeNotifier{
           _homeState = Constants.VISIT_STATUS_NONE;
           break;
         }
-        this.currentAssistant = await getUpcomingAssistant(this.currentVisit.aId);
+        this.currentAssistant = await getAssistant(this.currentVisit.aId);
         if(this.currentAssistant == null) {
           log.error("Couldnt identify Upcoming Visit Assistant. Defaulting HomeState");
           _homeState = Constants.VISIT_STATUS_NONE;
@@ -112,25 +112,25 @@ class BaseUtil extends ChangeNotifier{
     return lVisit;
   }
 
-  Future<Assistant> getUpcomingAssistant(String aId) async{
-    if(aId == null)return null;
+  Future<Assistant> getAssistant(String aId) async{
+    if(aId == null || aId.isEmpty)return null;
     aId = aId.trim();
     //first check the cache
     Assistant lAssistant = await _cModel.getAssistant();
     if(lAssistant == null || lAssistant.id != aId) {
       log.debug("No local saved assistant object or expired assistant object. Updation required");
-      Assistant nAssistant = await _dbModel.getAssistant(aId);
-      if(nAssistant != null) {
-        nAssistant.url = await getAssistantDpUrl(aId);
-        if(nAssistant.url != null) { //for now
-          bool flag = await _cModel.saveAssistant(nAssistant);
-          log.debug("Saved fetched assistant object to le cache: $flag");
-        }
-        return nAssistant;
+      lAssistant = await _dbModel.getAssistant(aId);
+    }
+    if(lAssistant != null) {
+      if(lAssistant.url == null || lAssistant.url.isEmpty)lAssistant.url = await getAssistantDpUrl(aId);
+      if (lAssistant.url != null) {
+        bool flag = await _cModel.saveAssistant(lAssistant);
+        log.debug("Saved fetched assistant object to le cache: $flag");
       }
     }
     return lAssistant;
-  }
+    }
+
   //TODO code crashes in case ImageURL is null. Needs to be fixed
   Future<String> getAssistantDpUrl(String aid) async{
     log.debug("Fetching DP url for assistant: $aid");
