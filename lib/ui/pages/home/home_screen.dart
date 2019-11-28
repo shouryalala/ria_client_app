@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
   /// Possible UI States
   /// - Default Home screen
   /// - Assistant matched and enroute
-  /// - Visit ongoing
+  /// - Visit ongoing wasaa
   ///
   @override
   void initState() {
