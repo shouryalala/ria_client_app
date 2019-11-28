@@ -5,7 +5,6 @@ import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/locator.dart';
 import 'package:flutter_app/util/logger.dart';
 
-import 'model/assistant.dart';
 import 'model/visit.dart';
 
 class FcmHandler extends ChangeNotifier {
@@ -13,7 +12,7 @@ class FcmHandler extends ChangeNotifier {
   //LocalDBModel _lModel = locator<LocalDBModel>();
   CacheModel _cModel = locator<CacheModel>();
   BaseUtil _baseUtil = locator<BaseUtil>();
-  static VoidCallback aUpdate;
+  static ValueChanged<int> aUpdate;
 
   FcmHandler() {}
 
@@ -30,6 +29,7 @@ class FcmHandler extends ChangeNotifier {
            * Trigger HomeScreen UI change
            * */
           Visit recVisit;
+          //TODO bruh just send a ping from the server and let this client app make a new call to get the visit object
           try {
             recVisit = new Visit(
               path: data[Visit.fldVID],
@@ -53,7 +53,7 @@ class FcmHandler extends ChangeNotifier {
             if(_baseUtil.currentAssistant != null){
               if(aUpdate != null) {   //refresh Home Screen UI if its available
                 log.debug("Refreshing Home Screen layout to Upcoming Visit Workflow");
-                aUpdate();
+                aUpdate(Constants.VISIT_STATUS_UPCOMING);
               }
             }else{
               log.error("Couldnt fetch upcoming visit assistant. Discarding message");
@@ -78,16 +78,15 @@ class FcmHandler extends ChangeNotifier {
             log.error("Couldnt parse visit Path/Invalid status recevied. Skipping");
             return false;
           }
-          if(_baseUtil.currentVisit == null || _baseUtil.currentVisit.path == null || _baseUtil.currentVisit.path != visPath){
-            log.debug("Current Visit details not available to provide to ongoing visit workflow. Needs to be newly fetched");
-            _baseUtil.currentVisit = await _baseUtil.getVisit(visPath);
-          }
+          //Update the current visit details
+          _baseUtil.currentVisit = await _baseUtil.getVisit(visPath, true);
+          //}
           if(_baseUtil.currentVisit != null && _baseUtil.currentVisit.path != null && _baseUtil.currentVisit.path.isNotEmpty){
             _baseUtil.currentAssistant = await _baseUtil.getAssistant(_baseUtil.currentVisit.aId);
             if(_baseUtil.currentAssistant != null){
               if(aUpdate != null) {   //refresh Home Screen UI if its available
                 log.debug("Refreshing Home Screen layout to Ongoing Visit Workflow");
-                aUpdate();
+                aUpdate(Constants.VISIT_STATUS_ONGOING);
               }
             }else{
               log.error("Couldnt fetch ongoing visit assistant. Discarding message");
@@ -105,7 +104,7 @@ class FcmHandler extends ChangeNotifier {
     return true;
   }
 
-  setHomeScreenCallback({VoidCallback onAssistantAvailable}) {
+  setHomeScreenCallback({ValueChanged onAssistantAvailable}) {
     aUpdate = onAssistantAvailable;
   }
 }

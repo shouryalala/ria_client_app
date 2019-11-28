@@ -60,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
     baseProvider = Provider.of<BaseUtil>(context);
     handler = Provider.of<FcmHandler>(context);
     if(handler != null) {
-      handler.setHomeScreenCallback(onAssistantAvailable: () => onAssistantAvailable());  //register callback to allow handler to notify change in ui
+      handler.setHomeScreenCallback(onAssistantAvailable: (state) => onAssistantAvailable(state));  //register callback to allow handler to notify change in ui
     }
     switch(homeState) {
       case Constants.VISIT_STATUS_NONE: {
@@ -80,9 +80,9 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  onAssistantAvailable() {
+  onAssistantAvailable(state) {
     setState(() {
-      homeState = Constants.VISIT_STATUS_UPCOMING;
+      homeState = state;
     });
   }
 

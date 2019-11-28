@@ -64,20 +64,24 @@ class BaseUtil extends ChangeNotifier{
         _homeState = Constants.VISIT_STATUS_NONE;
         break;
       }
-      case Constants.VISIT_STATUS_UPCOMING: {
+      case Constants.VISIT_STATUS_UPCOMING: case Constants.VISIT_STATUS_ONGOING:{
         /**
          * Retrieve Upcoming Visit. Ensure not null
          * Retrieve Upcoming visit Assistant. Ensure not null
          * */
-        _homeState = Constants.VISIT_STATUS_UPCOMING;
+        _homeState = status;
         if(vPath == null){
           log.error("Status in VISIT_STATUS_UPCOMING but no visit id found");
           _homeState = Constants.VISIT_STATUS_NONE;
           break;
         }
-        this.currentVisit = await getVisit(vPath);
-        if(this.currentVisit == null) {
-          log.error("Couldnt identify Upcoming visit. Defaulting HomeState");
+        this.currentVisit = await getVisit(vPath, false);
+        if(this.currentVisit != null && this.currentVisit.status != status) {
+          //received stored visit object which has'nt been updated yet
+          this.currentVisit = await getVisit(vPath, true);
+        }
+        if(this.currentVisit == null || this.currentVisit.status != status) {
+          log.error("Couldnt identify visit. Defaulting HomeState");
           _homeState = Constants.VISIT_STATUS_NONE;
           break;
         }
@@ -96,17 +100,16 @@ class BaseUtil extends ChangeNotifier{
   }
 
   //Path of format: visits/YEAR/MONTH/ID
-  Future<Visit> getVisit(String vPath) async {
+  Future<Visit> getVisit(String vPath, bool refreshCache) async {
     if(vPath == null) return null;
     //first check in cache
     Visit lVisit = await _cModel.getVisit();
-    if (lVisit == null || lVisit.path != vPath) {
-      log.debug("No local saved visit object or expired visit object. Updation required");
-      Visit nVisit = await _dbModel.getVisit(vPath);
-      if (nVisit != null) {
-        bool flag = await _cModel.saveVisit(nVisit);
+    if (lVisit == null || lVisit.path != vPath || refreshCache) {
+      log.debug("No local saved visit object/expired visit object/Cache refresh reqd.");
+      lVisit = await _dbModel.getVisit(vPath);
+      if (lVisit != null) {
+        bool flag = await _cModel.saveVisit(lVisit);
         log.debug("Saved fetched visit to local cache: $flag");
-        return nVisit;
       }
     }
     return lVisit;
@@ -120,18 +123,24 @@ class BaseUtil extends ChangeNotifier{
     if(lAssistant == null || lAssistant.id != aId) {
       log.debug("No local saved assistant object or expired assistant object. Updation required");
       lAssistant = await _dbModel.getAssistant(aId);
-    }
-    if(lAssistant != null) {
-      if(lAssistant.url == null || lAssistant.url.isEmpty)lAssistant.url = await getAssistantDpUrl(aId);
-      if (lAssistant.url != null) {
-        bool flag = await _cModel.saveAssistant(lAssistant);
-        log.debug("Saved fetched assistant object to le cache: $flag");
+      if(lAssistant != null) {
+        lAssistant.url = await getAssistantDpUrl(aId);
+        if (lAssistant.url != null) {
+          bool flag = await _cModel.saveAssistant(lAssistant);
+          //only save to cache if the assistant was fetched and the url also
+          log.debug("Saved fetched assistant object to le cache: $flag");
+        }
+        else{
+          log.error("Couldnt fetch the assistant dp url. Not saving to cache.");
+        }
+      }
+      else{
+        log.error("Couldnt fetch assistant. Not saving to cache");
       }
     }
     return lAssistant;
     }
 
-  //TODO code crashes in case ImageURL is null. Needs to be fixed
   Future<String> getAssistantDpUrl(String aid) async{
     log.debug("Fetching DP url for assistant: $aid");
     if(aid == null || aid.isEmpty)return null;
@@ -139,6 +148,7 @@ class BaseUtil extends ChangeNotifier{
       var ref = FirebaseStorage.instance.ref().child(Constants.ASSISTANT_DP_PATH).child(aid.trim() + ".jpg");
       log.debug(ref.path);
       String uri = (await ref.getDownloadURL()).toString();
+      if(uri == null || uri.toString().isEmpty)return null;
       log.debug("Assistant DP Url fetched: $uri");
       return uri.toString();
     }catch(e) {
