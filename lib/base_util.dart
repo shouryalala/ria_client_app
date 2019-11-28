@@ -57,7 +57,7 @@ class BaseUtil extends ChangeNotifier{
       log.debug("Didnt find the activity subcollection. Defaulting values");
       status = Constants.VISIT_STATUS_NONE;
     }
-    log.debug("Recieved Activity Status:: Status: $status.toString()");
+    log.debug("Recieved Activity Status:: Status: $status");
     switch(status) {
       case Constants.VISIT_STATUS_NONE: {
         //TODO clear existing cache visit object if present
