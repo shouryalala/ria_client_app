@@ -6,6 +6,7 @@ import 'package:flutter_app/core/fcm_handler.dart';
 import 'package:flutter_app/core/model/assistant.dart';
 import 'package:flutter_app/core/model/request.dart';
 import 'package:flutter_app/core/model/visit.dart';
+import 'package:flutter_app/core/ops/http_ops.dart';
 import 'package:flutter_app/ui/elements/mutli_select_chip.dart';
 import 'package:flutter_app/ui/elements/time_picker_model.dart';
 import 'package:flutter_app/util/calendar_util.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:flutter_app/util/ui_constants.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/ops/db_ops.dart';
@@ -41,7 +43,10 @@ class _HomeScreenState extends State<HomeScreen> {
   DBModel reqProvider;
   BaseUtil baseProvider;
   FcmHandler handler;
+  HttpModel httpProvider;
   CalendarUtil cUtil;
+  bool _isCostAvailable = false;
+  Widget _requestCostWidget;
   /// Possible UI States
   /// - Default Home screen
   /// - Assistant matched and enroute
@@ -58,6 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     reqProvider = Provider.of<DBModel>(context);
     baseProvider = Provider.of<BaseUtil>(context);
+    httpProvider = Provider.of<HttpModel>(context);
     handler = Provider.of<FcmHandler>(context);
     if(handler != null) {
       handler.setHomeScreenCallback(onAssistantAvailable: (state) => onAssistantAvailable(state));  //register callback to allow handler to notify change in ui
@@ -126,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5.0)),
                           elevation: 4.0,
-                          onPressed: () async {
+                          onPressed: () {
                             if (baseProvider.firebaseUser == null ||
                                 baseProvider.myUser == null
                                 || baseProvider.myUser.hasIncompleteDetails() ||
@@ -152,7 +158,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 society_id: baseProvider.myUser.society_id,
                                 req_time: baseProvider.encodeTimeRequest(reqTime),
                                 timestamp: FieldValue.serverTimestamp());
-                            reqProvider.pushRequest(req);
+                            _settingModalBottomSheet(context, req);
+                            //reqProvider.pushRequest(req);
                           },
                           child: Text("Request!"),
                         ),
@@ -384,4 +391,57 @@ class _HomeScreenState extends State<HomeScreen> {
       color: Colors.white,
     );
   }
+
+  void _settingModalBottomSheet(BuildContext context, Request req){
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc){
+          return Container(
+            child: new Wrap(
+              children: <Widget>[
+                  new Padding(
+                  padding: const EdgeInsets.fromLTRB(25.0, 25.0, 25.0, 25.0),
+                  child: _costConfirmDialog(req),
+                ),
+              ],
+            ),
+          );
+        }
+    );
+  }
+
+  Widget _costConfirmDialog(Request request) {
+    if(!_isCostAvailable) {
+      httpProvider.getRequestCost(request).then((resCost) {
+        _isCostAvailable = true;
+        if(resCost == -1) {
+          _requestCostWidget = new Text('Couldnt fetch the cost at this moment. Please try again soon.');
+        }
+        else{
+          _requestCostWidget = new Column(
+            children: <Widget>[
+              new Text('Cost for Service: $resCost'),
+              new RaisedButton(
+                shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0)),
+                elevation: 4.0,
+                onPressed: () {
+                  reqProvider.pushRequest(request);
+                }
+              ),
+            ],
+          );
+        }
+        setState(() {});
+      });
+      _requestCostWidget = SpinKitDoubleBounce(
+        color: UiConstants.spinnerColor,
+        size: 50.0,
+        //controller: AnimationController(vsync: this, duration: const Duration(milliseconds: 1200)),
+      );
+    }
+    return _requestCostWidget;
+  }
+
+
 }

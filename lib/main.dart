@@ -11,6 +11,7 @@ import 'base_util.dart';
 import 'core/ops/cache_ops.dart';
 import 'core/fcm_handler.dart';
 import 'core/fcm_listener.dart';
+import 'core/ops/http_ops.dart';
 import 'core/ops/lcl_db_ops.dart';
 import 'ui/pages/app_canvas.dart';
 import 'ui/pages/launcher_screen.dart';
@@ -29,6 +30,7 @@ class App extends StatelessWidget{
         ChangeNotifierProvider(builder: (_) =>  locator<DBModel>()),
         ChangeNotifierProvider(builder: (_) =>  locator<LocalDBModel>()),
         ChangeNotifierProvider(builder: (_) =>  locator<CacheModel>()),
+        ChangeNotifierProvider(builder: (_) =>  locator<HttpModel>()),
         ChangeNotifierProvider(builder: (_) =>  locator<BaseUtil>()),
         ChangeNotifierProvider(builder: (_) =>  locator<FcmListener>()),
         ChangeNotifierProvider(builder: (_) =>  locator<FcmHandler>()),

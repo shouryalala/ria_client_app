@@ -2,9 +2,11 @@ import 'package:flutter_app/base_util.dart';
 import 'package:flutter_app/core/ops/cache_ops.dart';
 import 'package:flutter_app/core/fcm_handler.dart';
 import 'package:flutter_app/core/fcm_listener.dart';
+import 'package:flutter_app/core/ops/http_ops.dart';
 import 'package:flutter_app/core/ops/lcl_db_ops.dart';
 import 'package:flutter_app/core/service/api.dart';
 import 'package:flutter_app/core/service/cache_api.dart';
+import 'package:flutter_app/core/service/http_api.dart';
 import 'package:flutter_app/core/service/lcl_db_api.dart';
 import 'package:get_it/get_it.dart';
 
@@ -19,6 +21,8 @@ void setupLocator() {
   locator.registerLazySingleton(() => LocalDBModel());
   locator.registerLazySingleton(() => CacheApi());
   locator.registerLazySingleton(() => CacheModel());
+  locator.registerLazySingleton(() => HttpApi());
+  locator.registerLazySingleton(() => HttpModel());
   locator.registerLazySingleton(() => BaseUtil());
   locator.registerLazySingleton(() => FcmListener());
   locator.registerLazySingleton(() => FcmHandler());
