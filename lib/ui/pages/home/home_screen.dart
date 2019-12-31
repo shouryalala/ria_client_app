@@ -45,8 +45,12 @@ class _HomeScreenState extends State<HomeScreen> {
   FcmHandler handler;
   HttpModel httpProvider;
   CalendarUtil cUtil;
-  bool _isCostAvailable = false;
+/*
+  bool _isCostFetched = false;  //http request called
+  bool _isCostAvailable = false;  //http request successful
+  bool _isCostRequestCalled = false;
   Widget _requestCostWidget;
+*/
   /// Possible UI States
   /// - Default Home screen
   /// - Assistant matched and enroute
@@ -158,8 +162,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                 society_id: baseProvider.myUser.society_id,
                                 req_time: baseProvider.encodeTimeRequest(reqTime),
                                 timestamp: FieldValue.serverTimestamp());
-                            _settingModalBottomSheet(context, req);
-                            //reqProvider.pushRequest(req);
+                            showModalBottomSheet(
+                                context: context,
+                                builder: (context){
+                                  return CostConfirmModalSheet(request: req, onRequestConfirmed: (cost) => _onRequestConfirmed(req, cost));
+                                }
+                            );
                           },
                           child: Text("Request!"),
                         ),
@@ -392,56 +400,89 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _settingModalBottomSheet(BuildContext context, Request req){
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc){
-          return Container(
-            child: new Wrap(
-              children: <Widget>[
-                  new Padding(
-                  padding: const EdgeInsets.fromLTRB(25.0, 25.0, 25.0, 25.0),
-                  child: _costConfirmDialog(req),
-                ),
-              ],
-            ),
-          );
-        }
+  //Callback from BottomModalSheet
+  _onRequestConfirmed(Request req, double cost) {
+    req.cost = cost;
+    reqProvider.pushRequest(req);
+  }
+
+}
+
+class CostConfirmModalSheet extends StatefulWidget {
+  final Request request;
+  final ValueChanged<double> onRequestConfirmed;
+
+  CostConfirmModalSheet({this.request, this.onRequestConfirmed});
+
+  _CostConfirmModalSheetState createState() => _CostConfirmModalSheetState();
+}
+
+class _CostConfirmModalSheetState extends State<CostConfirmModalSheet> with SingleTickerProviderStateMixin {
+  _CostConfirmModalSheetState();
+  Log log = new Log('CostConfirmModalSheet');
+  var heightOfModalBottomSheet = 100.0;
+  bool _isCostRequestCalled = false;
+  bool _isCostFetched = false;
+  bool _isCostAvailable = false;
+  Widget _requestCostWidget;
+  HttpModel httpProvider;
+
+  Widget build(BuildContext context) {
+    httpProvider = Provider.of<HttpModel>(context);
+    return Container(
+      child: new Wrap(
+        children: <Widget>[
+          new Padding(
+            padding: const EdgeInsets.fromLTRB(25.0, 25.0, 25.0, 25.0),
+            child: _costConfirmDialog(widget.request),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _costConfirmDialog(Request request) {
-    if(!_isCostAvailable) {
+    if(!_isCostRequestCalled) {
+      _isCostRequestCalled = true;
       httpProvider.getRequestCost(request).then((resCost) {
-        _isCostAvailable = true;
-        if(resCost == -1) {
-          _requestCostWidget = new Text('Couldnt fetch the cost at this moment. Please try again soon.');
-        }
-        else{
-          _requestCostWidget = new Column(
-            children: <Widget>[
-              new Text('Cost for Service: $resCost'),
-              new RaisedButton(
-                shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5.0)),
-                elevation: 4.0,
-                onPressed: () {
-                  reqProvider.pushRequest(request);
-                }
-              ),
-            ],
-          );
-        }
-        setState(() {});
+        setState(() {
+          _isCostFetched = true;
+          if(resCost == -1.0) {
+            _isCostAvailable = false;
+            _requestCostWidget = new Text('Couldnt fetch the cost at this moment. Please try again soon.');
+          }
+          else{
+            _isCostAvailable = true;
+            _requestCostWidget = new Column(
+              children: <Widget>[
+                new Text('Cost for Service: $resCost'),
+                new RaisedButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5.0)),
+                    elevation: 4.0,
+                    onPressed: () {
+                      if(widget.onRequestConfirmed != null) {
+                        log.debug('Request has been confirmed. Sending callback to homeScreen');
+                        widget.onRequestConfirmed(resCost);
+                      }else{
+                        log.error('Callback not set. Cost confirmation discarded');
+                      }
+                    },
+                  child: Text('Confirm'),
+                ),
+              ],
+            );
+          }
+        });
       });
-      _requestCostWidget = SpinKitDoubleBounce(
-        color: UiConstants.spinnerColor,
-        size: 50.0,
-        //controller: AnimationController(vsync: this, duration: const Duration(milliseconds: 1200)),
-      );
+      if(!_isCostFetched) {
+        _requestCostWidget = SpinKitDoubleBounce(
+          color: UiConstants.spinnerColor,
+          size: 50.0,
+          //controller: AnimationController(vsync: this, duration: const Duration(milliseconds: 1200)),
+        );
+      }
     }
     return _requestCostWidget;
   }
-
-
 }

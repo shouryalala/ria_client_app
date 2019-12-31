@@ -12,9 +12,10 @@ class Request{
   final String status = Constants.REQ_STATUS_UNASSIGNED;
   final int req_time;
   final FieldValue timestamp;
+  double cost;
 
-  const Request({this.service, this.user_id, this.user_mobile, this.date, this.address, this.society_id,
-       this.req_time, this.timestamp});
+  Request({this.service, this.user_id, this.user_mobile, this.date, this.address, this.society_id,
+       this.req_time, this.timestamp, this.cost});
 
   //never used
   Request.fromMap(Map<String, dynamic> data, String id)
@@ -26,7 +27,8 @@ class Request{
     address: data['address'],
     society_id: data['society_id'],
     req_time: data['req_time'],
-    timestamp: data['timestamp']
+    timestamp: data['timestamp'],
+    cost: data['cost']
   );
 
   toJson() {
@@ -41,6 +43,7 @@ class Request{
       'status': status,
       'req_time': req_time,
       'timestamp': timestamp,
+      'cost': cost
     };
   }
 }
