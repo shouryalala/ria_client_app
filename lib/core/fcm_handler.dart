@@ -65,7 +65,7 @@ class FcmHandler extends ChangeNotifier {
           }
           return true;
         }
-        case Constants.COMMAND_VISIT_ONGOING: {
+        case Constants.COMMAND_VISIT_ONGOING: case Constants.COMMAND_VISIT_CANCELLED:{
           String visPath;
           int status;
           try {
@@ -74,8 +74,13 @@ class FcmHandler extends ChangeNotifier {
           }catch(error){
             log.error("Couldnt parse status int value: "+ error);
           }
-          if(visPath == null || status != Constants.VISIT_STATUS_ONGOING) {
-            log.error("Couldnt parse visit Path/Invalid status recevied. Skipping");
+          if(visPath == null || visPath.isEmpty) {
+            log.error('Couldnt parse visit Path recevied. Skipping request');
+            return false;
+          }
+          if((command == Constants.COMMAND_VISIT_ONGOING && status != Constants.VISIT_STATUS_ONGOING) ||
+              command == Constants.COMMAND_VISIT_CANCELLED && status != Constants.VISIT_STATUS_CANCELLED){
+            log.error('Invalid Visit status recevied. Skipping request');
             return false;
           }
           //Update the current visit details
@@ -85,11 +90,11 @@ class FcmHandler extends ChangeNotifier {
             _baseUtil.currentAssistant = await _baseUtil.getAssistant(_baseUtil.currentVisit.aId);
             if(_baseUtil.currentAssistant != null){
               if(aUpdate != null) {   //refresh Home Screen UI if its available
-                log.debug("Refreshing Home Screen layout to Ongoing Visit Workflow");
-                aUpdate(Constants.VISIT_STATUS_ONGOING);
+                log.debug("Refreshing Home Screen layout to $command Visit Workflow");
+                aUpdate(status);
               }
             }else{
-              log.error("Couldnt fetch ongoing visit assistant. Discarding message");
+              log.error("Couldnt fetch ongoing/cancelled visit assistant. Discarding message");
               return false;
             }
           }
