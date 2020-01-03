@@ -159,6 +159,16 @@ class BaseUtil extends ChangeNotifier{
 
   isSignedIn() =>  (firebaseUser != null && myUser != null);
 
+  String decodeService(String code) {
+    switch(code) {
+      case Constants.CLEANING_CDE: return Constants.CLEANING;
+      case Constants.UTENSILS_CDE: return Constants.UTENSILS;
+      case Constants.DUSTING_CDE: return "Dusting";
+      case Constants.CLEAN_UTENSIL_CDE: return "Cleaning and Utensils";
+      default: return code;
+    }
+  }
+
   AuthCredential generateAuthCredential(String verificationId, String smsCode) {
     final AuthCredential credential = PhoneAuthProvider.getCredential(
       verificationId: verificationId,

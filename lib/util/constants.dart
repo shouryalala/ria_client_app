@@ -95,4 +95,7 @@ class Constants {
   static final String DEFAULT_SERVICE = "Cleaning";
   static final String DEFAULT_ADDRESS = "3/202\n Beverly Park Appt\n Sector-22";
 
+  //Home Screen constants
+  static const String CLEANING = "Cleaning";
+  static const String UTENSILS = "Utensils";
 }

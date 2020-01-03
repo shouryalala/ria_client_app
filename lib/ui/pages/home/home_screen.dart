@@ -18,6 +18,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/ops/db_ops.dart';
+import '../../../util/constants.dart';
 
 class HomeScreen extends StatefulWidget {
   final ValueChanged<int> onLoginRequest;
@@ -36,10 +37,8 @@ class _HomeScreenState extends State<HomeScreen> {
   _HomeScreenState({this.onLoginRequest, this.homeState});
   String _time;
   DateTime reqTime = new DateTime.now();
-  static const String CLEANING = "Cleaning";
-  static const String UTENSILS = "Utensils";
-  List<String> serviceList = [CLEANING, UTENSILS];
-  List<String> selectedServiceList = [CLEANING];
+  List<String> serviceList = [Constants.CLEANING, Constants.UTENSILS];
+  List<String> selectedServiceList = [Constants.CLEANING];
   DBModel reqProvider;
   BaseUtil baseProvider;
   FcmHandler handler;
@@ -55,7 +54,11 @@ class _HomeScreenState extends State<HomeScreen> {
   /// - Default Home screen
   /// - Assistant matched and enroute
   /// - Visit ongoing wasaa
+  /// - Visit Cancelled by Assistant
+  /// - Visit Completed. Rate Assistant
   ///
+
+  //TODO add call assistant button, add internet connection background checker, add device_id fetch and storer, fix navigation back on exit
   @override
   void initState() {
     super.initState();
@@ -88,12 +91,6 @@ class _HomeScreenState extends State<HomeScreen> {
         return buildHomeLayout();
       }
     }
-  }
-
-  onAssistantAvailable(state) {
-    setState(() {
-      homeState = state;
-    });
   }
 
   Widget buildHomeLayout() {
@@ -203,7 +200,7 @@ class _HomeScreenState extends State<HomeScreen> {
                          style: Theme.of(context).textTheme.body1.copyWith(color: Colors.grey[800]),
                          textAlign: TextAlign.center,
                        ),
-                       Text(decodeService(upVisit.service),
+                       Text(baseProvider.decodeService(upVisit.service),
                          style: Theme.of(context).textTheme.body1.copyWith(color: Colors.grey[800]),
                          textAlign: TextAlign.center,
                        ),
@@ -259,7 +256,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text('Your Visit is Ongoin! \n' + baseProvider.decodeTime(onVisit.vis_st_time) + ' to ' + baseProvider.decodeTime(onVisit.vis_en_time),
+                  Text('Service Ongoing!',
+                    style: Theme.of(context).textTheme.display1.copyWith(color: Colors.grey[800]),
+                    textAlign: TextAlign.center,),
+                  Text('Your Visit is Ongoing \nFrom:' + baseProvider.decodeTime(onVisit.vis_st_time) + ' to ' + baseProvider.decodeTime(onVisit.vis_en_time),
                     style: Theme.of(context).textTheme.body1.copyWith(color: Colors.grey[800]),
                     textAlign: TextAlign.center,
                   ),
@@ -273,19 +273,64 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  String decodeService(String code) {
-    switch(code) {
-      case Constants.CLEANING_CDE: return CLEANING;
-      case Constants.UTENSILS_CDE: return UTENSILS;
-      case Constants.DUSTING_CDE: return "Dusting";
-      case Constants.CLEAN_UTENSIL_CDE: return "Cleaning and Utensils";
-      default: return code;
-    }
+  Widget buildCancelledVisitLayout(Visit canVisit, Assistant canAssistant) {
+    return Scaffold(
+      body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Stack(
+            alignment: Alignment.center,
+            children: <Widget>[
+              Container(
+                color: Colors.white10,
+              ),
+              Align(
+                  alignment: Alignment.center,
+                  child: Container(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text('Service Ongoing!',
+                          style: Theme.of(context).textTheme.display1.copyWith(color: Colors.grey[800]),
+                          textAlign: TextAlign.center,),
+                        Text('Your Visit has been Cancelled by: ' + canAssistant.name + '\n Would you like to request for a different Assistant?',
+                          style: Theme.of(context).textTheme.body1.copyWith(color: Colors.grey[800]),
+                          textAlign: TextAlign.center,
+                        ),
+                        RaisedButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0)),
+                          elevation: 4.0,
+                          child: Text('Request Again'),
+                          onPressed: () {
+                            Request req = Request(
+                                user_id: baseProvider.myUser.uid,
+                                user_mobile: baseProvider.myUser.mobile,
+                                date: cUtil.now.day,
+                                service: canVisit.service,
+                                address: baseProvider.myUser.flat_no,
+                                society_id: baseProvider.myUser.society_id,
+                                req_time: baseProvider.encodeTimeRequest(new DateTime.now()),
+                                timestamp: FieldValue.serverTimestamp());
+
+                            req.addException(canAssistant.id);
+                            reqProvider.pushRequest(req);
+
+                          },
+                        ),
+                      ],
+                    ),
+                  )
+              ),
+            ],
+          )
+      ),
+    );
   }
 
   String decodeMultiChip() {
-    if(selectedServiceList.contains(CLEANING) && selectedServiceList.contains(UTENSILS)) return Constants.CLEAN_UTENSIL_CDE;
-    else if(selectedServiceList.contains(CLEANING)) return Constants.CLEANING_CDE;
+    if(selectedServiceList.contains(Constants.CLEANING) && selectedServiceList.contains(Constants.UTENSILS)) return Constants.CLEAN_UTENSIL_CDE;
+    else if(selectedServiceList.contains(Constants.CLEANING)) return Constants.CLEANING_CDE;
     else return Constants.UTENSILS_CDE;
   }
 
@@ -404,6 +449,13 @@ class _HomeScreenState extends State<HomeScreen> {
   _onRequestConfirmed(Request req, double cost) {
     req.cost = cost;
     reqProvider.pushRequest(req);
+  }
+
+  //state changer when request is confirmed
+  onAssistantAvailable(state) {
+    setState(() {
+      homeState = state;
+    });
   }
 
 }

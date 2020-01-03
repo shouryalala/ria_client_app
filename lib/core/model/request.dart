@@ -13,6 +13,7 @@ class Request{
   final int req_time;
   final FieldValue timestamp;
   double cost;
+  List exceptions;
 
   Request({this.service, this.user_id, this.user_mobile, this.date, this.address, this.society_id,
        this.req_time, this.timestamp, this.cost});
@@ -43,7 +44,18 @@ class Request{
       'status': status,
       'req_time': req_time,
       'timestamp': timestamp,
-      'cost': cost
+      'cost': cost,
+      'rejections': exceptions,
     };
   }
+
+  void addException(String aId) {
+    if(exceptions == null || exceptions.length == 0) {
+      exceptions = [aId];
+    }
+    else{
+      exceptions.add(aId);
+    }
+  }
+
 }
