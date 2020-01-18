@@ -323,6 +323,7 @@ class _LoginDialogState extends State<LoginDialog> {
       //dbProvider.getUser(this.userMobile).then((user) {
       dbProvider.getUser(fUser.uid).then((user) {
         //user variable is pre cast into User object
+        dbProvider.logDeviceId(fUser.uid); //no await needed. async can complete in its own time
         if(user == null || (user != null && user.hasIncompleteDetails())) {
           log.debug("No existing user details found or found incomplete details for user. Moving to details page");
           baseProvider.myUser = (user != null)?user:User.newUser(fUser.uid, this.userMobile);

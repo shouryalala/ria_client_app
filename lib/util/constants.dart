@@ -13,6 +13,7 @@ class Constants {
   static final String SUBCOLN_USER_ACTIVITY = "activity";
   static final String SUBCOLN_USER_FCM = "fcm";
   static final String DOC_USER_FCM_TOKEN = "client_token";
+  static final String DOC_DEVICE_LOG = "DEVICE_LOG";
 
   //Firebase Storage
   static final String ASSISTANT_DP_PATH = "assistant_dp";

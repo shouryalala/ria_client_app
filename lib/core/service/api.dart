@@ -33,6 +33,12 @@ class Api{
     return ref.document(Constants.DOC_USER_FCM_TOKEN).setData(data);
   }
 
+  Future<void> updateDeviceLog(String devId, String userId) {
+    ref = _db.collection(Constants.COLN_USERS);
+    Map<String, dynamic> map = {devId : FieldValue.arrayUnion([userId])};
+    return ref.document(Constants.DOC_DEVICE_LOG).updateData(map);
+  }
+
   Future<QuerySnapshot> getSocietyColn() {
     ref = _db.collection(Constants.COLN_SOCIETIES);
     return ref.getDocuments();

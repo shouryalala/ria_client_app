@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:device_id/device_id.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/model/request.dart';
@@ -68,6 +69,21 @@ class DBModel extends ChangeNotifier {
       return true;
     }catch(e) {
       log.error("Failed to update User Client Token: " + e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> logDeviceId(String userId) async{
+    try {
+      String meid = await DeviceId.getMEID;
+      if (meid != null && meid.isNotEmpty){
+        await _api.updateDeviceLog(meid, userId);
+        log.debug("DeviceID logged successfully");
+        return true;
+      }
+      return false;
+    }catch(e) {
+      log.error("Platform Exception(?) while trying to fetch meid: " + e.toString());
       return false;
     }
   }
