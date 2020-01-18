@@ -4,6 +4,7 @@ import 'package:flutter_app/core/fcm_handler.dart';
 import 'package:flutter_app/core/model/request.dart';
 import 'package:flutter_app/core/ops/http_ops.dart';
 import 'package:flutter_app/ui/pages/home/ongoing_visit_layout.dart';
+import 'package:flutter_app/ui/pages/home/rate_visit_layout.dart';
 import 'package:flutter_app/ui/pages/home/upcoming_visit_layout.dart';
 import 'package:flutter_app/util/calendar_util.dart';
 import 'package:flutter_app/util/constants.dart';
@@ -15,21 +16,21 @@ import '../../../util/constants.dart';
 import 'cancelled_visit_layout.dart';
 import 'home_layout.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeController extends StatefulWidget {
   final ValueChanged<int> onLoginRequest;
-  int homeState;
-  HomeScreen({this.onLoginRequest, this.homeState});
+  final int homeState;
+  HomeController({this.onLoginRequest, this.homeState});
   @override
-  _HomeScreenState createState() {
-    return _HomeScreenState(onLoginRequest: onLoginRequest, homeState: homeState);
+  _HomeControllerState createState() {
+    return _HomeControllerState(onLoginRequest: onLoginRequest, homeState: homeState);
   }
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  final Log log = new Log("HomeScreen");
+class _HomeControllerState extends State<HomeController> {
+  final Log log = new Log("HomeController");
   final ValueChanged<int> onLoginRequest;
   int homeState;
-  _HomeScreenState({this.onLoginRequest, this.homeState});
+  _HomeControllerState({this.onLoginRequest, this.homeState});
 
   DBModel reqProvider;
   BaseUtil baseProvider;
@@ -75,6 +76,10 @@ class _HomeScreenState extends State<HomeScreen> {
       case Constants.VISIT_STATUS_CANCELLED:{
         if(baseProvider.currentVisit == null || baseProvider.currentAssistant == null) return buildHomeLayout();
         return CancelledVisitLayout(canVisit: baseProvider.currentVisit, canAssistant: baseProvider.currentAssistant);
+      }
+      case Constants.VISIT_STATUS_COMPLETED:{
+        if(baseProvider.currentVisit == null || baseProvider.currentAssistant == null) return buildHomeLayout();
+        return RateVisitLayout(rateVisit: baseProvider.currentVisit, rateAssistant: baseProvider.currentAssistant);
       }
       default: return buildHomeLayout();
     }

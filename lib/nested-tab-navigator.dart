@@ -58,7 +58,7 @@ class TabNavigator extends StatelessWidget {
 
   Map<String, WidgetBuilder> _routeBuilders(BuildContext context) {
     return {
-      TabNavigatorRoutes.root: (context) => HomeScreen(
+      TabNavigatorRoutes.root: (context) => HomeController(
         onLoginRequest: (pageNo) =>
             _pushLoginScreen(context, pageNo),
         homeState: baseUtil.homeState,

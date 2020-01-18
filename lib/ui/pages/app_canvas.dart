@@ -24,7 +24,7 @@ class _AppCanvasState extends State<AppCanvas> {
 
   //not currently being used.. using navigator
   final List<Widget> _children = [
-    HomeScreen(),
+    HomeController(),
     PlaceholderWidget(Colors.deepOrange),
     ProfileOptions()
   ];
