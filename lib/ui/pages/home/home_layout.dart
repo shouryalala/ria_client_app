@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/model/request.dart';
+import 'package:flutter_app/core/ops/db_ops.dart';
 import 'package:flutter_app/core/ops/http_ops.dart';
 import 'package:flutter_app/ui/elements/mutli_select_chip.dart';
 import 'package:flutter_app/ui/elements/time_picker_model.dart';
@@ -15,10 +16,9 @@ import 'package:provider/provider.dart';
 import '../../../base_util.dart';
 
 class HomeLayout extends StatefulWidget{
-  final ValueChanged<Request> onRequestConfirmed;
   final ValueChanged<int> onLoginRequest;
 
-  HomeLayout({this.onRequestConfirmed, this.onLoginRequest});
+  HomeLayout({this.onLoginRequest});
 
   @override
   State createState() => _HomeLayoutState();
@@ -27,6 +27,7 @@ class HomeLayout extends StatefulWidget{
 class _HomeLayoutState extends State<HomeLayout> {
   Log log = new Log("HomeLayout");
   BaseUtil baseProvider;
+  DBModel reqProvider;
   String _time;
   DateTime reqTime = new DateTime.now();
   List<String> serviceList = [Constants.CLEANING, Constants.UTENSILS];
@@ -37,6 +38,7 @@ class _HomeLayoutState extends State<HomeLayout> {
   @override
   Widget build(BuildContext context) {
     baseProvider = Provider.of<BaseUtil>(context);
+    reqProvider = Provider.of<DBModel>(context);
     return Scaffold(
         body: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -109,10 +111,8 @@ class _HomeLayoutState extends State<HomeLayout> {
                                     Navigator.of(context).pop();  //close Cost Sheet
                                     //TODO add a spinner here
                                     req.cost = cost;
-                                    if(widget.onRequestConfirmed != null) {
-                                      log.debug("onRequestConfirmed callback called for: " + req.toString());
-                                      widget.onRequestConfirmed(req);
-                                    }
+                                    log.debug("onRequestConfirmed called for: " + req.toString());
+                                    reqProvider.pushRequest(req);
                                   });
                                 }
                             );
