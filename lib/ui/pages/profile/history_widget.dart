@@ -14,7 +14,7 @@ class _HistoryList extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        body: StreamBuilder(
+        body: StreamBuilder(  //TODO to be fixed.
             stream: Firestore.instance.collection("visits").document("2019").collection("AUG").snapshots(),
             builder: (context, snapshot) {
               if(!snapshot.hasData) return const Text("Loading..");

@@ -162,7 +162,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             showModalBottomSheet(
                                 context: context,
                                 builder: (context){
-                                  return CostConfirmModalSheet(request: req, onRequestConfirmed: (cost) => _onRequestConfirmed(req, cost));
+                                  return CostConfirmModalSheet(request: req, onRequestConfirmed: (cost) {
+                                    Navigator.of(context).pop();  //close Cost Sheet
+                                    //TODO add a spinner here
+                                    _onRequestConfirmed(req, cost);
+                                  });
                                 }
                             );
                           },
@@ -514,7 +518,7 @@ class _CostConfirmModalSheetState extends State<CostConfirmModalSheet> with Sing
                     elevation: 4.0,
                     onPressed: () {
                       if(widget.onRequestConfirmed != null) {
-                        log.debug('Request has been confirmed. Sending callback to homeScreen');
+                        log.debug('Confirm Request clicked. Sending callback to homeScreen');
                         widget.onRequestConfirmed(resCost);
                       }else{
                         log.error('Callback not set. Cost confirmation discarded');
