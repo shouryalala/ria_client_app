@@ -79,7 +79,12 @@ class _HomeControllerState extends State<HomeController> {
       }
       case Constants.VISIT_STATUS_COMPLETED:{
         if(baseProvider.currentVisit == null || baseProvider.currentAssistant == null) return buildHomeLayout();
-        return RateVisitLayout(rateVisit: baseProvider.currentVisit, rateAssistant: baseProvider.currentAssistant);
+        return RateVisitLayout(rateVisit: baseProvider.currentVisit, rateAssistant: baseProvider.currentAssistant,
+          actionComplete: () {
+            setState(() {
+              homeState = Constants.VISIT_STATUS_NONE;
+            });
+          });
       }
       default: return buildHomeLayout();
     }

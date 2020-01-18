@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/core/model/request.dart';
 import 'package:flutter_app/core/model/society.dart';
 import 'package:flutter_app/core/service/api.dart';
+import 'package:flutter_app/util/constants.dart';
 
 import '../../util/locator.dart';
 import '../../util/logger.dart';
@@ -70,6 +71,32 @@ class DBModel extends ChangeNotifier {
     }catch(e) {
       log.error("Failed to update User Client Token: " + e.toString());
       return false;
+    }
+  }
+
+  Future<bool> rateVisitAndUpdateUserStatus(String userId, String visPath, int rating) {
+    if(rating == 0) {
+      try {
+        log.debug("Rating unavailable. Only updating user status");
+        return _api.updateUserStatus(userId, Constants.VISIT_STATUS_NONE);
+      }catch(e) {
+        log.error("Failed to update user activity status: " + e.toString());
+      }
+    }
+    else{
+      try {
+        log.debug("Batching rating and updation of user status");
+        List<String> vPath = visPath.split("/");
+        if (vPath[0] == null || vPath[1] == null || vPath[2] == null ||
+            vPath[3] == null) return null;
+        Map userActMap = {'visit_status': Constants.VISIT_STATUS_NONE,
+          'modified_time': FieldValue.serverTimestamp()};
+        Map ratingMap = {'rating': rating};
+        return _api.batchRateAndUpdateStatus(
+            userId, userActMap, vPath[1], vPath[2], vPath[3], ratingMap);
+      }catch(e) {
+        log.error("Batch commit for rating and updating user activity status failed: " + e.toString());
+      }
     }
   }
 

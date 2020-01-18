@@ -33,6 +33,11 @@ class Api{
     return ref.document(Constants.DOC_USER_FCM_TOKEN).setData(data);
   }
 
+  Future<void> updateUserStatus(String userId, Map data) {
+    ref = _db.collection(Constants.COLN_USERS).document(userId).collection(Constants.SUBCOLN_USER_ACTIVITY);
+    return ref.document(Constants.DOC_USER_ACTIVITY_STATUS).setData(data, merge: false);  //fresh doc. remove earlier fields
+  }
+
   Future<void> updateDeviceLog(String devId, String userId) {
     ref = _db.collection(Constants.COLN_USERS);
     Map<String, dynamic> map = {devId : FieldValue.arrayUnion([userId])};
@@ -43,14 +48,12 @@ class Api{
     ref = _db.collection(Constants.COLN_SOCIETIES);
     return ref.getDocuments();
   }
-
   /**
    * return Doc:: status:  {visit_id: xyz, visit_status: VISIT_CDE}
    * */
   Future<DocumentSnapshot> getUserActivityDocument(String id) {
-    String activityDocKey = "status"; //fixed document key where we're storing the status
     ref = _db.collection(Constants.COLN_USERS).document(id).collection(Constants.SUBCOLN_USER_ACTIVITY);
-    return ref.document(activityDocKey).get();
+    return ref.document(Constants.DOC_USER_ACTIVITY_STATUS).get();
   } 
 
   Future<DocumentSnapshot> getVisitByPath(String yearDoc, String monthSubColn, String id) {
@@ -66,5 +69,14 @@ class Api{
   Future<DocumentSnapshot> getAssistantById(String id) {
     ref = _db.collection(Constants.COLN_ASSISTANTS);
     return ref.document(id).get();
+  }
+
+  Future<void> batchRateAndUpdateStatus(String userId, Map statusMap, String yearDoc, String monthSubColn, String id, Map visMap) {
+    WriteBatch batch = _db.batch();
+    DocumentReference ref1 = _db.collection(Constants.COLN_USERS).document(userId).collection(Constants.SUBCOLN_USER_ACTIVITY).document(Constants.DOC_USER_ACTIVITY_STATUS);
+    DocumentReference ref2 = _db.collection(Constants.COLN_VISITS).document(yearDoc).collection(monthSubColn).document(id);
+    batch.setData(ref1, statusMap, merge: true);
+    batch.setData(ref2, visMap, merge: true);
+    return batch.commit();
   }
 }

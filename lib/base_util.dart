@@ -64,7 +64,10 @@ class BaseUtil extends ChangeNotifier{
         _homeState = Constants.VISIT_STATUS_NONE;
         break;
       }
-      case Constants.VISIT_STATUS_UPCOMING: case Constants.VISIT_STATUS_ONGOING:{
+      case Constants.VISIT_STATUS_UPCOMING:
+      case Constants.VISIT_STATUS_ONGOING:
+      case Constants.VISIT_STATUS_COMPLETED:
+      case Constants.VISIT_STATUS_CANCELLED: {
         /**
          * Retrieve Upcoming Visit. Ensure not null
          * Retrieve Upcoming visit Assistant. Ensure not null
@@ -92,9 +95,6 @@ class BaseUtil extends ChangeNotifier{
           break;
         }
         break;
-      }
-      case Constants.VISIT_STATUS_COMPLETED: {
-
       }
     }
   }
