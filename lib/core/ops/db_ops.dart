@@ -74,11 +74,15 @@ class DBModel extends ChangeNotifier {
     }
   }
 
-  Future<bool> rateVisitAndUpdateUserStatus(String userId, String visPath, int rating) {
+  ///if rating = 0 , visit rating was skipped
+  Future<bool> rateVisitAndUpdateUserStatus(String userId, String astId, String visPath, int rating, String fdbk) async{
     if(rating == 0) {
       try {
         log.debug("Rating unavailable. Only updating user status");
-        return _api.updateUserStatus(userId, Constants.VISIT_STATUS_NONE);
+        Map userActMap = {'visit_status': Constants.VISIT_STATUS_NONE,
+          'modified_time': FieldValue.serverTimestamp()};
+        await _api.updateUserStatus(userId, userActMap);
+        return true;
       }catch(e) {
         log.error("Failed to update user activity status: " + e.toString());
       }
@@ -89,15 +93,23 @@ class DBModel extends ChangeNotifier {
         List<String> vPath = visPath.split("/");
         if (vPath[0] == null || vPath[1] == null || vPath[2] == null ||
             vPath[3] == null) return null;
-        Map userActMap = {'visit_status': Constants.VISIT_STATUS_NONE,
+        Map<String, dynamic> userActMap = {'visit_status': Constants.VISIT_STATUS_NONE,
           'modified_time': FieldValue.serverTimestamp()};
-        Map ratingMap = {'rating': rating};
-        return _api.batchRateAndUpdateStatus(
-            userId, userActMap, vPath[1], vPath[2], vPath[3], ratingMap);
+        Map<String, dynamic> ratingMap = {'rating': rating};
+        Map<String, dynamic> fdbkMap;
+        if(fdbk != null && fdbk.isNotEmpty) {
+          fdbkMap = {'fdbk': fdbk,
+          'timestamp': FieldValue.serverTimestamp(),
+          'userId': userId};
+        }
+        await _api.batchRateAndUpdateStatus(
+            userId, astId, vPath[1], vPath[2], vPath[3], userActMap, ratingMap, fdbkMap);
+        return true;
       }catch(e) {
         log.error("Batch commit for rating and updating user activity status failed: " + e.toString());
       }
     }
+    return false;
   }
 
   Future<bool> logDeviceId(String userId) async{

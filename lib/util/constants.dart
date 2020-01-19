@@ -7,7 +7,6 @@ class Constants {
   static final String COLN_APPTS = "appts";
   static final String COLN_SOCIETIES = "societies";
   static final String COLN_VISITS = "visits";
-  static final String COLN_FEEDBACK = "feedback";
 
   //Sub-collections
   static final String SUBCOLN_USER_ACTIVITY = "activity";
@@ -15,6 +14,7 @@ class Constants {
   static final String DOC_USER_FCM_TOKEN = "client_token";
   static final String DOC_DEVICE_LOG = "DEVICE_LOG";
   static final String DOC_USER_ACTIVITY_STATUS = "status";
+  static final String SUBCOLN_AST_FEEDBACK = "feedback";
 
   //Firebase Storage
   static final String ASSISTANT_DP_PATH = "assistant_dp";

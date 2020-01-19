@@ -71,11 +71,20 @@ class Api{
     return ref.document(id).get();
   }
 
-  Future<void> batchRateAndUpdateStatus(String userId, Map statusMap, String yearDoc, String monthSubColn, String id, Map visMap) {
+  Future<void> batchRateAndUpdateStatus(String userId, String astId, String yearDoc, String monthSubColn, String id, Map statusMap, Map visMap, Map fdbkMap) {
     WriteBatch batch = _db.batch();
-    DocumentReference ref1 = _db.collection(Constants.COLN_USERS).document(userId).collection(Constants.SUBCOLN_USER_ACTIVITY).document(Constants.DOC_USER_ACTIVITY_STATUS);
-    DocumentReference ref2 = _db.collection(Constants.COLN_VISITS).document(yearDoc).collection(monthSubColn).document(id);
-    batch.setData(ref1, statusMap, merge: true);
+    DocumentReference ref1 = _db.collection(Constants.COLN_USERS).document(
+        userId).collection(Constants.SUBCOLN_USER_ACTIVITY).document(
+        Constants.DOC_USER_ACTIVITY_STATUS);
+    DocumentReference ref2 = _db.collection(Constants.COLN_VISITS).document(
+        yearDoc).collection(monthSubColn).document(id);
+    if (fdbkMap != null) {
+      DocumentReference ref3 = _db.collection(Constants.COLN_ASSISTANTS)
+          .document(astId).collection(Constants.SUBCOLN_AST_FEEDBACK)
+          .document();
+      batch.setData(ref3, fdbkMap, merge: false); //each feedback is a doc of its own
+    }
+    batch.setData(ref1, statusMap, merge: false); //fresh doc. remove earlier fields
     batch.setData(ref2, visMap, merge: true);
     return batch.commit();
   }

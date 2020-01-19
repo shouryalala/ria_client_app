@@ -22,11 +22,12 @@ class LogoFadeIn extends State<SplashScreen> {
     _timer = new Timer(const Duration(seconds: 2), () {
       setState(() {
         _logoStyle = FlutterLogoStyle.horizontal;
+        initialize();
       });
     });
-    _timer2 = new Timer(const Duration(seconds: 6), () {
-      initialize();
-    });
+//    _timer2 = new Timer(const Duration(seconds: 6), () {
+//      initialize();
+//    });
   }
 
   initialize() async{

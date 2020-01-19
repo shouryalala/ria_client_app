@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import '../../../base_util.dart';
 
 class RateVisitLayout extends StatefulWidget{
-  final VoidCallback actionComplete;
+  final VoidCallback  actionComplete;
   final Visit rateVisit;
   final Assistant rateAssistant;
 
@@ -24,6 +24,7 @@ class _RateVisitLayoutState extends State<RateVisitLayout> {
   BaseUtil baseProvider;
   DBModel dbProvider;
   int rating=0;
+  final fdbkController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +48,7 @@ class _RateVisitLayoutState extends State<RateVisitLayout> {
                   child: Text("Skip"),
                   onPressed: () {
                     log.debug("User skipped rating for assistant");
-                    dbProvider.rateVisitAndUpdateUserStatus(baseProvider.myUser.uid, widget.rateVisit.path, 0);
+                    dbProvider.rateVisitAndUpdateUserStatus(baseProvider.myUser.uid, widget.rateAssistant.id, widget.rateVisit.path, 0, null);
                     if(widget.actionComplete != null) widget.actionComplete();
                   },
                 ),
@@ -77,19 +78,63 @@ class _RateVisitLayoutState extends State<RateVisitLayout> {
                             );
                           },
                         ),
-                        RaisedButton(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0)),
-                          elevation: 4.0,
-                          child: Text("Submit"),
-                          onPressed: () {
-                            if(widget.rateVisit.path != null && rating != 0)
-                              dbProvider.rateVisitAndUpdateUserStatus(baseProvider.myUser.uid, widget.rateVisit.path, rating);
-                          },
-                        )
+                        SizedBox(
+                          height: 40.0,
+                        ),
+                        Container(
+                            padding: EdgeInsets.all(12.0),
+                            child : TextField(
+                                controller: fdbkController,
+                                autocorrect: true,
+                                decoration: InputDecoration(
+                                  hintText: 'Provide feedback for ${widget.rateAssistant.name}',
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.grey),
+                                  ),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.green),
+                                  ),
+                                )
+                            )
+                        ),
                       ],
                     ),
                   )
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child:SizedBox(
+                  width: double.infinity,
+                  child: RaisedButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5.0)),
+                    elevation: 4.0,
+                    child: Text("Submit",
+                      style: Theme.of(context).textTheme.button.copyWith(color: Colors.grey[800]),
+                      textAlign: TextAlign.center,),
+                    onPressed: () {
+                      if(this.rating == 0){
+                        final snackBar = SnackBar(
+                          content: Text('Please add a rating'),
+                        );
+                        Scaffold.of(context).showSnackBar(snackBar);
+                        return;
+                      }
+                      if(widget.rateVisit.path != null && widget.rateAssistant.id != null)
+                        dbProvider.rateVisitAndUpdateUserStatus(baseProvider.myUser.uid, widget.rateAssistant.id,
+                            widget.rateVisit.path, rating, fdbkController.text).then((flag) {
+                          log.debug("Rated Visit, added Feedback, and updated User Activity Status: $flag");
+                          if(widget.actionComplete != null){
+                            final snackBar = SnackBar(
+                              content: Text('Thank you! :D'),
+                            );
+                            Scaffold.of(context).showSnackBar(snackBar);
+                            widget.actionComplete();
+                          }
+                        });
+                    },
+                  )
+                ),
               ),
             ],
           )
