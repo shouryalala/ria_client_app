@@ -7,7 +7,7 @@ import 'package:flutter_app/ui/pages/profile/update_address.dart';
 import 'package:provider/provider.dart';
 
 import 'base_util.dart';
-import 'ui/pages/home/home_screen.dart';
+import 'ui/pages/home/home_controller.dart';
 
 class TabNavigatorRoutes {
   static const String root = '/home';
@@ -61,7 +61,7 @@ class TabNavigator extends StatelessWidget {
       TabNavigatorRoutes.root: (context) => HomeController(
         onLoginRequest: (pageNo) =>
             _pushLoginScreen(context, pageNo),
-        homeState: baseUtil.homeState,
+        //homeState: baseUtil.homeState,
       ),
       TabNavigatorRoutes.subscribe: (context) => PlaceholderWidget(Colors.amberAccent),
       TabNavigatorRoutes.profile: (context) => ProfileOptions(

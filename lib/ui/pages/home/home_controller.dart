@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/base_util.dart';
 import 'package:flutter_app/core/fcm_handler.dart';
-import 'package:flutter_app/core/model/request.dart';
 import 'package:flutter_app/core/ops/http_ops.dart';
 import 'package:flutter_app/ui/pages/home/ongoing_visit_layout.dart';
 import 'package:flutter_app/ui/pages/home/rate_visit_layout.dart';
@@ -18,25 +17,27 @@ import 'home_layout.dart';
 
 class HomeController extends StatefulWidget {
   final ValueChanged<int> onLoginRequest;
-  final int homeState;
-  HomeController({this.onLoginRequest, this.homeState});
+  //final int homeState;
+  HomeController({this.onLoginRequest});
   @override
-  _HomeControllerState createState() {
-    return _HomeControllerState(onLoginRequest: onLoginRequest, homeState: homeState);
-  }
+  _HomeControllerState createState() => _HomeControllerState();
+    //return _HomeControllerState(onLoginRequest: onLoginRequest);
+  //}
 }
 
 class _HomeControllerState extends State<HomeController> {
   final Log log = new Log("HomeController");
-  final ValueChanged<int> onLoginRequest;
-  int homeState;
-  _HomeControllerState({this.onLoginRequest, this.homeState});
+  //final ValueChanged<int> onLoginRequest;
+  //int homeState;  //can be fetched from baseUtil directly
+  //_HomeControllerState({this.onLoginRequest});
+  _HomeControllerState();
 
   DBModel reqProvider;
   BaseUtil baseProvider;
   FcmHandler handler;
   HttpModel httpProvider;
   CalendarUtil cUtil;
+  int homeState;
   /// Possible UI States
   /// - Default Home screen
   /// - Assistant matched and enroute
@@ -49,7 +50,7 @@ class _HomeControllerState extends State<HomeController> {
   @override
   void initState() {
     super.initState();
-    homeState = (homeState == null)?Constants.VISIT_STATUS_NONE:homeState;
+    //homeState = (homeState == null)?Constants.VISIT_STATUS_NONE:homeState;
     cUtil = new CalendarUtil();
   }
 
@@ -58,6 +59,7 @@ class _HomeControllerState extends State<HomeController> {
     reqProvider = Provider.of<DBModel>(context);
     baseProvider = Provider.of<BaseUtil>(context);
     handler = Provider.of<FcmHandler>(context);
+    homeState = (baseProvider.homeState == null)?Constants.VISIT_STATUS_NONE:baseProvider.homeState;
     if(handler != null) {
       handler.setHomeScreenCallback(onAssistantAvailable: (state) => onAssistantAvailable(state));  //register callback to allow handler to notify change in ui
     }
@@ -92,7 +94,8 @@ class _HomeControllerState extends State<HomeController> {
 
   Widget buildHomeLayout() {
     return HomeLayout(onLoginRequest: (pageNo) {
-      this.onLoginRequest(pageNo);
+      if(widget.onLoginRequest != null)
+        widget.onLoginRequest(pageNo);
     });
   }
 
