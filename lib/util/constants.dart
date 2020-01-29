@@ -1,5 +1,6 @@
 class Constants {
   static final String DEBUG_TAG = "DEBUG_KANTA::";
+  static final String APP_NAME = "RIA";
   //Collections
   static final String COLN_REQUESTS = "requests";
   static final String COLN_USERS = "users";

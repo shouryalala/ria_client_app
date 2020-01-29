@@ -3,43 +3,34 @@ import 'package:flutter_app/ui/elements/bottom_navy_bar.dart';
 import 'package:flutter_app/ui/pages/home/home_controller.dart';
 import 'package:flutter_app/ui/pages/profile/history_widget.dart';
 import 'package:flutter_app/ui/pages/profile/profile_options.dart';
+import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/logger.dart';
 
-import '../../nested-tab-navigator.dart';
 import 'login/login_dialog.dart';
 
 class AppCanvas extends StatefulWidget{
   @override
-  State createState() {
-    return _AppCanvasState();
-  }
+  State createState() => _AppCanvasState();
 }
 
 class _AppCanvasState extends State<AppCanvas> {
   Log log = new Log("AppCanvas");
   int _currentIndex = 0;
-  PageController _controller;
   //TabItem currentItem = TabItem.Home;
-  final navigatorKey = GlobalKey<NavigatorState>();
-  Map<int, GlobalKey<NavigatorState>> navigatorKeys = {
-    0 : GlobalKey<NavigatorState>(),
-    1 : GlobalKey<NavigatorState>(),
-    2 : GlobalKey<NavigatorState>(),
-  };
+//  final navigatorKey = GlobalKey<NavigatorState>();
+//  Map<int, GlobalKey<NavigatorState>> navigatorKeys = {
+//    0 : GlobalKey<NavigatorState>(),
+//    1 : GlobalKey<NavigatorState>(),
+//    2 : GlobalKey<NavigatorState>(),
+//  };
 
   //not currently being used.. using navigator
-  final List<Widget> _children = [
+//  final List<Widget> _children = [
 //    HomeController(onLoginRequest: (pageNo) =>
 //        _pushLoginScreen(context, pageNo),
 //    PlaceholderWidget(Colors.deepOrange),
 //    ProfileOptions()
-  ];
-
-
-  @override
-  void initState() {
-    _controller = new PageController(initialPage: 0);
-  }
+//  ];
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +41,7 @@ class _AppCanvasState extends State<AppCanvas> {
     child:
     Scaffold(
       appBar: AppBar(
-        title: Text('\tRIA'),
+        title: Text('\t${Constants.APP_NAME}'),
       ),
       body: Center(
         child:
@@ -90,12 +81,12 @@ class _AppCanvasState extends State<AppCanvas> {
             BottomNavyBarItem(
               icon: Icon(Icons.home),
               title: Text('Home'),
-              activeColor: Colors.limeAccent
+              activeColor: Colors.greenAccent
             ),
             BottomNavyBarItem(
                 icon: Icon(Icons.settings),
                 title: Text('You'),
-                activeColor: Colors.green
+                activeColor: Colors.greenAccent[400]
             ),
           ]
       ),
@@ -128,16 +119,16 @@ class _AppCanvasState extends State<AppCanvas> {
     });
   }
 
-  Widget _buildOffstageNavigator(int index, BuildContext context) {
-    return Offstage(
-      offstage: _currentIndex != index,
-      child: TabNavigator(
-        navigatorKey: navigatorKeys[index],
-        item: index,
-        context: context,
-      ),
-    );
-  }
+//  Widget _buildOffstageNavigator(int index, BuildContext context) {
+//    return Offstage(
+//      offstage: _currentIndex != index,
+//      child: TabNavigator(
+//        navigatorKey: navigatorKeys[index],
+//        item: index,
+//        context: context,
+//      ),
+//    );
+//  }
 
   Widget getTab(int index, BuildContext context) {
     switch(index) {
@@ -149,7 +140,7 @@ class _AppCanvasState extends State<AppCanvas> {
       }
       case 1: {
             return ProfileOptions(
-              onPush: (routeId) => _pushScreen(context),
+              onPush: (routeId) => _pushHistoryScreen(context),
             );
       }
       default: {
@@ -170,7 +161,7 @@ class _AppCanvasState extends State<AppCanvas> {
     );
   }
 
-  void _pushScreen(BuildContext context) {
+  void _pushHistoryScreen(BuildContext context) {
     Navigator.push(context, MaterialPageRoute(
         builder: (context) => HistoryPage()
       )

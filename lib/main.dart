@@ -4,6 +4,7 @@ import 'package:flutter_app/ui/pages/login/login_dialog.dart';
 import 'package:flutter_app/ui/pages/onboarding/onboarding_widget.dart';
 import 'package:flutter_app/ui/pages/profile/history_widget.dart';
 import 'package:flutter_app/ui/pages/profile/profile_options.dart';
+import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/locator.dart';
 import 'package:provider/provider.dart';
 
@@ -36,7 +37,7 @@ class App extends StatelessWidget{
         ChangeNotifierProvider(builder: (_) =>  locator<FcmHandler>()),
       ],
       child: MaterialApp(
-        title:"Ria",
+        title:'\t${Constants.APP_NAME}',
         color: Colors.greenAccent,
         theme: ThemeData(
           primaryColor: Colors.greenAccent[400]
@@ -46,9 +47,9 @@ class App extends StatelessWidget{
           '/launcher': (BuildContext context) => SplashScreen(),
           '/home': (BuildContext context) => AppCanvas(),
           '/onboarding':(BuildContext context) => OnboardingMainPage(),
-          '/login': (BuildContext context) => LoginDialog(),
-          '/history': (BuildContext context) => HistoryPage(),
-          '/profile': (BuildContext context) => ProfileOptions(),
+//          '/login': (BuildContext context) => LoginDialog(),
+//          '/history': (BuildContext context) => HistoryPage(),
+//          '/profile': (BuildContext context) => ProfileOptions(),
         },
       )
     );
