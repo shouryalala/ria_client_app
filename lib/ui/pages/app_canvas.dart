@@ -5,6 +5,7 @@ import 'package:flutter_app/ui/pages/profile/history_widget.dart';
 import 'package:flutter_app/ui/pages/profile/profile_options.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/logger.dart';
+import 'package:morpheus/morpheus.dart';
 
 import 'login/login_dialog.dart';
 
@@ -16,28 +17,11 @@ class AppCanvas extends StatefulWidget{
 class _AppCanvasState extends State<AppCanvas> {
   Log log = new Log("AppCanvas");
   int _currentIndex = 0;
-  //TabItem currentItem = TabItem.Home;
-//  final navigatorKey = GlobalKey<NavigatorState>();
-//  Map<int, GlobalKey<NavigatorState>> navigatorKeys = {
-//    0 : GlobalKey<NavigatorState>(),
-//    1 : GlobalKey<NavigatorState>(),
-//    2 : GlobalKey<NavigatorState>(),
-//  };
-
-  //not currently being used.. using navigator
-//  final List<Widget> _children = [
-//    HomeController(onLoginRequest: (pageNo) =>
-//        _pushLoginScreen(context, pageNo),
-//    PlaceholderWidget(Colors.deepOrange),
-//    ProfileOptions()
-//  ];
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        onWillPop: () async => Navigator.of(context).maybePop()
-           // () async => !await navigatorKeys[_currentIndex].currentState.maybePop()
-        ,
+        onWillPop: () async => Navigator.of(context).maybePop(),
     child:
     Scaffold(
       appBar: AppBar(
@@ -45,22 +29,9 @@ class _AppCanvasState extends State<AppCanvas> {
       ),
       body: Center(
         child:
-//        new PageView.builder(
-//            physics: NeverScrollableScrollPhysics(),
-//            itemBuilder: (BuildContext context, int index) {
-//              return getTab(index, context);
-//            },
-//            itemCount: 2,
-//            controller: _controller,
-//            onPageChanged: (int p) {
-//              setState(() {
-//                log.debug("How many times do ineed to set the current Index??");
-//                _currentIndex = p;
-//              });
-//            },
-//        ),
-          getTab(_currentIndex, context)
-      ),
+          MorpheusTabView(
+              child: getTab(_currentIndex, context)
+          )),
 //      MorpheusTabView(
 //        child:
 //          Stack(children: <Widget>[
@@ -74,8 +45,6 @@ class _AppCanvasState extends State<AppCanvas> {
           showElevation: true,
           onItemSelected: (index) => setState(() {
             _currentIndex = index;
-//            _pageController.animateToPage(index,
-//                duration: Duration(milliseconds: 300), curve: Curves.ease);
           }),
           items: [
             BottomNavyBarItem(
@@ -90,45 +59,8 @@ class _AppCanvasState extends State<AppCanvas> {
             ),
           ]
       ),
-
-//      BottomNavigationBar(
-//        onTap: onTabTapped, // new
-//        currentIndex: _currentIndex, // new
-//        items: [
-//          BottomNavigationBarItem(
-//            icon: new Icon(Icons.home),
-//            title: new Text('Home'),
-//          ),
-//          BottomNavigationBarItem(
-//            icon: new Icon(Icons.mail),
-//            title: new Text('Subscribe'),
-//          ),
-//          BottomNavigationBarItem(
-//              icon: Icon(Icons.person),
-//              title: Text('Profile')
-//          )
-//        ],
-//      ),
     ));
   }
-
-  void onTabTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-      //currentTab = TabItem[index];
-    });
-  }
-
-//  Widget _buildOffstageNavigator(int index, BuildContext context) {
-//    return Offstage(
-//      offstage: _currentIndex != index,
-//      child: TabNavigator(
-//        navigatorKey: navigatorKeys[index],
-//        item: index,
-//        context: context,
-//      ),
-//    );
-//  }
 
   Widget getTab(int index, BuildContext context) {
     switch(index) {
@@ -153,8 +85,6 @@ class _AppCanvasState extends State<AppCanvas> {
   }
 
   void _pushLoginScreen(BuildContext context, int pageNo) {
-    //var routeBuilders = _routeBuilders(context);
-
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => LoginDialog(initPage: pageNo)
       )
