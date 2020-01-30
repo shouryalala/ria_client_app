@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/model/request.dart';
 import 'package:flutter_app/core/ops/db_ops.dart';
@@ -39,16 +40,37 @@ class _HomeLayoutState extends State<HomeLayout> {
   Widget build(BuildContext context) {
     baseProvider = Provider.of<BaseUtil>(context);
     reqProvider = Provider.of<DBModel>(context);
-    return Scaffold(
-        body: Padding(
+    return Padding(
+        //body: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Stack(
               alignment: Alignment.center,
               children: <Widget>[
                 Container(
-                  color: Colors.white10,
+                  color: Colors.transparent,
                 ),
                 buildLoginButton(),
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Column(
+                    children: <Widget>[
+                      SizedBox(
+                        height: 15.0,
+                      ),
+                      Text(
+                          'Cryb',
+//                    style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
+                          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white,fontSize: 40, fontStyle: FontStyle.italic),
+                      ),
+                      Text(
+                        '                    Beta',
+                        textAlign: TextAlign.right,
+//                    style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
+                        style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white,fontSize: 20, fontStyle: FontStyle.italic),
+                      ),
+                    ],
+                  )
+                ),
                 Align(
                   alignment: Alignment.center,
                   child: Container(
@@ -125,7 +147,7 @@ class _HomeLayoutState extends State<HomeLayout> {
                 )
               ],
             )
-        )
+      //  )
     );
   }
 

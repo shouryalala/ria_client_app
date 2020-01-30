@@ -4,6 +4,7 @@ import 'package:flutter_app/ui/pages/login/login_dialog.dart';
 import 'package:flutter_app/ui/pages/onboarding/onboarding_widget.dart';
 import 'package:flutter_app/ui/pages/profile/history_widget.dart';
 import 'package:flutter_app/ui/pages/profile/profile_options.dart';
+import 'package:flutter_app/ui/test_screen.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/locator.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +24,8 @@ void main() {
 }
 
 class App extends StatelessWidget{
-
+  final Color primaryColor = Color(0xff03da9d);
+  final Color accentColor = Color(0xff333333);
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -40,9 +42,11 @@ class App extends StatelessWidget{
         title:'\t${Constants.APP_NAME}',
         color: Colors.greenAccent,
         theme: ThemeData(
-          primaryColor: Colors.greenAccent[400]
+          //primaryColor: Colors.greenAccent[400]
+          primaryColor: primaryColor,
+          accentColor: accentColor
         ),
-        home: SplashScreen(),
+        home: Home('abc'),
         routes: <String, WidgetBuilder> {
           '/launcher': (BuildContext context) => SplashScreen(),
           '/home': (BuildContext context) => AppCanvas(),
