@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/base_util.dart';
 import 'package:flutter_app/core/fcm_handler.dart';
-import 'package:flutter_app/core/model/request.dart';
 import 'package:flutter_app/core/ops/http_ops.dart';
 import 'package:flutter_app/ui/pages/home/ongoing_visit_layout.dart';
 import 'package:flutter_app/ui/pages/home/rate_visit_layout.dart';

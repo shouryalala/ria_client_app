@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/ops/db_ops.dart';
+import 'package:flutter_app/main_page.dart';
 import 'package:flutter_app/ui/pages/login/login_dialog.dart';
 import 'package:flutter_app/ui/pages/onboarding/onboarding_widget.dart';
 import 'package:flutter_app/ui/pages/profile/history_widget.dart';
 import 'package:flutter_app/ui/pages/profile/profile_options.dart';
 import 'package:flutter_app/util/locator.dart';
+import 'package:flutter_app/util/ui_constants.dart';
 import 'package:provider/provider.dart';
 
 import 'base_util.dart';
@@ -37,14 +39,15 @@ class App extends StatelessWidget{
         ],
         child: MaterialApp(
           title:"Ria",
-          color: Colors.greenAccent,
+          color: UiConstants.secondaryColor,
           theme: ThemeData(
-              primaryColor: Colors.greenAccent[400]
+              primaryColor: UiConstants.primaryColor
           ),
           home: SplashScreen(),
           routes: <String, WidgetBuilder> {
             '/launcher': (BuildContext context) => SplashScreen(),
-            '/home': (BuildContext context) => AppCanvas(),
+//            '/home': (BuildContext context) => AppCanvas(),
+            '/home': (BuildContext context) => MainPage(),
             '/onboarding':(BuildContext context) => OnboardingMainPage(),
             '/login': (BuildContext context) => LoginDialog(),
             '/history': (BuildContext context) => HistoryPage(),

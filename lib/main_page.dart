@@ -1,132 +1,129 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/ui/elements/mutli_select_chip.dart';
-import 'package:flutter_app/ui/elements/time_picker_model.dart';
+import 'package:flutter_app/ui/pages/home/cancelled_visit_layout.dart';
 import 'package:flutter_app/ui/pages/home/home_layout.dart';
+import 'package:flutter_app/ui/pages/home/ongoing_visit_layout.dart';
+import 'package:flutter_app/ui/pages/home/rate_visit_layout.dart';
+import 'package:flutter_app/ui/pages/home/upcoming_visit_layout.dart';
 import 'package:flutter_app/util/calendar_util.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/logger.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:flutter_sparkline/flutter_sparkline.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 
 import 'base_util.dart';
-import 'core/model/request.dart';
+import 'core/fcm_handler.dart';
 import 'core/ops/db_ops.dart';
 import 'shop_items_page.dart';
 
-class MainPage extends StatefulWidget
-{
+class MainPage extends StatefulWidget {
+  final ValueChanged<int> onLoginRequest;
+  MainPage({this.onLoginRequest});
+
   @override
   _MainPageState createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage>
-{
-
-  Log log = new Log("HomeLayout");
+class _MainPageState extends State<MainPage> {
+  Log log = new Log("DashboardHomeLayout");
   BaseUtil baseProvider;
   DBModel reqProvider;
+  FcmHandler handler;
   String _time;
   DateTime reqTime = new DateTime.now();
   List<String> serviceList = [Constants.CLEANING, Constants.UTENSILS];
   List<String> selectedServiceList = [Constants.CLEANING];
   CalendarUtil cUtil = new CalendarUtil();
-  final List<List<double>> charts =
-  [
-    [0.0, 0.3, 0.7, 0.6, 0.55, 0.8, 1.2, 1.3, 1.35, 0.9, 1.5, 1.7, 1.8, 1.7, 1.2, 0.8, 1.9, 2.0, 2.2, 1.9, 2.2, 2.1, 2.0, 2.3, 2.4, 2.45, 2.6, 3.6, 2.6, 2.7, 2.9, 2.8, 3.4],
-    [0.0, 0.3, 0.7, 0.6, 0.55, 0.8, 1.2, 1.3, 1.35, 0.9, 1.5, 1.7, 1.8, 1.7, 1.2, 0.8, 1.9, 2.0, 2.2, 1.9, 2.2, 2.1, 2.0, 2.3, 2.4, 2.45, 2.6, 3.6, 2.6, 2.7, 2.9, 2.8, 3.4, 0.0, 0.3, 0.7, 0.6, 0.55, 0.8, 1.2, 1.3, 1.35, 0.9, 1.5, 1.7, 1.8, 1.7, 1.2, 0.8, 1.9, 2.0, 2.2, 1.9, 2.2, 2.1, 2.0, 2.3, 2.4, 2.45, 2.6, 3.6, 2.6, 2.7, 2.9, 2.8, 3.4,],
-    [0.0, 0.3, 0.7, 0.6, 0.55, 0.8, 1.2, 1.3, 1.35, 0.9, 1.5, 1.7, 1.8, 1.7, 1.2, 0.8, 1.9, 2.0, 2.2, 1.9, 2.2, 2.1, 2.0, 2.3, 2.4, 2.45, 2.6, 3.6, 2.6, 2.7, 2.9, 2.8, 3.4, 0.0, 0.3, 0.7, 0.6, 0.55, 0.8, 1.2, 1.3, 1.35, 0.9, 1.5, 1.7, 1.8, 1.7, 1.2, 0.8, 1.9, 2.0, 2.2, 1.9, 2.2, 2.1, 2.0, 2.3, 2.4, 2.45, 2.6, 3.6, 2.6, 2.7, 2.9, 2.8, 3.4, 0.0, 0.3, 0.7, 0.6, 0.55, 0.8, 1.2, 1.3, 1.35, 0.9, 1.5, 1.7, 1.8, 1.7, 1.2, 0.8, 1.9, 2.0, 2.2, 1.9, 2.2, 2.1, 2.0, 2.3, 2.4, 2.45, 2.6, 3.6, 2.6, 2.7, 2.9, 2.8, 3.4]
+  int homeState = Constants.VISIT_STATUS_NONE;
+  static final List<String> chartDropdownItems = [
+    'Last 7 days',
+    'Last month',
+    'Last year'
   ];
-
-  static final List<String> chartDropdownItems = [ 'Last 7 days', 'Last month', 'Last year' ];
   String actualDropdown = chartDropdownItems[0];
   int actualChart = 0;
 
   @override
-  Widget build(BuildContext context)
-  {
-//    baseProvider = Provider.of<BaseUtil>(context);
-//    reqProvider = Provider.of<DBModel>(context);
-    return Scaffold
-    (
-      appBar: AppBar
-      (
-        elevation: 2.0,
-        backgroundColor: Colors.greenAccent,
-        title: Text('CRYB', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 30.0)),
-        actions: <Widget>
-        [
-          Container
-          (
-            margin: EdgeInsets.only(right: 8.0),
-            child: Row
-            (
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>
-              [
-                Text('beclothed.com', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w700, fontSize: 14.0)),
-                Icon(Icons.arrow_drop_down, color: Colors.black54)
-              ],
-            ),
-          )
-        ],
-      ),
-      body: StaggeredGridView.count(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12.0,
-        mainAxisSpacing: 12.0,
-        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        children: <Widget>[
-          _buildTile(
-            Padding
-            (
-              padding: const EdgeInsets.all(24.0),
-              child: Row
-              (
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget build(BuildContext context) {
+    baseProvider = Provider.of<BaseUtil>(context);
+    reqProvider = Provider.of<DBModel>(context);
+    if(handler != null) {
+      handler.setHomeScreenCallback(onAssistantAvailable: (state) => onAssistantAvailable(state));  //register callback to allow handler to notify change in ui
+    }
+    homeState = (baseProvider.homeState != null)?baseProvider.homeState: Constants.VISIT_STATUS_NONE;
+    return Scaffold(
+        appBar: AppBar(
+          elevation: 2.0,
+          backgroundColor: Colors.white70,
+          title: Text('Cryb',
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 30.0)),
+          actions: <Widget>[
+            Container(
+              margin: EdgeInsets.only(right: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>
-                [
-                  Column
-                  (
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>
-                    [
-                      Text('Total Views', style: TextStyle(color: Colors.blueAccent)),
-                      Text('265K', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 34.0))
-                    ],
-                  ),
-                  Material
-                  (
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(24.0),
-                    child: Center
-                    (
-                      child: Padding
-                      (
-                        padding: const EdgeInsets.all(16.0),
-                        child: Icon(Icons.timeline, color: Colors.white, size: 30.0),
-                      )
-                    )
-                  )
-                ]
+                children: <Widget>[
+                  Text('beta',
+                      style: TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14.0)),
+                  Icon(Icons.info_outline, color: Colors.black54)
+                ],
+              ),
+            )
+          ],
+        ),
+        body: StaggeredGridView.count(
+          crossAxisCount: 2,
+          crossAxisSpacing: 12.0,
+          mainAxisSpacing: 12.0,
+          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          children: <Widget>[
+            _buildTile( //Total Mins used
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('Total Mins',
+                              style: TextStyle(color: Colors.blueAccent)),
+                          Text('49',
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 34.0))
+                        ],
+                      ),
+                      Material(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(24.0),
+                          child: Center(
+                              child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Icon(Icons.timeline,
+                                color: Colors.white, size: 30.0),
+                          )))
+                    ]),
               ),
             ),
-          ),
-          _buildTile(
-            Padding
-                (
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column
-                  (
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>
-                    [
+            _buildLoginTile(),
+            _buildTile(
+              __buildVisitLayout(homeState)
+//              Padding(
+//                  padding: const EdgeInsets.all(24.0),
+//                  child: Column(
+//                    mainAxisAlignment: MainAxisAlignment.start,
+//                    crossAxisAlignment: CrossAxisAlignment.start,
+//                    children: <Widget>[
 //                      Row
 //                      (
 //                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -171,269 +168,221 @@ class _MainPageState extends State<MainPage>
 //                        lineWidth: 5.0,
 //                        lineColor: Colors.greenAccent,
 //                      ),
-                      Align(
-                        alignment: Alignment.center,
-                        child: Container(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              buildTimeButton(),
-                              SizedBox(
-                                height: 20.0,
-                              ),
-                              Container(
-                                child: MultiSelectChip(
-                                  serviceList,
-                                  selectedServiceList,
-                                  onSelectionChanged: (selectedList) {
-                                    setState(() {
-                                      selectedServiceList = selectedList;
-                                    });
-                                  },
-                                ),
-                              ),
-                              SizedBox(
-                                height: 20.0,
-                              ),
-                              RaisedButton(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5.0)),
-                                elevation: 4.0,
-                                onPressed: () {
-                                  if (baseProvider.firebaseUser == null ||
-                                      baseProvider.myUser == null
-                                      || baseProvider.myUser.hasIncompleteDetails() ||
-                                      selectedServiceList.isEmpty) {
-                                    //validation message to be assigned on priority basis: Not signed in -- Incomplete details -- Service not selected
-                                    String message = (baseProvider.firebaseUser ==
-                                        null) ? "Please sign in to continue" :
-                                    ((selectedServiceList.isNotEmpty)
-                                        ? "Please complete your details"
-                                        : "Please select atleast one service");
-                                    final snackBar = SnackBar(
-                                      content: Text(message),
-                                    );
-                                    Scaffold.of(context).showSnackBar(snackBar);
-                                    return;
-                                  }
-                                  Request req = Request(
-                                      user_id: baseProvider.myUser.uid,
-                                      user_mobile: baseProvider.myUser.mobile,
-                                      date: cUtil.now.day,
-                                      service: decodeMultiChip(),
-                                      address: baseProvider.myUser.flat_no,
-                                      society_id: baseProvider.myUser.society_id,
-                                      req_time: baseProvider.encodeTimeRequest(reqTime),
-                                      timestamp: FieldValue.serverTimestamp());
-                                  showModalBottomSheet(
-                                      context: context,
-                                      builder: (context){
-                                        return CostConfirmModalSheet(request: req, onRequestConfirmed: (cost) {
-                                          Navigator.of(context).pop();  //close Cost Sheet
-                                          //TODO add a spinner here
-                                          req.cost = cost;
-                                          log.debug("onRequestConfirmed called for: " + req.toString());
-                                          reqProvider.pushRequest(req);
-                                        });
-                                      }
-                                  );
-                                },
-                                child: Text("Request!"),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  )
-                ),
-          ),
 
-          _buildTile(
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column
-                (
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>
-                  [
-                    Material
-                      (
-                        color: Colors.teal,
-                        shape: CircleBorder(),
-                        child: Padding
-                          (
-                          padding: const EdgeInsets.all(16.0),
-                          child: Icon(Icons.settings_applications, color: Colors.white, size: 30.0),
-                        )
-                    ),
-                    Padding(padding: EdgeInsets.only(bottom: 16.0)),
-                    Text('General', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 24.0)),
-                    Text('Images, Videos', style: TextStyle(color: Colors.black45)),
-                  ]
-              ),
+//                    ],
+//                  )),
             ),
-          ),
-          _buildTile(
-            Padding
-              (
-              padding: const EdgeInsets.all(24.0),
-              child: Column
-                (
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>
-                  [
-                    Material
-                      (
-                        color: Colors.amber,
-                        shape: CircleBorder(),
-                        child: Padding
-                          (
-                          padding: EdgeInsets.all(16.0),
-                          child: Icon(Icons.notifications, color: Colors.white, size: 30.0),
-                        )
-                    ),
-                    Padding(padding: EdgeInsets.only(bottom: 16.0)),
-                    Text('Alerts', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 24.0)),
-                    Text('All ', style: TextStyle(color: Colors.black45)),
-                  ]
-              ),
-            ),
-          ),
-          _buildTile(
-            Padding
-            (
-              padding: const EdgeInsets.all(24.0),
-              child: Row
-              (
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>
-                [
-                  Column
-                  (
-                    mainAxisAlignment: MainAxisAlignment.center,
+            _buildTile(
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>
-                    [
-                      Text('Shop Items', style: TextStyle(color: Colors.redAccent)),
-                      Text('173', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 34.0))
-                    ],
-                  ),
-                  Material
-                  (
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(24.0),
-                    child: Center
-                    (
-                      child: Padding
-                      (
-                        padding: EdgeInsets.all(16.0),
-                        child: Icon(Icons.store, color: Colors.white, size: 30.0),
-                      )
-                    )
-                  )
-                ]
+                    children: <Widget>[
+                      Material(
+                          color: Colors.teal,
+                          shape: CircleBorder(),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Icon(Icons.history,
+                                color: Colors.white, size: 30.0),
+                          )),
+                      Padding(padding: EdgeInsets.only(bottom: 16.0)),
+                      Text('History',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 24.0)),
+                      Text('Past Visits',
+                          style: TextStyle(color: Colors.black45)),
+                    ]),
               ),
             ),
-            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => ShopItemsPage())),
-          )
-        ],
-        staggeredTiles: [
-          StaggeredTile.extent(2, 110.0),
-          StaggeredTile.extent(2, 300.0),
-          StaggeredTile.extent(1, 180.0),
-          StaggeredTile.extent(1, 180.0),
-          StaggeredTile.extent(2, 110.0),
-        ],
-      )
-    );
+            _buildTile(
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Material(
+                          color: Colors.amber,
+                          shape: CircleBorder(),
+                          child: Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Icon(Icons.feedback,
+                                color: Colors.white, size: 30.0),
+                          )),
+                      Padding(padding: EdgeInsets.only(bottom: 16.0)),
+                      Text('Feedback',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 24.0)),
+                      Text('Help us improve ', style: TextStyle(color: Colors.black45)),
+                    ]),
+              ),
+            ),
+            _buildTile(
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('Options',
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 24.0)),
+                          Text('lorme ipsum',
+                              style: TextStyle(color: Colors.redAccent)),
+                        ],
+                      ),
+                      Material(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(24.0),
+                          child: Center(
+                              child: Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Icon(Icons.settings,
+                                color: Colors.white, size: 30.0),
+                          )))
+                    ]),
+              ),
+              onTap: () => Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => ShopItemsPage())),
+            )
+          ],
+          staggeredTiles: [
+            StaggeredTile.extent(2, 110.0),
+            StaggeredTile.fit(2), //for the login button
+            StaggeredTile.extent(2, 300.0),
+            StaggeredTile.extent(1, 180.0),
+            StaggeredTile.extent(1, 180.0),
+            StaggeredTile.extent(2, 110.0),
+          ],
+        ));
   }
 
   Widget _buildTile(Widget child, {Function() onTap}) {
     return Material(
-      elevation: 14.0,
-      borderRadius: BorderRadius.circular(12.0),
-      shadowColor: Color(0x802196F3),
-      child: InkWell
-      (
-        // Do onTap() if it isn't null, otherwise do print()
-        onTap: onTap != null ? () => onTap() : () { print('Not set yet'); },
-        child: child
-      )
-    );
+        elevation: 14.0,
+        borderRadius: BorderRadius.circular(12.0),
+        shadowColor: Color(0x802196F3),
+        child: InkWell(
+            // Do onTap() if it isn't null, otherwise do print()
+            onTap: onTap != null
+                ? () => onTap()
+                : () {
+                    print('Not set yet');
+                  },
+            child: child));
   }
 
-  Widget buildTimeButton() {
-    return RaisedButton(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5.0)
-      ),
-      elevation: 4.0,
-      onPressed: () {
-        DatePicker.showPicker(context,
-            theme: DatePickerTheme(
-              containerHeight: 210.0,
-            ),
-            showTitleActions: true,
-            onConfirm: (time) {
-              print('confirm $time');
-              setState(() {
-                _time = '${time.hour} : ' + '${time.minute}'.padLeft(2,"0");
-                reqTime = time;
-              });
-            },
-            pickerModel:CustomPicker(currentTime: DateTime.now(), locale: LocaleType.en));
-        setState(() {});
-      },
-      child: Container(
-        alignment: Alignment.center,
-        height: 50.0,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Container(
-                  child: Row(
+  Widget _buildLoginTile() {
+    if(baseProvider.firebaseUser == null || baseProvider.myUser == null || baseProvider.myUser.hasIncompleteDetails()) {
+      String btnText = "LOGIN";
+      int pageNo = 0; //mobile no page
+      if(baseProvider.firebaseUser != null ) {
+        //user logged in but has incomplete details
+        btnText = "Confirm Details";
+        pageNo = 2; //name input page
+      }
+      return Material(
+          elevation: 14.0,
+          borderRadius: BorderRadius.circular(12.0),
+          shadowColor: Color(0x802196F3),
+          child: InkWell(
+            // Do onTap() if it isn't null, otherwise do print()
+              onTap:  () {
+                if(widget.onLoginRequest != null) {
+                log.debug("onLoginRequest callback for pageNo: " + pageNo.toString());
+                widget.onLoginRequest(pageNo);
+                }
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Icon(
-                        Icons.access_time,
-                        size: 18.0,
-                        color: Colors.teal,
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(btnText,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 34.0))
+                        ],
                       ),
-                      Text((_time == null)?new CalendarUtil().getRoundedTime():_time,
-                        style: TextStyle(
-                            color: Colors.teal,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18.0),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-            Text(
-              "  Change",
-              style: TextStyle(
-                  color: Colors.teal,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18.0),
-            ),
-          ],
-        ),
-      ),
-      color: Colors.white,
-    );
+                      Material(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(24.0),
+                          child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Icon(Icons.timeline,
+                                    color: Colors.white, size: 30.0),
+                              )))
+                    ]),
+              )
+          )
+      );
+    }
+    //user already logged in and all important user details already available
+    return new Container(width: 0, height: 0,);
   }
 
+  Widget __buildVisitLayout(int homeState) {
+    switch(homeState) {
+      case Constants.VISIT_STATUS_NONE: {
+        return buildHomeLayout();
+      }
+      case Constants.VISIT_STATUS_UPCOMING:{
+        if(baseProvider.currentVisit == null || baseProvider.currentAssistant == null) return buildHomeLayout();
+        return UpcomingVisitLayout(upVisit: baseProvider.currentVisit, upAssistant: baseProvider.currentAssistant);
+      }
+      case Constants.VISIT_STATUS_ONGOING:{
+        if(baseProvider.currentVisit == null || baseProvider.currentAssistant == null) return buildHomeLayout();
+        return OngoingVisitLayout(onVisit: baseProvider.currentVisit, onAssistant: baseProvider.currentAssistant);
+      }
+      case Constants.VISIT_STATUS_CANCELLED:{
+        if(baseProvider.currentVisit == null || baseProvider.currentAssistant == null) return buildHomeLayout();
+        return CancelledVisitLayout(canVisit: baseProvider.currentVisit, canAssistant: baseProvider.currentAssistant);
+      }
+      case Constants.VISIT_STATUS_COMPLETED:{
+        if(baseProvider.currentVisit == null || baseProvider.currentAssistant == null) return buildHomeLayout();
+        return RateVisitLayout(rateVisit: baseProvider.currentVisit, rateAssistant: baseProvider.currentAssistant,
+            actionComplete: () {
+              setState(() {
+                homeState = Constants.VISIT_STATUS_NONE;
+              });
+            });
+      }
+      default: return buildHomeLayout();
+    }
+  }
 
-  String decodeMultiChip() {
-    if(selectedServiceList.contains(Constants.CLEANING) && selectedServiceList.contains(Constants.UTENSILS)) return Constants.CLEAN_UTENSIL_CDE;
-    else if(selectedServiceList.contains(Constants.CLEANING)) return Constants.CLEANING_CDE;
-    else return Constants.UTENSILS_CDE;
+  Widget buildHomeLayout() {
+    return HomeLayout(onLoginRequest: (pageNo) {    //wont need onLoginRequest to be passed on to the HomeLayout either
+      if(widget.onLoginRequest != null) {
+        log.debug("onLoginRequest callback for pageNo: " + pageNo.toString());
+        widget.onLoginRequest(pageNo);
+      }
+    });
+  }
+  //state changer when request is confirmed
+  onAssistantAvailable(state) {
+    setState(() {
+      baseProvider.homeState = state; //TODO should be done in the FCMHandler itself
+      homeState = state;
+    });
   }
 }

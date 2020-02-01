@@ -5,6 +5,7 @@ class UiConstants{
   UiConstants._();
 
   static final Color primaryColor = Colors.greenAccent[400];
+  static final Color accentColor = Colors.grey[800];
   static final Color secondaryColor = Colors.greenAccent;
   static final Color spinnerColor = Colors.grey[400];
   //dimens
