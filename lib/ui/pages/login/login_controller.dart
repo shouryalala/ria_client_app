@@ -43,7 +43,6 @@ class _LoginControllerState extends State<LoginController> {
   static AddressInputScreen addressInScreen;
   String verificationId;
   static List<Widget> _pages;
-  static final _formKey = GlobalKey<FormState>();
   int page;
 
   @override
@@ -64,9 +63,10 @@ class _LoginControllerState extends State<LoginController> {
   }
 
   Future<void> verifyPhone() async {
-    //await SmsAutoFill().listenForCode;
     final PhoneCodeAutoRetrievalTimeout autoRetrieve = (String verId) {
       //this.verificationId = verId;
+      log.debug("Phone number hasnt been auto verified yet");
+      otpInScreen.onOtpTimeout();
     };
 
     final PhoneCodeSent smsCodeSent = (String verId, [int forceCodeResend]) {
@@ -100,7 +100,7 @@ class _LoginControllerState extends State<LoginController> {
         phoneNumber: this.verificationId,
         codeAutoRetrievalTimeout: autoRetrieve,
         codeSent: smsCodeSent,
-        timeout: const Duration(seconds: 35),
+        timeout: const Duration(seconds: 30),
         verificationCompleted: verifiedSuccess,
         verificationFailed: veriFailed);
   }
@@ -234,25 +234,26 @@ class _LoginControllerState extends State<LoginController> {
       case MobileInputScreen.index:
         {
           //in mobile input screen. Get and set mobile/ set error interface if not correct
-          if(mobileInScreen.validate()){
-            log.debug("Form is valid till now");
-          }
-          //Form.of(mobileInScreen)
-          String id = mobileInScreen.getMobile();
-          if (formatMobileNumber(id) != null) {
-            this.userMobile = formatMobileNumber(id);
-            this.verificationId = "+91" + this.userMobile;
-            //TODO add a progress bar until smsCode sent
+          if (mobileInScreen.validate()) {
+            log.debug('Mobile number validated: ${mobileInScreen.getMobile()}');
+            this.userMobile = mobileInScreen.getMobile();
+            this.verificationId = '+91' + this.userMobile;
             verifyPhone();
-          } else {
-            mobileInScreen.setMobileTextError();
           }
+//          if (formatMobileNumber(id) != null) {
+//            this.userMobile = formatMobileNumber(id);
+//            this.verificationId = "+91" + this.userMobile;
+//            //TODO add a progress bar until smsCode sent
+//            verifyPhone();
+//          } else {
+//            mobileInScreen.setMobileTextError();
+//          }
           break;
         }
       case OtpInputScreen.index:
         {
           String otp = otpInScreen.getOtp();
-          if (otp != null && otp.isNotEmpty) {
+          if (otp != null && otp.isNotEmpty && otp.length == 6) {
             baseProvider
                 .authenticateUser(
                     baseProvider.generateAuthCredential(verificationId, otp))
@@ -261,7 +262,7 @@ class _LoginControllerState extends State<LoginController> {
                 otpInScreen.onOtpReceived();
                 onSignInSuccess();
               } else {
-                //TODO
+                UiConstants.offerSnacks(context, 'Please enter a valid otp');
               }
             });
           } else {
@@ -349,13 +350,11 @@ class _LoginControllerState extends State<LoginController> {
       //dbProvider.getUser(this.userMobile).then((user) {
       dbProvider.getUser(fUser.uid).then((user) {
         //user variable is pre cast into User object
-        dbProvider.logDeviceId(
-            fUser.uid); //no await needed. async can complete in its own time
+        dbProvider.logDeviceId(fUser.uid); //no await needed. async can complete in its own time
         if (user == null || (user != null && user.hasIncompleteDetails())) {
           log.debug(
               "No existing user details found or found incomplete details for user. Moving to details page");
-          baseProvider.myUser =
-              (user != null) ? user : User.newUser(fUser.uid, this.userMobile);
+          baseProvider.myUser = user ?? User.newUser(fUser.uid, this.userMobile);
           //Move to name input page
           _controller.animateToPage(NameInputScreen.index,
               duration: Duration(milliseconds: 300), curve: Curves.easeIn);

@@ -4,7 +4,6 @@ import 'package:flutter_app/util/logger.dart';
 import 'package:flutter_app/util/ui_constants.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:pin_input_text_field/pin_input_text_field.dart';
-//import 'package:sms_autofill/sms_autofill.dart';
 
 class OtpInputScreen extends StatefulWidget{
   static const int index = 1;  //pager index
@@ -13,8 +12,8 @@ class OtpInputScreen extends StatefulWidget{
   State<StatefulWidget> createState() => otpInputScreenState;
 
   void onOtpReceived() => otpInputScreenState.onOtpReceived();
-
-  String getOtp() => otpInputScreenState.otp;
+  void onOtpTimeout() => otpInputScreenState.onOtpAutoDetectTimeout();
+  String getOtp() => otpInputScreenState.getOtp();
 }
 
 class _OtpInputScreenState extends State<OtpInputScreen> {
@@ -22,6 +21,7 @@ class _OtpInputScreenState extends State<OtpInputScreen> {
   String _otp;
   String _loaderMessage = "Detecting otp..";
   bool _otpFieldEnabled = true;
+  bool _autoDetectingOtp = true;
   final _pinEditingController = new TextEditingController();
 
   @override
@@ -33,12 +33,6 @@ class _OtpInputScreenState extends State<OtpInputScreen> {
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 18.0),
-//                child: PinFieldAutoFill(  //TODO This AutoFill doesn't work
-//                  currentCode: "123456",
-//                  onCodeChanged: pinFieldCodeChanged,
-//                  onCodeSubmitted: pinFieldCodeSubmitted,
-//                  codeLength: 6,
-//                ),
                   child: PinInputTextField(
                     enabled: _otpFieldEnabled,
                     pinLength: 6,
@@ -56,19 +50,25 @@ class _OtpInputScreenState extends State<OtpInputScreen> {
                   )
               ),
               SizedBox(height: 16.0),
-              Padding(
+              (_autoDetectingOtp)?Padding(
                 padding: const EdgeInsets.fromLTRB(25.0, 25.0, 25.0, 25.0),
                 child: SpinKitDoubleBounce(
                   color: UiConstants.spinnerColor,
                   //controller: AnimationController(vsync: this, duration: const Duration(milliseconds: 1200)),
                 ),
-              ),
-              SizedBox(height: 5.0),
+              ):Container(),
+              (_autoDetectingOtp)?SizedBox(height: 5.0):Container(),
               Text(
                 _loaderMessage,
                 style: Theme.of(context).textTheme.body1.copyWith(color: Colors.grey[800]),
                 textAlign: TextAlign.center,
-              )
+              ),
+              (!_autoDetectingOtp)?FlatButton(
+                child: Text('Resend'),
+                onPressed: () {
+                  log.debug("Resend action triggered");
+                },
+              ): Container()
             ],
           )
         )
@@ -91,5 +91,13 @@ class _OtpInputScreenState extends State<OtpInputScreen> {
     });
   }
 
-  String get otp => _pinEditingController.text;
+  onOtpAutoDetectTimeout() {
+    setState(() {
+      _otpFieldEnabled = true;
+      _autoDetectingOtp = false;
+      _loaderMessage = "Couldn't auto-detect otp";
+    });
+  }
+
+  String getOtp() => _pinEditingController.text;
 }

@@ -12,15 +12,14 @@ class MobileInputScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => mobileInputScreenState;
 
-  getMobile() => mobileInputScreenState.phoneNo;
+  getMobile() => mobileInputScreenState.getMobile();
 
-  setMobileTextError() => mobileInputScreenState.setError();
+  //setMobileTextError() => mobileInputScreenState.setError();
 
   validate() => mobileInputScreenState._formKey.currentState.validate();
 }
 
 class _MobileInputScreenState extends State<MobileInputScreen> {
-  String _phoneNo;
   final _formKey = GlobalKey<FormState>();
   final _mobileController = TextEditingController();
   bool _validate = true;
@@ -105,13 +104,13 @@ class _MobileInputScreenState extends State<MobileInputScreen> {
   }
 
   String _validateMobile(String value) {
-    Pattern pattern = "^[0-9+]*\$";
+    Pattern pattern = "^[0-9]*\$";
     RegExp regex = new RegExp(pattern);
-    if (regex.hasMatch(value))
+    if (!regex.hasMatch(value) || value.length != 10)
       return 'Enter a valid Mobile';
     else
       return null;
   }
 
-  String get phoneNo => _mobileController.text;
+  String getMobile() => _mobileController.text;
 }
