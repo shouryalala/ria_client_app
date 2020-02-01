@@ -47,14 +47,14 @@ class _MainPageState extends State<MainPage>
   @override
   Widget build(BuildContext context)
   {
-    baseProvider = Provider.of<BaseUtil>(context);
-    reqProvider = Provider.of<DBModel>(context);
+//    baseProvider = Provider.of<BaseUtil>(context);
+//    reqProvider = Provider.of<DBModel>(context);
     return Scaffold
     (
       appBar: AppBar
       (
         elevation: 2.0,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.greenAccent,
         title: Text('CRYB', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 30.0)),
         actions: <Widget>
         [
@@ -113,59 +113,6 @@ class _MainPageState extends State<MainPage>
                       )
                     )
                   )
-                ]
-              ),
-            ),
-          ),
-          _buildTile(
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column
-              (
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>
-                [
-                  Material
-                  (
-                    color: Colors.teal,
-                    shape: CircleBorder(),
-                    child: Padding
-                    (
-                      padding: const EdgeInsets.all(16.0),
-                      child: Icon(Icons.settings_applications, color: Colors.white, size: 30.0),
-                    )
-                  ),
-                  Padding(padding: EdgeInsets.only(bottom: 16.0)),
-                  Text('General', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 24.0)),
-                  Text('Images, Videos', style: TextStyle(color: Colors.black45)),
-                ]
-              ),
-            ),
-          ),
-          _buildTile(
-            Padding
-            (
-              padding: const EdgeInsets.all(24.0),
-              child: Column
-              (
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>
-                [
-                  Material
-                  (
-                    color: Colors.amber,
-                    shape: CircleBorder(),
-                    child: Padding
-                    (
-                      padding: EdgeInsets.all(16.0),
-                      child: Icon(Icons.notifications, color: Colors.white, size: 30.0),
-                    )
-                  ),
-                  Padding(padding: EdgeInsets.only(bottom: 16.0)),
-                  Text('Alerts', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 24.0)),
-                  Text('All ', style: TextStyle(color: Colors.black45)),
                 ]
               ),
             ),
@@ -302,6 +249,60 @@ class _MainPageState extends State<MainPage>
                   )
                 ),
           ),
+
+          _buildTile(
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column
+                (
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>
+                  [
+                    Material
+                      (
+                        color: Colors.teal,
+                        shape: CircleBorder(),
+                        child: Padding
+                          (
+                          padding: const EdgeInsets.all(16.0),
+                          child: Icon(Icons.settings_applications, color: Colors.white, size: 30.0),
+                        )
+                    ),
+                    Padding(padding: EdgeInsets.only(bottom: 16.0)),
+                    Text('General', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 24.0)),
+                    Text('Images, Videos', style: TextStyle(color: Colors.black45)),
+                  ]
+              ),
+            ),
+          ),
+          _buildTile(
+            Padding
+              (
+              padding: const EdgeInsets.all(24.0),
+              child: Column
+                (
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>
+                  [
+                    Material
+                      (
+                        color: Colors.amber,
+                        shape: CircleBorder(),
+                        child: Padding
+                          (
+                          padding: EdgeInsets.all(16.0),
+                          child: Icon(Icons.notifications, color: Colors.white, size: 30.0),
+                        )
+                    ),
+                    Padding(padding: EdgeInsets.only(bottom: 16.0)),
+                    Text('Alerts', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 24.0)),
+                    Text('All ', style: TextStyle(color: Colors.black45)),
+                  ]
+              ),
+            ),
+          ),
           _buildTile(
             Padding
             (
@@ -343,9 +344,9 @@ class _MainPageState extends State<MainPage>
         ],
         staggeredTiles: [
           StaggeredTile.extent(2, 110.0),
+          StaggeredTile.extent(2, 300.0),
           StaggeredTile.extent(1, 180.0),
           StaggeredTile.extent(1, 180.0),
-          StaggeredTile.extent(2, 500.0),
           StaggeredTile.extent(2, 110.0),
         ],
       )
