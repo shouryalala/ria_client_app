@@ -4,6 +4,10 @@ import 'package:flutter_app/ui/pages/availability_dialog.dart';
 import 'package:flutter_app/util/logger.dart';
 
 class MobileInputScreen extends StatefulWidget {
+//  final GlobalKey<FormState> formKey;
+//  MobileInputScreen({this.formKey});
+
+  static const int index = 0;  //pager index
   final mobileInputScreenState = _MobileInputScreenState();
   @override
   State<StatefulWidget> createState() => mobileInputScreenState;
@@ -11,10 +15,14 @@ class MobileInputScreen extends StatefulWidget {
   getMobile() => mobileInputScreenState.phoneNo;
 
   setMobileTextError() => mobileInputScreenState.setError();
+
+  validate() => mobileInputScreenState._formKey.currentState.validate();
 }
 
 class _MobileInputScreenState extends State<MobileInputScreen> {
   String _phoneNo;
+  final _formKey = GlobalKey<FormState>();
+  final _mobileController = TextEditingController();
   bool _validate = true;
   Log log = new Log("MobileInputScreen");
 
@@ -27,20 +35,38 @@ class _MobileInputScreenState extends State<MobileInputScreen> {
           Center(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 18.0),
-              child: TextField(
-                decoration: InputDecoration(
-                    hintText: 'Enter Phone number',
-                    errorText: _validate ? null : "Invalid!",
+              child:Form(
+                key: _formKey,
+                child: TextFormField(
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: "Mobile",
+                    prefixIcon: Icon(Icons.phone),
+                  ),
+                  controller: _mobileController,
+                  validator: (value) => _validateMobile(value),
+                  onFieldSubmitted: (v) {
+                    FocusScope.of(context).nextFocus();
+                  },
                 ),
-                keyboardType: TextInputType.number,
-                onChanged: (value) {
-                  this._phoneNo = value;
-                  if(!_validate) setState(() {
-                    _validate = true;
-                  });
-                },
-              ),
+              )
+//      TextField(
+//                decoration: InputDecoration(
+//                    hintText: 'Enter Phone number',
+//                    errorText: _validate ? null : "Invalid!",
+//                ),
+//                keyboardType: TextInputType.number,
+//                onChanged: (value) {
+//                  this._phoneNo = value;
+//                  if(!_validate) setState(() {
+//                    _validate = true;
+//                  });
+//                },
+//              ),
             ),
+          ),
+          SizedBox(
+            height: 12,
           ),
           Container(
             width: 150.0,
@@ -78,5 +104,14 @@ class _MobileInputScreenState extends State<MobileInputScreen> {
     });
   }
 
-  String get phoneNo => _phoneNo;
+  String _validateMobile(String value) {
+    Pattern pattern = "^[0-9+]*\$";
+    RegExp regex = new RegExp(pattern);
+    if (regex.hasMatch(value))
+      return 'Enter a valid Mobile';
+    else
+      return null;
+  }
+
+  String get phoneNo => _mobileController.text;
 }

@@ -5,6 +5,7 @@ import 'package:flutter_app/util/logger.dart';
 import 'package:provider/provider.dart';
 
 class AddressInputScreen extends StatefulWidget{
+  static const int index = 3;  //pager index
   final addressInputScreenState = _AddressInputScreenState();
   @override
   State<StatefulWidget> createState() => addressInputScreenState;

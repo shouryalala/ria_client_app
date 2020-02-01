@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../../../base_util.dart';
 
 class NameInputScreen extends StatefulWidget{
+  static const int index = 2; //pager index
   final nameInputScreenState = _NameInputScreenState();
   @override
   State<StatefulWidget> createState() => nameInputScreenState;

@@ -7,6 +7,7 @@ import 'package:pin_input_text_field/pin_input_text_field.dart';
 //import 'package:sms_autofill/sms_autofill.dart';
 
 class OtpInputScreen extends StatefulWidget{
+  static const int index = 1;  //pager index
   final otpInputScreenState = _OtpInputScreenState();
   @override
   State<StatefulWidget> createState() => otpInputScreenState;
