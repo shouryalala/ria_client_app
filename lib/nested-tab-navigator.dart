@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/ui/pages/login/login_dialog.dart';
+import 'package:flutter_app/ui/pages/login/login_controller.dart';
 import 'package:flutter_app/ui/pages/placeholder_widget.dart';
 import 'package:flutter_app/ui/pages/profile/history_widget.dart';
 import 'package:flutter_app/ui/pages/profile/profile_options.dart';
@@ -51,7 +51,7 @@ class TabNavigator extends StatelessWidget {
     //var routeBuilders = _routeBuilders(context);
 
     Navigator.push(context, MaterialPageRoute(
-        builder: (context) => LoginDialog(initPage: pageNo)
+        builder: (context) => LoginController(initPage: pageNo)
       ),
     );
   }
@@ -71,9 +71,9 @@ class TabNavigator extends StatelessWidget {
             _push(context, routeId),
       ),
       TabNavigatorRoutes.history: (context) => HistoryPage(),
-      TabNavigatorRoutes.login: (context) => LoginDialog(),
+      TabNavigatorRoutes.login: (context) => LoginController(),
       TabNavigatorRoutes.upAddress: (context) => UpdateAddressScreen(),
-      //TabNavigatorRoutes.login: (context) => LoginDialog(),
+      //TabNavigatorRoutes.login: (context) => LoginController(),
       //TabNavigatorRoutes.loginX: (context) => LoginScreen(),
     };
   }

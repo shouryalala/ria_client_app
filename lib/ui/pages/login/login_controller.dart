@@ -16,17 +16,17 @@ import 'package:provider/provider.dart';
 
 import '../../../base_util.dart';
 
-class LoginDialog extends StatefulWidget{
+class LoginController extends StatefulWidget{
   final int initPage;
-  LoginDialog({this.initPage});
+  LoginController({this.initPage});
   @override
-  State<StatefulWidget> createState() => _LoginDialogState(initPage);
+  State<StatefulWidget> createState() => _LoginControllerState(initPage);
 }
 
-class _LoginDialogState extends State<LoginDialog> {
-  final Log log = new Log("LoginDialog");
+class _LoginControllerState extends State<LoginController> {
+  final Log log = new Log("LoginController");
   final int initPage;
-  _LoginDialogState(this.initPage);
+  _LoginControllerState(this.initPage);
   PageController _controller;
   static BaseUtil baseProvider;
   static DBModel dbProvider;

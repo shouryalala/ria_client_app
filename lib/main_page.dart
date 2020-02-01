@@ -83,7 +83,7 @@ class _MainPageState extends State<MainPage> {
           mainAxisSpacing: 12.0,
           padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           children: <Widget>[
-            _buildTile( //Total Mins used
+            _buildTile( //Total Mins used //TODO remove this tile if not signed in yet
               Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Row(
@@ -286,7 +286,7 @@ class _MainPageState extends State<MainPage> {
 
   Widget _buildLoginTile() {
     if(baseProvider.firebaseUser == null || baseProvider.myUser == null || baseProvider.myUser.hasIncompleteDetails()) {
-      String btnText = "LOGIN";
+      String btnText = "Login";
       int pageNo = 0; //mobile no page
       if(baseProvider.firebaseUser != null ) {
         //user logged in but has incomplete details
@@ -319,16 +319,17 @@ class _MainPageState extends State<MainPage> {
                               style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w700,
-                                  fontSize: 34.0))
+                                  fontSize: 34.0)),
+                          Text('click to ${btnText} ', style: TextStyle(color: Colors.black45)),
                         ],
                       ),
                       Material(
-                          color: Colors.blue,
+                          color: Colors.greenAccent,
                           borderRadius: BorderRadius.circular(24.0),
                           child: Center(
                               child: Padding(
                                 padding: const EdgeInsets.all(16.0),
-                                child: Icon(Icons.timeline,
+                                child: Icon(Icons.verified_user,
                                     color: Colors.white, size: 30.0),
                               )))
                     ]),

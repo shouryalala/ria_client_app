@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/ops/db_ops.dart';
 import 'package:flutter_app/main_page.dart';
-import 'package:flutter_app/ui/pages/login/login_dialog.dart';
+import 'package:flutter_app/ui/pages/login/login_controller.dart';
 import 'package:flutter_app/ui/pages/onboarding/onboarding_widget.dart';
 import 'package:flutter_app/ui/pages/profile/history_widget.dart';
 import 'package:flutter_app/ui/pages/profile/profile_options.dart';
@@ -47,9 +47,13 @@ class App extends StatelessWidget{
           routes: <String, WidgetBuilder> {
             '/launcher': (BuildContext context) => SplashScreen(),
 //            '/home': (BuildContext context) => AppCanvas(),
-            '/home': (BuildContext context) => MainPage(),
+            '/home': (BuildContext context) => MainPage(onLoginRequest: (pageNo) {
+              Navigator.push(context, MaterialPageRoute(
+                builder: (context) => LoginController(initPage: pageNo)
+              ));
+            }),
             '/onboarding':(BuildContext context) => OnboardingMainPage(),
-            '/login': (BuildContext context) => LoginDialog(),
+            '/login': (BuildContext context) => LoginController(),
             '/history': (BuildContext context) => HistoryPage(),
             '/profile': (BuildContext context) => ProfileOptions(),
           },
