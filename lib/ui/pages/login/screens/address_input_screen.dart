@@ -34,6 +34,7 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
   int _bhk;
   bool _flatInvalid = false;
   static const List<int> BHK_OPTIONS = [1,2,3,4];
+  static const insets = EdgeInsets.fromLTRB(30.0, 18.0, 30.0, 18.0);
 
   @override
   void initState() {
@@ -59,9 +60,9 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
           child: Column(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 18.0),
+                padding: insets,
                 child: DropdownButtonFormField(
-                  hint: Text('Select Sector'),
+                  //hint: Text('Select Sector'),
                   value: _selected_sector,
                   items: (dMap != null)?dMap.keys.map((sector){
                     return new DropdownMenuItem(
@@ -71,6 +72,14 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
                   }).toList():
                   null,
                   isExpanded: true,
+                  validator: (value) {
+                    if(value == null)return 'Select your sector';
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Sector',
+                    icon: Icon(Icons.place)
+                  ),
                   //focusColor: UiConstants.primaryColor,
                   onChanged: ((selection){
                     setState(() {
@@ -81,14 +90,22 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 18.0),
+                padding: insets,
                 child: DropdownButtonFormField<Society>(
-                  hint: new Text('Select Society'),
+                  //hint: new Text('Select Society'),
                   value: _selected_society,
                   onChanged: (society) {
                     setState(() {
                       _selected_society = society;
                     });
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Society',
+                    icon: Icon(Icons.business)
+                  ),
+                  validator: (value) {
+                    if(value == null)return 'Select your society';
+                    return null;
                   },
                   items: (dMap == null || _selected_sector == null)?null:
                   dMap[_selected_sector].map((society){
@@ -104,11 +121,13 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 18.0),
+                padding: insets,
                 child: TextFormField(
                   decoration: InputDecoration(
-                    hintText: 'Flat No',
-                    errorText: _flatInvalid ? " House no needed ": null,
+                    //errorText: _flatInvalid ? " House no needed ": null,
+                    labelText: 'Building / Flat No',
+                    icon: Icon(Icons.home)
+
                   ),
                   onChanged: (value) {
                     setState(() {
@@ -116,14 +135,20 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
                       _flatInvalid = false;
                     });
                   },
+                  validator: (value) {
 
+                  },
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 18.0),
+                padding: insets,
                 child: DropdownButtonFormField(
-                  hint: new Text("Appt size"),
+                  //hint: new Text("Appt size"),
                   value: _bhk,
+                  decoration: InputDecoration(
+                    labelText: 'Appt Size',
+                    icon: Icon(Icons.weekend)
+                  ),
                   onChanged: (bhk) {
                     setState(() {
                       _bhk = bhk;

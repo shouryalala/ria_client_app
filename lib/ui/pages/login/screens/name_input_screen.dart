@@ -6,21 +6,22 @@ import 'package:provider/provider.dart';
 import '../../../../base_util.dart';
 
 class NameInputScreen extends StatefulWidget{
-  static const int index = 2; //pager index
-  final nameInputScreenState = _NameInputScreenState();
+  static const int index = 2;
+  NameInputScreen({Key key}):super(key: key); //pager index
+  //final nameInputScreenState = NameInputScreenState();
   @override
-  State<StatefulWidget> createState() => _NameInputScreenState();
+  State<StatefulWidget> createState() => NameInputScreenState();
 
-  String getName() => "x";//nameInputScreenState.name;
+  //String getName() => nameInputScreenState.name;
 
-  String getEmail() => "x";//nameInputScreenState.email;
+  //String getEmail() => nameInputScreenState.email;
 
-  setNameInvalid() => nameInputScreenState.setError();
+  //setNameInvalid() => nameInputScreenState.setError();
 
-  bool validate() => true;//nameInputScreenState._formKey.currentState.validate();
+  //bool validate() => nameInputScreenState._formKey.currentState.validate();
 }
 
-class _NameInputScreenState extends State<NameInputScreen> {
+class NameInputScreenState extends State<NameInputScreen> {
   String _name;
   String _email;
   bool _isInitialized = false;
@@ -54,10 +55,11 @@ class _NameInputScreenState extends State<NameInputScreen> {
       _emailFieldController = (authProvider.myUser != null && authProvider.myUser.email != null)?
       new TextEditingController(text: authProvider.myUser.email):new TextEditingController();
     }
-    return Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Center(
-            child: Form(
+//    return Scaffold(
+//        backgroundColor: Colors.transparent,
+//        body: Center(
+//            child:
+            return Form(
                 key:_formKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -110,8 +112,8 @@ class _NameInputScreenState extends State<NameInputScreen> {
                     ),
                   ],
                 )
-        )
-    )
+    //    )
+    //)
     );
   }
 
@@ -134,5 +136,8 @@ class _NameInputScreenState extends State<NameInputScreen> {
     //_name = value;
     _nameFieldController.text = value;
   }
+
+  get formKey => _formKey;
+
 
 }

@@ -45,6 +45,7 @@ class _LoginControllerState extends State<LoginController> {
   String verificationId;
   static List<Widget> _pages;
   int _currentPage;
+  final _nameScreenKey = new GlobalKey<NameInputScreenState>();
 
   @override
   void initState() {
@@ -54,7 +55,7 @@ class _LoginControllerState extends State<LoginController> {
     _controller = new PageController(initialPage: _currentPage);
     mobileInScreen = MobileInputScreen();
     otpInScreen = OtpInputScreen();
-    nameInScreen = NameInputScreen();
+    nameInScreen = NameInputScreen(key: _nameScreenKey);
     addressInScreen = AddressInputScreen();
     _pages = [
       mobileInScreen,
@@ -141,8 +142,11 @@ class _LoginControllerState extends State<LoginController> {
               backgroundColor: Colors.transparent,
               valueColor: AlwaysStoppedAnimation<Color>(
                   Theme.of(context).primaryColor)),
-          new Positioned.fill(
-            child: new PageView.builder(
+          //new Positioned.fill(
+            //child:
+            //Expanded(
+              //child:
+              new PageView.builder(
               physics: new NeverScrollableScrollPhysics(),
               controller: _controller,
               itemCount: _pages.length,
@@ -156,8 +160,11 @@ class _LoginControllerState extends State<LoginController> {
                 });
               },
             ),
-          ),
-          Align(
+          //)
+        //  ),
+          //Flexible(
+            //child:
+            Align(
 //          bottom: 10.0,
 //          left: 0.0,
 //          right: 0.0,
@@ -244,8 +251,10 @@ class _LoginControllerState extends State<LoginController> {
 //            ),
             ),
           ),
+    //      )
         ],
-      )),
+      )
+    ),
     );
   }
 
@@ -292,14 +301,17 @@ class _LoginControllerState extends State<LoginController> {
         }
       case NameInputScreen.index:
         {
-          if(nameInScreen.validate()) {
+          //if(nameInScreen.validate()) {
+          if(_nameScreenKey.currentState.formKey.currentState.validate()) {
             if (baseProvider.myUser == null) {
               //firebase user should never be null at this point
               baseProvider.myUser = User.newUser(baseProvider.firebaseUser.uid,
                   formatMobileNumber(baseProvider.firebaseUser.phoneNumber));
             }
-            baseProvider.myUser.name = nameInScreen.getName();
-            String email = nameInScreen.getEmail();
+            //baseProvider.myUser.name = nameInScreen.getName();
+            baseProvider.myUser.name = _nameScreenKey.currentState.name;
+            //String email = nameInScreen.getEmail();
+            String email = _nameScreenKey.currentState.email;
             if (email != null && email.isNotEmpty) {
               baseProvider.myUser.email = email;
             }
@@ -311,34 +323,34 @@ class _LoginControllerState extends State<LoginController> {
         }
       case AddressInputScreen.index:
         {
-          Society selSociety = addressInScreen.getSociety();
-          String selFlatNo = addressInScreen.getFlatNo();
-          int selBhk = addressInScreen.getBhk();
-          if (selSociety == null) {
-            UiConstants.offerSnacks(context, "Please select your appt");
-            return;
-          }
-          if (selFlatNo == null || selFlatNo.isEmpty) {
-            addressInScreen.setFlatNoInvalid();
-            return;
-          }
-          if (selBhk == null) {
-            UiConstants.offerSnacks(context, "Please select your house size");
-            return;
-          }
-          baseProvider.myUser.flat_no = selFlatNo;
-          baseProvider.myUser.society_id = selSociety.sId;
-          baseProvider.myUser.sector = selSociety.sector;
-          baseProvider.myUser.bhk = selBhk;
-          //if nothing was invalid:
-          dbProvider.updateUser(baseProvider.myUser).then((flag) {
-            if (flag) {
-              log.debug("User object saved successfully");
-              onSignUpComplete();
-            } else {
-              //TODO signup failed! YIKES please try again later
-            }
-          });
+//          Society selSociety = addressInScreen.getSociety();
+//          String selFlatNo = addressInScreen.getFlatNo();
+//          int selBhk = addressInScreen.getBhk();
+//          if (selSociety == null) {
+//            UiConstants.offerSnacks(context, "Please select your appt");
+//            return;
+//          }
+//          if (selFlatNo == null || selFlatNo.isEmpty) {
+//            addressInScreen.setFlatNoInvalid();
+//            return;
+//          }
+//          if (selBhk == null) {
+//            UiConstants.offerSnacks(context, "Please select your house size");
+//            return;
+//          }
+//          baseProvider.myUser.flat_no = selFlatNo;
+//          baseProvider.myUser.society_id = selSociety.sId;
+//          baseProvider.myUser.sector = selSociety.sector;
+//          baseProvider.myUser.bhk = selBhk;
+//          //if nothing was invalid:
+//          dbProvider.updateUser(baseProvider.myUser).then((flag) {
+//            if (flag) {
+//              log.debug("User object saved successfully");
+//              onSignUpComplete();
+//            } else {
+//              //TODO signup failed! YIKES please try again later
+//            }
+//          });
         }
     }
   }
