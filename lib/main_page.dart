@@ -54,7 +54,7 @@ class _MainPageState extends State<MainPage> {
         appBar: AppBar(
           elevation: 2.0,
           backgroundColor: Colors.white70,
-          title: Text('Test',
+          title: Text('${Constants.APP_NAME}',
               style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.w700,

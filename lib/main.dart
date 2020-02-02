@@ -5,6 +5,7 @@ import 'package:flutter_app/ui/pages/login/login_controller.dart';
 import 'package:flutter_app/ui/pages/onboarding/onboarding_widget.dart';
 import 'package:flutter_app/ui/pages/profile/history_widget.dart';
 import 'package:flutter_app/ui/pages/profile/profile_options.dart';
+import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/locator.dart';
 import 'package:flutter_app/util/ui_constants.dart';
 import 'package:provider/provider.dart';
@@ -38,7 +39,7 @@ class App extends StatelessWidget{
           ChangeNotifierProvider(builder: (_) =>  locator<FcmHandler>()),
         ],
         child: MaterialApp(
-          title:"Ria",
+          title:'${Constants.APP_NAME}',
           color: UiConstants.secondaryColor,
           theme: ThemeData(
               primaryColor: UiConstants.primaryColor

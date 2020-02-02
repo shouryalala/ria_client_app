@@ -5,6 +5,8 @@ import 'package:flutter_app/core/ops/db_ops.dart';
 import 'package:flutter_app/core/ops/http_ops.dart';
 import 'package:flutter_app/ui/elements/mutli_select_chip.dart';
 import 'package:flutter_app/ui/elements/time_picker_model.dart';
+import 'package:flutter_app/ui/pages/login/screens/mobile_input_screen.dart';
+import 'package:flutter_app/ui/pages/login/screens/name_input_screen.dart';
 import 'package:flutter_app/util/calendar_util.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/logger.dart';
@@ -202,11 +204,11 @@ class _HomeLayoutState extends State<HomeLayout> {
   Widget buildLoginButton() {
     if(baseProvider.firebaseUser == null || baseProvider.myUser == null || baseProvider.myUser.hasIncompleteDetails()) {
       String btnText = "LOGIN";
-      int pageNo = 0; //mobile no page
+      int pageNo = MobileInputScreen.index; //mobile no page
       if(baseProvider.firebaseUser != null ) {
         //user logged in but has incomplete details
         btnText = "Confirm Details";
-        pageNo = 2; //name input page
+        pageNo = NameInputScreen.index; //name input page
       }
       Align loginBtn =
       Align(

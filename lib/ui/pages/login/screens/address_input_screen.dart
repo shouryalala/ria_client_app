@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/core/ops/db_ops.dart';
 import 'package:flutter_app/core/model/society.dart';
 import 'package:flutter_app/util/logger.dart';
+import 'package:flutter_app/util/ui_constants.dart';
 import 'package:provider/provider.dart';
 
 class AddressInputScreen extends StatefulWidget{
   static const int index = 3;  //pager index
   final addressInputScreenState = _AddressInputScreenState();
   @override
-  State<StatefulWidget> createState() => addressInputScreenState;
+  State<StatefulWidget> createState() => _AddressInputScreenState();
 
   Society getSociety() => addressInputScreenState.selected_society;
 
@@ -24,6 +25,7 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
   bool _isInitialised = false;
   static DBModel dbProvider;
   static Map<int, Set<Society>> dMap;
+  final _formKey = GlobalKey<FormState>();
   int _selected_sector;
   String _selected_society_id;
   Society _selected_society;
@@ -50,14 +52,16 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
         });
       });
     }
-    return Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Center(
+    return Form(
+        //backgroundColor: Colors.transparent,
+        key: _formKey,
+        child: Center(
           child: Column(
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 18.0),
-                child: DropdownButton(
+                child: DropdownButtonFormField(
+                  hint: Text('Select Sector'),
                   value: _selected_sector,
                   items: (dMap != null)?dMap.keys.map((sector){
                     return new DropdownMenuItem(
@@ -66,6 +70,8 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
                     );
                   }).toList():
                   null,
+                  isExpanded: true,
+                  //focusColor: UiConstants.primaryColor,
                   onChanged: ((selection){
                     setState(() {
                       _selected_sector = selection;
@@ -76,8 +82,8 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 18.0),
-                child: DropdownButton<Society>(
-                  hint: new Text("Pick your Society"),
+                child: DropdownButtonFormField<Society>(
+                  hint: new Text('Select Society'),
                   value: _selected_society,
                   onChanged: (society) {
                     setState(() {
@@ -91,11 +97,15 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
                         child: new Text(society.enName)
                     );
                   }).toList(),
+                  isExpanded: true,
+                  //focusColor: UiConstants.primaryColor,
+                  //underline: ,
+                  //disabledHint: Text('Please select a sector'),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 18.0),
-                child: TextField(
+                child: TextFormField(
                   decoration: InputDecoration(
                     hintText: 'Flat No',
                     errorText: _flatInvalid ? " House no needed ": null,
@@ -111,7 +121,7 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 18.0),
-                child: DropdownButton(
+                child: DropdownButtonFormField(
                   hint: new Text("Appt size"),
                   value: _bhk,
                   onChanged: (bhk) {

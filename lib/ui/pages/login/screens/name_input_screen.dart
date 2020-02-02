@@ -9,13 +9,15 @@ class NameInputScreen extends StatefulWidget{
   static const int index = 2; //pager index
   final nameInputScreenState = _NameInputScreenState();
   @override
-  State<StatefulWidget> createState() => nameInputScreenState;
+  State<StatefulWidget> createState() => _NameInputScreenState();
 
-  String getName() => nameInputScreenState.name;
+  String getName() => "x";//nameInputScreenState.name;
 
-  String getEmail() => nameInputScreenState.email;
+  String getEmail() => "x";//nameInputScreenState.email;
 
   setNameInvalid() => nameInputScreenState.setError();
+
+  bool validate() => true;//nameInputScreenState._formKey.currentState.validate();
 }
 
 class _NameInputScreenState extends State<NameInputScreen> {
@@ -26,6 +28,7 @@ class _NameInputScreenState extends State<NameInputScreen> {
   TextEditingController _nameFieldController;
   TextEditingController _emailFieldController;
   static BaseUtil authProvider;
+  final _formKey = GlobalKey<FormState>();
   Log log = new Log("NameInputScreen");
 
   @override
@@ -54,45 +57,61 @@ class _NameInputScreenState extends State<NameInputScreen> {
     return Scaffold(
         backgroundColor: Colors.transparent,
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 18.0),
-                child: TextField(
-                  controller: _nameFieldController,
-                  decoration: InputDecoration(
-                    hintText: 'Name',
-                    errorText: _validate ? null : "Tell us your name",
-                  ),
-                  onChanged: (value) {
-                    //this._name = value;
-                    if(!_validate) setState(() {
-                      _validate = true;
-                    });
-                  },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 18.0),
-                child: TextField(
-                  controller: _emailFieldController,
-                  decoration: InputDecoration(
-                    hintText: 'Email(optional)',
-                    //errorText: _validate ? null : "Invalid!",
-                  ),
-                  onChanged: (value) {
-                    //this._email = value;
+            child: Form(
+                key:_formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                          18.0, 18.0, 18.0, 18.0),
+                      child: TextFormField(
+                        controller: _nameFieldController,
+                        keyboardType: TextInputType.text,
+                        decoration: InputDecoration(
+//                          hintText: 'Name',
+//                          errorText: _validate ? null : "Tell us your name",
+                            labelText: 'Name',
+                            prefixIcon: Icon(Icons.person),
+                        ),
+                      validator: (value) {
+                          return (value != null && value.isNotEmpty)?null:'Please enter your name';
+                      },
+                      onFieldSubmitted: (v) {
+                        FocusScope.of(context).nextFocus();
+                      },
+//                        onChanged: (value) {
+//                          //this._name = value;
+//                          if (!_validate) setState(() {
+//                            _validate = true;
+//                          });
+//                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                          18.0, 18.0, 18.0, 18.0),
+                      child: TextFormField(
+                        controller: _emailFieldController,
+                        decoration: InputDecoration(
+                          //hintText: 'Email(optional)',
+                          //errorText: _validate ? null : "Invalid!",
+                          labelText: 'Email (optional)',
+                          prefixIcon: Icon(Icons.email),
+                        ),
+//                        onChanged: (value) {
+                          //this._email = value;
 //                    if(!_validate) setState(() {
 //                      _validate = true;
 //                    });
-                  },
-                ),
-              ),
-            ],
-          ),
+//                        },
+                      ),
+                    ),
+                  ],
+                )
         )
+    )
     );
   }
 

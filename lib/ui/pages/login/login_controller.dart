@@ -10,6 +10,7 @@ import 'package:flutter_app/ui/pages/login/screens/address_input_screen.dart';
 import 'package:flutter_app/ui/pages/login/screens/mobile_input_screen.dart';
 import 'package:flutter_app/ui/pages/login/screens/name_input_screen.dart';
 import 'package:flutter_app/ui/pages/login/screens/otp_input_screen.dart';
+import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:flutter_app/util/ui_constants.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +29,7 @@ class LoginController extends StatefulWidget {
 class _LoginControllerState extends State<LoginController> {
   final Log log = new Log("LoginController");
   final int initPage;
-  double _formProgress = 0.15;
+  double _formProgress = 0.2;
 
   _LoginControllerState(this.initPage);
 
@@ -43,13 +44,14 @@ class _LoginControllerState extends State<LoginController> {
   static AddressInputScreen addressInScreen;
   String verificationId;
   static List<Widget> _pages;
-  int page;
+  int _currentPage;
 
   @override
   void initState() {
     super.initState();
-    page = (initPage != null) ? initPage : 0;
-    _controller = new PageController(initialPage: page);
+    _currentPage = (initPage != null) ? initPage : MobileInputScreen.index;
+    _formProgress = 0.2 * (_currentPage+1);
+    _controller = new PageController(initialPage: _currentPage);
     mobileInScreen = MobileInputScreen();
     otpInScreen = OtpInputScreen();
     nameInScreen = NameInputScreen();
@@ -74,14 +76,17 @@ class _LoginControllerState extends State<LoginController> {
       log.debug(
           "User mobile number format verified. Sending otp and verifying");
       //move to otp screen
+      //_currentPage = OtpInputScreen.index;
       _controller.animateToPage(OtpInputScreen.index,
           duration: Duration(milliseconds: 300), curve: Curves.easeIn);
     };
 
     final PhoneVerificationCompleted verifiedSuccess = (AuthCredential user) {
       log.debug("Verified automagically!");
-      UiConstants.offerSnacks(context, "Mobile verified!");
-      otpInScreen.onOtpReceived();
+      if(_currentPage == OtpInputScreen.index){
+        UiConstants.offerSnacks(context, "Mobile verified!");
+        otpInScreen.onOtpReceived();
+      }
       baseProvider.authenticateUser(user).then((flag) {
         if (flag) {
           log.debug("User signed in successfully");
@@ -93,6 +98,7 @@ class _LoginControllerState extends State<LoginController> {
     };
 
     final PhoneVerificationFailed veriFailed = (AuthException exception) {
+      //codes: 'quotaExceeded'
       log.error("Verification process failed:  ${exception.message}");
     };
 
@@ -114,7 +120,7 @@ class _LoginControllerState extends State<LoginController> {
       appBar: AppBar(
         elevation: 2.0,
         backgroundColor: Colors.white70,
-        title: Text('Test',
+        title: Text('${Constants.APP_NAME}',
             style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.w700,
@@ -130,6 +136,11 @@ class _LoginControllerState extends State<LoginController> {
       body: SafeArea(
           child: Stack(
         children: <Widget>[
+          LinearProgressIndicator(
+              value: _formProgress,
+              backgroundColor: Colors.transparent,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                  Theme.of(context).primaryColor)),
           new Positioned.fill(
             child: new PageView.builder(
               physics: new NeverScrollableScrollPhysics(),
@@ -138,9 +149,10 @@ class _LoginControllerState extends State<LoginController> {
               itemBuilder: (BuildContext context, int index) {
                 return _pages[index % _pages.length];
               },
-              onPageChanged: (int p) {
+              onPageChanged: (int index) {
                 setState(() {
-                  page = p;
+                  _formProgress = 0.2 * (index+1);
+                  _currentPage = index;
                 });
               },
             ),
@@ -155,19 +167,18 @@ class _LoginControllerState extends State<LoginController> {
 //              children: <Widget>[
               padding: EdgeInsets.all(20.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
-                  new Container(
+                  (_currentPage == OtpInputScreen.index ||
+                      _currentPage == AddressInputScreen.index)?
+                  Container(
                     width: 150.0,
                     height: 50.0,
                     decoration: BoxDecoration(
-                      gradient: new LinearGradient(colors: [
-                        Colors.green[400],
-                        Colors.green[600],
-//                                  Colors.orange[600],
-//                                  Colors.orange[900],
-                      ], begin: Alignment(0.5, -1.0), end: Alignment(0.5, 1.0)),
                       borderRadius: new BorderRadius.circular(30.0),
+                      border: Border.all(color: Colors.green, width: 1.0),
+                      color: Colors.transparent,
                     ),
                     child: new Material(
                       child: MaterialButton(
@@ -179,7 +190,8 @@ class _LoginControllerState extends State<LoginController> {
                               .copyWith(color: Colors.white),
                         ),
                         onPressed: () {
-                          _controller.animateToPage(page - 1,
+                          _currentPage--;
+                          _controller.animateToPage(_currentPage,
                               duration: Duration(milliseconds: 300),
                               curve: Curves.easeIn);
                         },
@@ -189,14 +201,22 @@ class _LoginControllerState extends State<LoginController> {
                       color: Colors.transparent,
                       borderRadius: new BorderRadius.circular(30.0),
                     ),
-                  ),
+                  )
+                      :new Container(),
                   new Container(
                     width: 150.0,
                     height: 50.0,
                     decoration: BoxDecoration(
+                      gradient: new LinearGradient(colors: [
+                        Colors.green[400],
+                        Colors.green[600],
+//                                  Colors.orange[600],
+//                                  Colors.orange[900],
+                      ],
+                          begin: Alignment(0.5, -1.0),
+                          end: Alignment(0.5, 1.0)
+                      ),
                       borderRadius: new BorderRadius.circular(30.0),
-                      border: Border.all(color: Colors.green, width: 1.0),
-                      color: Colors.transparent,
                     ),
                     child: new Material(
                       child: MaterialButton(
@@ -205,10 +225,10 @@ class _LoginControllerState extends State<LoginController> {
                           style: Theme.of(context)
                               .textTheme
                               .button
-                              .copyWith(color: Colors.green),
+                              .copyWith(color: Colors.white),
                         ),
                         onPressed: () {
-                          processScreenInput(page);
+                          processScreenInput(_currentPage);
                           //_controller.animateToPage(page + 1, duration: Duration(milliseconds: 300), curve: Curves.easeIn);
                         },
                         highlightColor: Colors.white30,
@@ -272,21 +292,18 @@ class _LoginControllerState extends State<LoginController> {
         }
       case NameInputScreen.index:
         {
-          String name = nameInScreen.getName();
-          String email = nameInScreen.getEmail();
-          //TODO check if name, email already available in the local db
-          if (name == null || name.isEmpty) {
-            nameInScreen.setNameInvalid();
-          } else {
+          if(nameInScreen.validate()) {
             if (baseProvider.myUser == null) {
               //firebase user should never be null at this point
               baseProvider.myUser = User.newUser(baseProvider.firebaseUser.uid,
                   formatMobileNumber(baseProvider.firebaseUser.phoneNumber));
             }
-            baseProvider.myUser.name = name;
+            baseProvider.myUser.name = nameInScreen.getName();
+            String email = nameInScreen.getEmail();
             if (email != null && email.isNotEmpty) {
               baseProvider.myUser.email = email;
             }
+            //currentPage = AddressInputScreen.index;
             _controller.animateToPage(AddressInputScreen.index,
                 duration: Duration(milliseconds: 300), curve: Curves.easeIn);
           }
@@ -356,6 +373,7 @@ class _LoginControllerState extends State<LoginController> {
               "No existing user details found or found incomplete details for user. Moving to details page");
           baseProvider.myUser = user ?? User.newUser(fUser.uid, this.userMobile);
           //Move to name input page
+          //_currentPage = NameInputScreen.index;
           _controller.animateToPage(NameInputScreen.index,
               duration: Duration(milliseconds: 300), curve: Curves.easeIn);
         } else {

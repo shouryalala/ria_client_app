@@ -16,7 +16,7 @@ class MobileInputScreen extends StatefulWidget {
 
   //setMobileTextError() => mobileInputScreenState.setError();
 
-  validate() => mobileInputScreenState._formKey.currentState.validate();
+  bool validate() => mobileInputScreenState._formKey.currentState.validate();
 }
 
 class _MobileInputScreenState extends State<MobileInputScreen> {

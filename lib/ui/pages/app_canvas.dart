@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/ui/pages/home/home_screen.dart';
 import 'package:flutter_app/ui/pages/placeholder_widget.dart';
 import 'package:flutter_app/ui/pages/profile/profile_options.dart';
+import 'package:flutter_app/util/constants.dart';
 import 'package:morpheus/widgets/morpheus_tab_view.dart';
 import '../../nested-tab-navigator.dart';
 
@@ -37,7 +38,7 @@ class _AppCanvasState extends State<AppCanvas> {
     child:
     Scaffold(
       appBar: AppBar(
-        title: Text('\tRIA'),
+        title: Text('\t${Constants.APP_NAME}'),
       ),
       body:MorpheusTabView( child:
       Stack(children: <Widget>[
