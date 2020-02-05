@@ -38,14 +38,17 @@ class _LoginControllerState extends State<LoginController> {
   static DBModel dbProvider;
   static LocalDBModel localDbProvider;
   String userMobile;
-  static MobileInputScreen mobileInScreen;
-  static OtpInputScreen otpInScreen;
-  static NameInputScreen nameInScreen;
-  static AddressInputScreen addressInScreen;
+//  static MobileInputScreen mobileInScreen;
+//  static OtpInputScreen otpInScreen;
+//  static NameInputScreen nameInScreen;
+//  static AddressInputScreen addressInScreen;
   String verificationId;
   static List<Widget> _pages;
   int _currentPage;
+  final _mobileScreenKey = new GlobalKey<MobileInputScreenState>();
+  final _otpScreenKey = new GlobalKey<OtpInputScreenState>();
   final _nameScreenKey = new GlobalKey<NameInputScreenState>();
+  final _addressScreenKey = new GlobalKey<AddressInputScreenState>();
 
   @override
   void initState() {
@@ -53,15 +56,15 @@ class _LoginControllerState extends State<LoginController> {
     _currentPage = (initPage != null) ? initPage : MobileInputScreen.index;
     _formProgress = 0.2 * (_currentPage+1);
     _controller = new PageController(initialPage: _currentPage);
-    mobileInScreen = MobileInputScreen();
-    otpInScreen = OtpInputScreen();
-    nameInScreen = NameInputScreen(key: _nameScreenKey);
-    addressInScreen = AddressInputScreen();
+//    mobileInScreen = MobileInputScreen();
+//    otpInScreen = OtpInputScreen();
+    //nameInScreen = NameInputScreen(key: _nameScreenKey);
+    //addressInScreen = AddressInputScreen(key: _addressScreenKey);
     _pages = [
-      mobileInScreen,
-      otpInScreen,
-      nameInScreen,
-      addressInScreen,
+      MobileInputScreen(key: _mobileScreenKey),
+      OtpInputScreen(key: _otpScreenKey),
+      NameInputScreen(key: _nameScreenKey),
+      AddressInputScreen(key: _addressScreenKey),
     ];
   }
 
@@ -69,7 +72,8 @@ class _LoginControllerState extends State<LoginController> {
     final PhoneCodeAutoRetrievalTimeout autoRetrieve = (String verId) {
       //this.verificationId = verId;
       log.debug("Phone number hasnt been auto verified yet");
-      otpInScreen.onOtpTimeout();
+//      otpInScreen.onOtpTimeout();
+        _otpScreenKey.currentState.onOtpAutoDetectTimeout();
     };
 
     final PhoneCodeSent smsCodeSent = (String verId, [int forceCodeResend]) {
@@ -86,7 +90,8 @@ class _LoginControllerState extends State<LoginController> {
       log.debug("Verified automagically!");
       if(_currentPage == OtpInputScreen.index){
         UiConstants.offerSnacks(context, "Mobile verified!");
-        otpInScreen.onOtpReceived();
+//        otpInScreen.onOtpReceived();
+          _otpScreenKey.currentState.onOtpReceived();
       }
       baseProvider.authenticateUser(user).then((flag) {
         if (flag) {
@@ -263,9 +268,9 @@ class _LoginControllerState extends State<LoginController> {
       case MobileInputScreen.index:
         {
           //in mobile input screen. Get and set mobile/ set error interface if not correct
-          if (mobileInScreen.validate()) {
-            log.debug('Mobile number validated: ${mobileInScreen.getMobile()}');
-            this.userMobile = mobileInScreen.getMobile();
+          if (_mobileScreenKey.currentState.formKey.validate()) {
+            log.debug('Mobile number validated: ${_mobileScreenKey.currentState.getMobile()}');
+            this.userMobile = _mobileScreenKey.currentState.getMobile();
             this.verificationId = '+91' + this.userMobile;
             verifyPhone();
           }
@@ -281,14 +286,15 @@ class _LoginControllerState extends State<LoginController> {
         }
       case OtpInputScreen.index:
         {
-          String otp = otpInScreen.getOtp();
+          String otp = _otpScreenKey.currentState.otp; //otpInScreen.getOtp();
           if (otp != null && otp.isNotEmpty && otp.length == 6) {
             baseProvider
                 .authenticateUser(
                     baseProvider.generateAuthCredential(verificationId, otp))
                 .then((flag) {
               if (flag) {
-                otpInScreen.onOtpReceived();
+//                otpInScreen.onOtpReceived();
+                _otpScreenKey.currentState.onOtpReceived();
                 onSignInSuccess();
               } else {
                 UiConstants.offerSnacks(context, 'Please enter a valid otp');
@@ -323,6 +329,26 @@ class _LoginControllerState extends State<LoginController> {
         }
       case AddressInputScreen.index:
         {
+          if(_addressScreenKey.currentState.formKey.currentState.validate()){
+            Society selSociety = _addressScreenKey.currentState.selected_society;
+            String selFlatNo = _addressScreenKey.currentState.flat_no;
+            int selBhk = _addressScreenKey.currentState.bhk;
+            if(selSociety != null && selFlatNo != null && selBhk != 0) {  //added safegaurd
+              baseProvider.myUser.flat_no = selFlatNo;
+              baseProvider.myUser.society_id = selSociety.sId;
+              baseProvider.myUser.sector = selSociety.sector;
+              baseProvider.myUser.bhk = selBhk;
+              //if nothing was invalid:
+              dbProvider.updateUser(baseProvider.myUser).then((flag) {
+                if (flag) {
+                  log.debug("User object saved successfully");
+                  onSignUpComplete();
+                } else {
+                  //TODO signup failed! YIKES please try again later
+                }
+              });
+            }
+          }
 //          Society selSociety = addressInScreen.getSociety();
 //          String selFlatNo = addressInScreen.getFlatNo();
 //          int selBhk = addressInScreen.getBhk();

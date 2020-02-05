@@ -7,16 +7,18 @@ import 'package:pin_input_text_field/pin_input_text_field.dart';
 
 class OtpInputScreen extends StatefulWidget{
   static const int index = 1;  //pager index
-  final otpInputScreenState = _OtpInputScreenState();
-  @override
-  State<StatefulWidget> createState() => otpInputScreenState;
+  OtpInputScreen({Key key}):super(key: key);
+//  final otpInputScreenState = _OtpInputScreenState();
 
-  void onOtpReceived() => otpInputScreenState.onOtpReceived();
-  void onOtpTimeout() => otpInputScreenState.onOtpAutoDetectTimeout();
-  String getOtp() => otpInputScreenState.getOtp();
+  @override
+  State<StatefulWidget> createState() => OtpInputScreenState();
+
+//  void onOtpReceived() => otpInputScreenState.onOtpReceived();
+//  void onOtpTimeout() => otpInputScreenState.onOtpAutoDetectTimeout();
+//  String getOtp() => otpInputScreenState.getOtp();
 }
 
-class _OtpInputScreenState extends State<OtpInputScreen> {
+class OtpInputScreenState extends State<OtpInputScreen> {
   Log log = new Log("OtpInputScreen");
   String _otp;
   String _loaderMessage = "Detecting otp..";
@@ -99,5 +101,6 @@ class _OtpInputScreenState extends State<OtpInputScreen> {
     });
   }
 
-  String getOtp() => _pinEditingController.text;
+  String get otp => _pinEditingController.text;
+
 }

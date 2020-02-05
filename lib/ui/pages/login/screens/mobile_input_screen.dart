@@ -4,22 +4,21 @@ import 'package:flutter_app/ui/pages/availability_dialog.dart';
 import 'package:flutter_app/util/logger.dart';
 
 class MobileInputScreen extends StatefulWidget {
-//  final GlobalKey<FormState> formKey;
-//  MobileInputScreen({this.formKey});
+  static const int index = 0; //pager index
+  MobileInputScreen({Key key}):super(key: key);
 
-  static const int index = 0;  //pager index
-  final mobileInputScreenState = _MobileInputScreenState();
+//  final mobileInputScreenState = _MobileInputScreenState();
   @override
-  State<StatefulWidget> createState() => mobileInputScreenState;
+  State<StatefulWidget> createState() => MobileInputScreenState();
 
-  getMobile() => mobileInputScreenState.getMobile();
+//  getMobile() => mobileInputScreenState.getMobile();
 
   //setMobileTextError() => mobileInputScreenState.setError();
 
-  bool validate() => mobileInputScreenState._formKey.currentState.validate();
+//  bool validate() => mobileInputScreenState._formKey.currentState.validate();
 }
 
-class _MobileInputScreenState extends State<MobileInputScreen> {
+class MobileInputScreenState extends State<MobileInputScreen> {
   final _formKey = GlobalKey<FormState>();
   final _mobileController = TextEditingController();
   bool _validate = true;
@@ -113,4 +112,6 @@ class _MobileInputScreenState extends State<MobileInputScreen> {
   }
 
   String getMobile() => _mobileController.text;
+
+  get formKey => _formKey;
 }

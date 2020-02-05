@@ -66,41 +66,41 @@ class _UpdateAddressScreenState extends State<UpdateAddressScreen> {
                             style: Theme.of(context).textTheme.button.copyWith(color: Colors.white),
                           ),
                           onPressed: (){
-                            Society selSociety = _addressInputScreen.getSociety();
-                            String selFlatNo = _addressInputScreen.getFlatNo();
-                            int selBhk = _addressInputScreen.getBhk();
-                            if(selSociety == null) {
-                              UiConstants.offerSnacks(context,"Please select your appt");
-                              return;
-                            }
-                            if(selFlatNo == null || selFlatNo.isEmpty) {
-                              _addressInputScreen.setFlatNoInvalid();
-                              return;
-                            }
-                            if(selBhk == null) {
-                              UiConstants.offerSnacks(context, "Please select your house size");
-                              return;
-                            }
-                            baseProvider.myUser.flat_no = selFlatNo;
-                            baseProvider.myUser.society_id = selSociety.sId;
-                            baseProvider.myUser.sector = selSociety.sector;
-                            baseProvider.myUser.bhk = selBhk;
-                            //TODO add the spinner here
-                            dbProvider.updateUser(baseProvider.myUser).then((flag) {
-                              if(flag){
-                                log.debug("User object saved successfully");
-                                localDbProvider.saveUser(baseProvider.myUser).then((flag) {
-                                  if (flag) {
-                                    log.debug("User object saved locally");
-                                    Navigator.of(context).pop();
-                                    //Navigator.of(context).pushReplacementNamed('/home');
-                                  }
-                                });
-                              }
-                              else{
-                                //TODO signup failed! YIKES please try again later
-                              }
-                            });
+//                            Society selSociety = _addressInputScreen.getSociety();
+//                            String selFlatNo = _addressInputScreen.getFlatNo();
+//                            int selBhk = _addressInputScreen.getBhk();
+//                            if(selSociety == null) {
+//                              UiConstants.offerSnacks(context,"Please select your appt");
+//                              return;
+//                            }
+//                            if(selFlatNo == null || selFlatNo.isEmpty) {
+//                              _addressInputScreen.setFlatNoInvalid();
+//                              return;
+//                            }
+//                            if(selBhk == null) {
+//                              UiConstants.offerSnacks(context, "Please select your house size");
+//                              return;
+//                            }
+//                            baseProvider.myUser.flat_no = selFlatNo;
+//                            baseProvider.myUser.society_id = selSociety.sId;
+//                            baseProvider.myUser.sector = selSociety.sector;
+//                            baseProvider.myUser.bhk = selBhk;
+//                            //TODO add the spinner here
+//                            dbProvider.updateUser(baseProvider.myUser).then((flag) {
+//                              if(flag){
+//                                log.debug("User object saved successfully");
+//                                localDbProvider.saveUser(baseProvider.myUser).then((flag) {
+//                                  if (flag) {
+//                                    log.debug("User object saved locally");
+//                                    Navigator.of(context).pop();
+//                                    //Navigator.of(context).pushReplacementNamed('/home');
+//                                  }
+//                                });
+//                              }
+//                              else{
+//                                //TODO signup failed! YIKES please try again later
+//                              }
+//                            });
                           },
                           highlightColor: Colors.orange.withOpacity(0.5),
                           splashColor: Colors.orange.withOpacity(0.5),

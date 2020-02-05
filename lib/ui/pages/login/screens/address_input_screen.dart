@@ -5,27 +5,31 @@ import 'package:flutter_app/util/logger.dart';
 import 'package:flutter_app/util/ui_constants.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../base_util.dart';
+
 class AddressInputScreen extends StatefulWidget{
-  static const int index = 3;  //pager index
-  final addressInputScreenState = _AddressInputScreenState();
+  static const int index = 3; //pager index
+  AddressInputScreen({Key key}):super(key: key);
+  //final addressInputScreenState = _AddressInputScreenState();
   @override
-  State<StatefulWidget> createState() => _AddressInputScreenState();
+  State<StatefulWidget> createState() => AddressInputScreenState();
 
-  Society getSociety() => addressInputScreenState.selected_society;
-
-  String getFlatNo() => addressInputScreenState.flat_no;
-
-  int getBhk() => addressInputScreenState.bhk;
-
-  void setFlatNoInvalid() => addressInputScreenState.setFlatNoInvalid();
+//  Society getSociety() => addressInputScreenState.selected_society;
+//
+//  String getFlatNo() => addressInputScreenState.flat_no;
+//
+//  int getBhk() => addressInputScreenState.bhk;
+//
+//  void setFlatNoInvalid() => addressInputScreenState.setFlatNoInvalid();
 }
 
-class _AddressInputScreenState extends State<AddressInputScreen> {
+class AddressInputScreenState extends State<AddressInputScreen> {
   Log log = new Log("AddressInputScreen");
   bool _isInitialised = false;
   static DBModel dbProvider;
   static Map<int, Set<Society>> dMap;
   final _formKey = GlobalKey<FormState>();
+  static BaseUtil authProvider;
   int _selected_sector;
   String _selected_society_id;
   Society _selected_society;
@@ -33,6 +37,7 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
   String _district;
   int _bhk;
   bool _flatInvalid = false;
+  final _addressController = new TextEditingController();
   static const List<int> BHK_OPTIONS = [1,2,3,4];
   static const insets = EdgeInsets.fromLTRB(30.0, 18.0, 30.0, 18.0);
 
@@ -41,18 +46,31 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
     super.initState();
   }
 
-  @override
-  Widget build(BuildContext context) {
+  void initialize(BuildContext context) {
+    authProvider = Provider.of<BaseUtil>(context);
+    dbProvider = Provider.of<DBModel>(context);
     if(!_isInitialised) {
       _isInitialised = true;
-      //TODO add fields if already available!
-      dbProvider = Provider.of<DBModel>(context);
       dbProvider.getServicingApptList().then((map) {
+        dMap = map;
+        if(authProvider.myUser.sector != null){
+          _selected_sector = authProvider.myUser.sector;
+          dMap[_selected_sector].forEach((society) {
+            if(society.sId == authProvider.myUser.society_id) _selected_society = society;
+          });
+          if(authProvider.myUser.flat_no != null) _addressController.text = authProvider.myUser.flat_no;
+        }
         setState(() {
-          dMap = map;
+          log.debug('Initializing address input screen with values:: Sector: ${_selected_sector??''}, '
+              'SocietyName: ${_selected_society.enName??''},Address: ${_addressController.text??''}' );
         });
       });
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    initialize(context);
     return Form(
         //backgroundColor: Colors.transparent,
         key: _formKey,
@@ -129,15 +147,17 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
                     icon: Icon(Icons.home)
 
                   ),
-                  onChanged: (value) {
-                    setState(() {
-                      _flat_no = value;
-                      _flatInvalid = false;
-                    });
-                  },
+//                  onChanged: (value) {
+//                    setState(() {
+//                      _flat_no = value;
+//                      _flatInvalid = false;
+//                    });
+//                  },
                   validator: (value) {
-
+                    if(value == null || value.isEmpty)return 'Enter your address';
+                    else return null;
                   },
+                  controller: _addressController,
                 ),
               ),
               Padding(
@@ -153,6 +173,9 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
                     setState(() {
                       _bhk = bhk;
                     });
+                  },
+                  validator: (value) {
+                    return (value == null)? 'Select Appt size': null;
                   },
                   items: BHK_OPTIONS.map((digit) {
                     return new DropdownMenuItem(
@@ -174,17 +197,19 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
     _district = value;
   }
 
-  String get flat_no => _flat_no;
+  String get flat_no => _addressController.text;
+//  String get flat_no => _flat_no;
+//
+//  set flat_no(String value) {
+//    _flat_no = value;
+//  }
+//
+//  setFlatNoInvalid() {
+//    setState(() {
+//      _flatInvalid = true;
+//    });
+//  }
 
-  set flat_no(String value) {
-    _flat_no = value;
-  }
-
-  setFlatNoInvalid() {
-    setState(() {
-      _flatInvalid = true;
-    });
-  }
 
   String get selected_society_id => _selected_society_id;
 
@@ -210,5 +235,6 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
     _selected_society = value;
   }
 
+  get formKey => _formKey;
 
 }
