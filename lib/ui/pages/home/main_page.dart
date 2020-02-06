@@ -10,10 +10,10 @@ import 'package:flutter_app/util/logger.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 
-import 'base_util.dart';
-import 'core/fcm_handler.dart';
-import 'core/ops/db_ops.dart';
-import 'shop_items_page.dart';
+import '../../../base_util.dart';
+import '../../../core/fcm_handler.dart';
+import '../../../core/ops/db_ops.dart';
+import '../../../shop_items_page.dart';
 
 class MainPage extends StatefulWidget {
   final ValueChanged<int> onLoginRequest;
@@ -34,13 +34,13 @@ class _MainPageState extends State<MainPage> {
   List<String> selectedServiceList = [Constants.CLEANING];
   CalendarUtil cUtil = new CalendarUtil();
   int homeState = Constants.VISIT_STATUS_NONE;
-  static final List<String> chartDropdownItems = [
-    'Last 7 days',
-    'Last month',
-    'Last year'
-  ];
-  String actualDropdown = chartDropdownItems[0];
-  int actualChart = 0;
+//  static final List<String> chartDropdownItems = [
+//    'Last 7 days',
+//    'Last month',
+//    'Last year'
+//  ];
+//  String actualDropdown = chartDropdownItems[0];
+//  int actualChart = 0;
 
   @override
   Widget build(BuildContext context) {

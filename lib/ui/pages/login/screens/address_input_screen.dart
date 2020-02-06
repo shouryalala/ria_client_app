@@ -59,10 +59,11 @@ class AddressInputScreenState extends State<AddressInputScreen> {
             if(society.sId == authProvider.myUser.society_id) _selected_society = society;
           });
           if(authProvider.myUser.flat_no != null) _addressController.text = authProvider.myUser.flat_no;
+          if(authProvider.myUser.bhk != null) _bhk = authProvider.myUser.bhk;
         }
         setState(() {
           log.debug('Initializing address input screen with values:: Sector: ${_selected_sector??''}, '
-              'SocietyName: ${_selected_society.enName??''},Address: ${_addressController.text??''}' );
+              'SocietyName: ${_selected_society.enName??''},Address: ${_addressController.text??''},Bhk: ${_bhk??''}' );
         });
       });
     }

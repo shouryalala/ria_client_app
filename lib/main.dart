@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/ops/db_ops.dart';
-import 'package:flutter_app/main_page.dart';
+import 'package:flutter_app/ui/pages/home/main_page.dart';
 import 'package:flutter_app/ui/pages/login/login_controller.dart';
 import 'package:flutter_app/ui/pages/onboarding/onboarding_widget.dart';
 import 'package:flutter_app/ui/pages/profile/history_widget.dart';
