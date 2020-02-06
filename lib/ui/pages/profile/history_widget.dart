@@ -34,7 +34,7 @@ class _HistoryList extends State<HistoryPage> {
         ),
         body: StreamBuilder(  //TODO to be fixed.
 //            stream: Firestore.instance.collection("visits").document("2019").collection("AUG").snapshots(),
-            stream: _dbProvider.getUserVisitHistory(_authProvider.myUser.uid),
+            stream: _dbProvider.getUserVisitHistory(_authProvider.firebaseUser.uid),
             builder: (context, snapshot) {
               if(!snapshot.hasData) return const Text("Loading..");
               return ListView.builder(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/ui/elements/custom_dialog.dart';
 import 'package:flutter_app/ui/pages/home/cancelled_visit_layout.dart';
 import 'package:flutter_app/ui/pages/home/home_layout.dart';
 import 'package:flutter_app/ui/pages/home/ongoing_visit_layout.dart';
@@ -113,6 +114,15 @@ class _MainPageState extends State<MainPage> {
                           style: TextStyle(color: Colors.black45)),
                     ]),
               ),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) => CustomDialog(
+                        title: "Header",
+                        description: "LoReM IpSuM",
+                        buttonText: "Got it!"),
+                  );
+                }
             ),
             _buildTile(
               Padding(
@@ -145,8 +155,8 @@ class _MainPageState extends State<MainPage> {
                           )))
                     ]),
               ),
-              onTap: () => Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (_) => ShopItemsPage())),
+              onTap: () =>Navigator.of(context).pushNamed('/profile')  
+                  //Navigator.of(context).push(MaterialPageRoute(builder: (_) => ShopItemsPage())),
             )
           ],
           staggeredTiles: [
