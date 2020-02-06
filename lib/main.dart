@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/ops/db_ops.dart';
-import 'package:flutter_app/ui/pages/home/main_page.dart';
+import 'package:flutter_app/ui/pages/dashboard.dart';
 import 'package:flutter_app/ui/pages/login/login_controller.dart';
 import 'package:flutter_app/ui/pages/onboarding/onboarding_widget.dart';
 import 'package:flutter_app/ui/pages/profile/history_widget.dart';
@@ -16,7 +16,7 @@ import 'core/fcm_handler.dart';
 import 'core/fcm_listener.dart';
 import 'core/ops/http_ops.dart';
 import 'core/ops/lcl_db_ops.dart';
-import 'ui/pages/app_canvas.dart';
+//import 'ui/pages/app_canvas.dart';
 import 'ui/pages/launcher_screen.dart';
 
 void main() {

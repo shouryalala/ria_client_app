@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/core/model/request.dart';
 import 'package:flutter_app/core/model/society.dart';
 import 'package:flutter_app/core/service/api.dart';
+import 'package:flutter_app/util/calendar_util.dart';
 import 'package:flutter_app/util/constants.dart';
 
 import '../../util/locator.dart';
@@ -188,4 +189,10 @@ class DBModel extends ChangeNotifier {
     }
   }
 
+  Stream<QuerySnapshot> getUserVisitHistory(String id){
+    CalendarUtil cal = CalendarUtil();
+    String yearDoc = cal.getCurrentYear();
+    String monthSubColn = cal.getCurrentMonthCode();
+    return _api.getUserVisitDocuments(id, yearDoc, monthSubColn);
+  }
 }
