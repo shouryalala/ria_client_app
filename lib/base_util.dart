@@ -5,6 +5,7 @@ import 'package:flutter_app/core/ops/cache_ops.dart';
 import 'package:flutter_app/core/ops/db_ops.dart';
 import 'package:flutter_app/core/ops/lcl_db_ops.dart';
 import 'package:flutter_app/core/model/assistant.dart';
+import 'package:flutter_app/util/connection_util.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/locator.dart';
 import 'package:flutter_app/util/logger.dart';
@@ -34,6 +35,8 @@ class BaseUtil extends ChangeNotifier{
     firebaseUser = await FirebaseAuth.instance.currentUser();
     isUserOnboarded = await _lModel.isUserOnboarded()==1;
     _myUser = await _lModel.getUser();
+    ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
+    connectionStatus.initialize();
     if(_myUser != null && _myUser.mobile != null) {
       //_homeState = await _retrieveCurrentStatus();
       //_homeState = (_homeState == null)?Constants.VISIT_STATUS_NONE:_homeState;
@@ -41,11 +44,9 @@ class BaseUtil extends ChangeNotifier{
     }
   }
 
-  /**
-   * -Fetches current activity state from user subcollection
-   * -If there is an upcoming visit, it retrieves/updates the local visit object
-   * -Sets the variable used to decide home layout(Default layout, upcoming visit, ongoing visit etc)
-   * */
+  /// -Fetches current activity state from user subcollection
+  /// -If there is an upcoming visit, it retrieves/updates the local visit object
+  /// -Sets the variable used to decide home layout(Default layout, upcoming visit, ongoing visit etc)
   Future<int> _setupCurrentState() async {
     int status = Constants.VISIT_STATUS_NONE;
     String vPath;

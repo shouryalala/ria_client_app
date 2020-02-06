@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app/ui/elements/custom_dialog.dart';
 import 'package:flutter_app/ui/pages/home/cancelled_visit_layout.dart';
@@ -6,6 +8,7 @@ import 'package:flutter_app/ui/pages/home/ongoing_visit_layout.dart';
 import 'package:flutter_app/ui/pages/home/rate_visit_layout.dart';
 import 'package:flutter_app/ui/pages/home/upcoming_visit_layout.dart';
 import 'package:flutter_app/util/calendar_util.dart';
+import 'package:flutter_app/util/connection_util.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -36,6 +39,21 @@ class _MainPageState extends State<MainPage> {
   List<String> selectedServiceList = [Constants.CLEANING];
   CalendarUtil cUtil = new CalendarUtil();
   int homeState = Constants.VISIT_STATUS_NONE;
+  StreamSubscription _connectionChangeStream;
+  bool isOffline = true;
+
+  @override
+  void initState() {
+    super.initState();
+    ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
+    _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
+  }
+
+  void connectionChanged(dynamic hasConnection) {
+    setState(() {
+      isOffline = !hasConnection;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
