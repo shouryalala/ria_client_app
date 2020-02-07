@@ -36,6 +36,7 @@ dependencies:
   #flutter_sparkline: ^0.1.0
   flutter_staggered_grid_view: ^0.3.0
   connectivity: ^0.4.6+2
+  flushbar: ^1.9.1
 
   flutter:
     sdk: flutter

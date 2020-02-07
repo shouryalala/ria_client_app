@@ -42,6 +42,7 @@ class _MainPageState extends State<MainPage> {
   StreamSubscription _connectionChangeStream;
   bool isOffline = true;
 
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   void initState() {
     super.initState();
@@ -68,6 +69,7 @@ class _MainPageState extends State<MainPage> {
         ? baseProvider.homeState
         : Constants.VISIT_STATUS_NONE;
     return Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           elevation: 2.0,
           backgroundColor: Colors.white70,
@@ -133,13 +135,15 @@ class _MainPageState extends State<MainPage> {
                     ]),
               ),
                 onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) => CustomDialog(
-                        title: "Header",
-                        description: "LoReM IpSuM",
-                        buttonText: "Got it!"),
-                  );
+//                  showDialog(
+//                    context: context,
+//                    builder: (BuildContext context) => CustomDialog(
+//                        title: "Header",
+//                        description: "LoReM IpSuM",
+//                        buttonText: "Got it!"),
+//                  );
+                  _showSnackBar('Lets go', context);
+
                 }
             ),
             _buildTile(
@@ -380,5 +384,13 @@ class _MainPageState extends State<MainPage> {
           state; //TODO should be done in the FCMHandler itself
       homeState = state;
     });
+  }
+
+  _showSnackBar(String key, BuildContext context) {
+    final snackBar = SnackBar(
+      content: Text(key + " pressed!"),
+    );
+    //Scaffold.of(context).showSnackBar(snackBar);
+    _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 }
