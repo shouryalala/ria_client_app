@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_app/core/model/request.dart';
 import 'package:flutter_app/core/ops/db_ops.dart';
 import 'package:flutter_app/core/ops/http_ops.dart';
@@ -50,7 +51,7 @@ class _HomeLayoutState extends State<HomeLayout> {
                 Container(
                   color: Colors.white10,
                 ),
-                buildLoginButton(),
+                //buildLoginButton(),
                 Align(
                   alignment: Alignment.center,
                   child: Container(
@@ -67,6 +68,7 @@ class _HomeLayoutState extends State<HomeLayout> {
                             serviceList,
                             selectedServiceList,
                             onSelectionChanged: (selectedList) {
+                              HapticFeedback.vibrate();
                               setState(() {
                                 selectedServiceList = selectedList;
                               });

@@ -93,4 +93,8 @@ class Api{
     CollectionReference _cRef = _db.collection(Constants.COLN_VISITS).document(yearDoc).collection(monthSubColn);
     return _cRef.where('userId', isEqualTo: userId).orderBy('timestamp',descending: true).getDocuments().asStream();
   }
+
+  Future<void> addFeedbackDocument(Map data) {
+    return _db.collection(Constants.COLN_FEEDBACK).add(data);
+  }
 }

@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/ops/cache_ops.dart';
 import 'package:flutter_app/core/ops/db_ops.dart';
@@ -43,6 +46,7 @@ class BaseUtil extends ChangeNotifier{
       await _setupCurrentState();
     }
   }
+
 
   /// -Fetches current activity state from user subcollection
   /// -If there is an upcoming visit, it retrieves/updates the local visit object
@@ -200,6 +204,44 @@ class BaseUtil extends ChangeNotifier{
     int minutes = (product%60);
     String ap = (hours < 12) ? "am" : "pm";
     return "$hours:$minutes $ap";
+  }
+
+  showNoInternetAlert(BuildContext context) {
+    Flushbar(
+      flushbarPosition: FlushbarPosition.TOP,
+      flushbarStyle: FlushbarStyle.FLOATING,
+      icon: Icon(
+        Icons.error,
+        size: 28.0,
+        color: Colors.white,
+      ),
+      margin: EdgeInsets.all(10),
+      borderRadius: 8,
+      title: "No Internet",
+      message: "Please check your network connection and try again",
+      duration: Duration(seconds: 2),
+      backgroundColor: Colors.red,
+      boxShadows: [BoxShadow(color: Colors.red[800], offset: Offset(0.0, 2.0), blurRadius: 3.0,)],
+    )..show(context);
+  }
+
+  showPositiveAlert(String title, String message, BuildContext context) {
+    Flushbar(
+      flushbarPosition: FlushbarPosition.BOTTOM,
+      flushbarStyle: FlushbarStyle.FLOATING,
+      icon: Icon(
+        Icons.flag,
+        size: 28.0,
+        color: Colors.white,
+      ),
+      margin: EdgeInsets.all(10),
+      borderRadius: 8,
+      title: title,
+      message: message,
+      duration: Duration(seconds: 3),
+      backgroundColor: Colors.greenAccent,
+      boxShadows: [BoxShadow(color: Colors.greenAccent, offset: Offset(0.0, 2.0), blurRadius: 3.0,)],
+    )..show(context);
   }
 
   User get myUser => _myUser;

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_app/ui/elements/custom_dialog.dart';
 import 'package:flutter_app/ui/pages/home/cancelled_visit_layout.dart';
 import 'package:flutter_app/ui/pages/home/home_layout.dart';
@@ -17,7 +18,6 @@ import 'package:provider/provider.dart';
 import '../../base_util.dart';
 import '../../core/fcm_handler.dart';
 import '../../core/ops/db_ops.dart';
-import '../../shop_items_page.dart';
 
 class MainPage extends StatefulWidget {
   final ValueChanged<int> onLoginRequest;
@@ -40,8 +40,7 @@ class _MainPageState extends State<MainPage> {
   CalendarUtil cUtil = new CalendarUtil();
   int homeState = Constants.VISIT_STATUS_NONE;
   StreamSubscription _connectionChangeStream;
-  bool isOffline = true;
-
+  bool _isOffline = false;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   void initState() {
@@ -52,7 +51,7 @@ class _MainPageState extends State<MainPage> {
 
   void connectionChanged(dynamic hasConnection) {
     setState(() {
-      isOffline = !hasConnection;
+      _isOffline = !hasConnection;
     });
   }
 
@@ -108,7 +107,7 @@ class _MainPageState extends State<MainPage> {
                 ? _buildLoginTile()
                 : _buildStatsTile(),
             _buildTile(__buildVisitLayout(homeState)),
-            _buildHistoryTile(),           
+            _buildHistoryTile(),
             _buildTile(
               Padding(
                 padding: const EdgeInsets.all(24.0),
@@ -135,15 +134,27 @@ class _MainPageState extends State<MainPage> {
                     ]),
               ),
                 onTap: () {
-//                  showDialog(
-//                    context: context,
-//                    builder: (BuildContext context) => CustomDialog(
-//                        title: "Header",
-//                        description: "LoReM IpSuM",
-//                        buttonText: "Got it!"),
-//                  );
-                  _showSnackBar('Lets go', context);
-
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) => CustomDialog(
+                        title: "Tell us what you think",
+                        description: "We'd really appreciate it",
+                        buttonText: "Submit",
+                        dialogAction: (String fdbk) {
+                          if(_isOffline) baseProvider.showNoInternetAlert(context);
+                          else{
+                            if(fdbk != null && fdbk.isNotEmpty){
+                              reqProvider.submitFeedback(baseProvider.firebaseUser.uid, fdbk).then((flag) {
+                                if(flag) {
+                                  baseProvider.showPositiveAlert('Thank You', 'You help us get better!', _scaffoldKey.currentContext);
+                                }
+                              });
+                              Navigator.of(context).pop();
+                            }
+                          }
+                        },
+                    ),
+                  );
                 }
             ),
             _buildTile(
@@ -162,7 +173,7 @@ class _MainPageState extends State<MainPage> {
                                   color: Colors.black,
                                   fontWeight: FontWeight.w700,
                                   fontSize: 24.0)),
-                          Text('lorme ipsum',
+                          Text('lorem ipsum',
                               style: TextStyle(color: Colors.redAccent)),
                         ],
                       ),
@@ -198,13 +209,21 @@ class _MainPageState extends State<MainPage> {
         borderRadius: BorderRadius.circular(12.0),
         shadowColor: Color(0x802196F3),
         child: InkWell(
-            // Do onTap() if it isn't null, otherwise do print()
             onTap: onTap != null
-                ? () => onTap()
-                : () {
-                    print('Not set yet');
-                  },
-            child: child));
+                ? () {
+                HapticFeedback.vibrate();
+                if(_isOffline){
+                  log.debug('No internet connection.');
+                  baseProvider.showNoInternetAlert(context);
+                }
+                else
+                  onTap();
+              }: () {
+                log.debug('No action set for tile.');
+              },
+            child: child
+        )
+    );
   }
 
   Widget _buildLoginTile() {
@@ -315,7 +334,14 @@ class _MainPageState extends State<MainPage> {
                   style: TextStyle(color: Colors.black45)),
             ]),
       ),
-      onTap: () => Navigator.of(context).pushNamed('/history')
+      onTap: () {
+        if(_isOffline){
+          log.debug('No internet connection.');
+          baseProvider.showNoInternetAlert(context);
+        }
+        else
+          Navigator.of(context).pushNamed('/history');
+      }
     );
   }
 
@@ -384,13 +410,5 @@ class _MainPageState extends State<MainPage> {
           state; //TODO should be done in the FCMHandler itself
       homeState = state;
     });
-  }
-
-  _showSnackBar(String key, BuildContext context) {
-    final snackBar = SnackBar(
-      content: Text(key + " pressed!"),
-    );
-    //Scaffold.of(context).showSnackBar(snackBar);
-    _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 }

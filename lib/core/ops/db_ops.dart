@@ -195,4 +195,17 @@ class DBModel extends ChangeNotifier {
     String monthSubColn = cal.getCurrentMonthCode();
     return _api.getUserVisitDocuments(id, yearDoc, monthSubColn);
   }
+
+  Future<bool> submitFeedback(String userId, String fdbk) async{
+    try {
+      Map<String, dynamic> fdbkMap = {'user_id': userId,
+        'timestamp': FieldValue.serverTimestamp(),
+        'fdbk': fdbk};
+        await _api.addFeedbackDocument(fdbkMap);
+        return true;
+    }catch(e) {
+      log.error(e.toString());
+      return false;
+    }
+  }
 }
