@@ -194,7 +194,7 @@ class DBModel extends ChangeNotifier {
       CalendarUtil cal = CalendarUtil();
       String yearDoc = cal.getCurrentYear();
       String monthSubColn = cal.getCurrentMonthCode();
-      return _api.getUserVisitDocuments(id, '2019', 'NOV');
+      return _api.getUserVisitDocuments(id, yearDoc, monthSubColn);
     }catch(e) {
       log.error('Stream fetch failed: ' + e.toString());
     }

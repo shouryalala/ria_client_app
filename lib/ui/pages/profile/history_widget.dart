@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_app/core/model/visit.dart';
 import 'package:flutter_app/core/ops/db_ops.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:flutter_app/util/ui_constants.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
 import '../../../base_util.dart';
@@ -21,7 +22,7 @@ class _HistoryList extends State<HistoryPage> {
   Log log = new Log('HistoryList');
   static DBModel _dbProvider;
   static BaseUtil _authProvider;
-  final _biggerFont = const TextStyle(fontSize: 18.0);
+  final _biggerFont = const TextStyle(fontSize: 24.0);
   @override
   Widget build(BuildContext context) {
     _dbProvider = Provider.of<DBModel>(context);
@@ -41,12 +42,82 @@ class _HistoryList extends State<HistoryPage> {
             stream: _dbProvider.getUserVisitHistory(_authProvider.firebaseUser.uid),
             builder: (context, snapshot) {
               log.debug(snapshot.error.toString());
-              if(!snapshot.hasData) return const Text("Loading..");
-              return ListView.builder(
-                itemExtent: 180.0,
-                itemCount: snapshot.data.documents.length,
-                itemBuilder: (context, index) => _buildCard(context, snapshot.data.documents[index]),
-              );
+              if (snapshot.error != null) {
+                return Container(
+                  width: double.infinity,
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          'There was a problem loading the history. Please try again later.',
+                          textAlign: TextAlign.center,
+                          style: _biggerFont,
+                        ),
+                      ],
+                    ),
+                  )
+                );
+              }
+              else if (!snapshot.hasData) {
+                return Container(
+                  width: double.infinity,
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          'Loading..',
+                          textAlign: TextAlign.center,
+                          style: _biggerFont,
+                        ),
+                        SizedBox(
+                          height: 24.0,
+                        ),
+                        SpinKitDoubleBounce(
+                          color: UiConstants.spinnerColor,
+                        )
+                      ],
+                    ),
+                  )
+                );
+              }
+              else if (snapshot.data.documents.length == 0) {
+                return Container(
+                  width: double.infinity,
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(10, 20, 20, 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        new Image(
+                          image: new AssetImage("images/cleaner.png"),
+                          height: 92.0,
+                          width: 92.0,
+                        ),
+                        Text(
+                          'No recorded visits',
+                          textAlign: TextAlign.center,
+                          style: _biggerFont,
+                        ),
+                      ],
+                    ),
+                  )
+                );
+              }
+              else {
+                return ListView.builder(
+                  itemExtent: 180.0,
+                  itemCount: snapshot.data.documents.length,
+                  itemBuilder: (context, index) =>
+                      _buildCard(context, snapshot.data.documents[index]),
+                );
+              }
             }
         )
     );
