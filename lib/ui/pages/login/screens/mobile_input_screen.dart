@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/ui/pages/availability_dialog.dart';
+import 'package:flutter_app/ui/dialog/availability_dialog.dart';
 import 'package:flutter_app/util/logger.dart';
 
 class MobileInputScreen extends StatefulWidget {

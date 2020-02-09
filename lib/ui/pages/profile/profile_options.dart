@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_app/ui/elements/confirm_action_dialog.dart';
+import 'package:flutter_app/ui/dialog/confirm_action_dialog.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:provider/provider.dart';
@@ -22,20 +22,8 @@ class _OptionsList extends State<ProfileOptions> {
   final ValueChanged<String> onPush;
   Log log = new Log('ProfileOptions');
   BaseUtil baseProvider;
-//  final _biggerFont = const TextStyle(
-//      fontSize: 18.0,
-//      color: Colors.grey[100],
-//  );
-//  bool isHistoryClicked = false;
   static List<OptionDetail> _optionsList;
 
-  final List<String> _list = [
-    //"History",
-    "Update Address",
-    "About Us",
-    "Contact Us",
-    "Sign Out",
-  ];
   @override
   Widget build(BuildContext context) {
     baseProvider = Provider.of<BaseUtil>(context);
@@ -57,7 +45,7 @@ class _OptionsList extends State<ProfileOptions> {
             final index = i ~/ 2; /*3*/
             return _buildRow(_optionsList[index]);
           },
-          itemCount: _list.length*2,
+          itemCount: _optionsList.length*2,
         )
     );
   }

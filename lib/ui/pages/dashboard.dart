@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_app/ui/elements/form_dialog.dart';
+import 'package:flutter_app/ui/dialog/form_dialog.dart';
 import 'package:flutter_app/ui/pages/home/cancelled_visit_layout.dart';
 import 'package:flutter_app/ui/pages/home/home_layout.dart';
 import 'package:flutter_app/ui/pages/home/ongoing_visit_layout.dart';
