@@ -144,7 +144,9 @@ class _MainPageState extends State<MainPage> {
                           if(_isOffline) baseProvider.showNoInternetAlert(context);
                           else{
                             if(fdbk != null && fdbk.isNotEmpty){
-                              reqProvider.submitFeedback(baseProvider.firebaseUser.uid, fdbk).then((flag) {
+                              //feedback submission allowed even if user not signed in
+                              reqProvider.submitFeedback((baseProvider.firebaseUser == null || baseProvider.firebaseUser.uid == null)?'UNKNOWN':
+                              baseProvider.firebaseUser.uid, fdbk).then((flag) {
                                 if(flag) {
                                   baseProvider.showPositiveAlert('Thank You', 'You help us get better!', _scaffoldKey.currentContext);
                                 }
@@ -338,6 +340,14 @@ class _MainPageState extends State<MainPage> {
         if(_isOffline){
           log.debug('No internet connection.');
           baseProvider.showNoInternetAlert(context);
+        }
+        else if(!baseProvider.isSignedIn()) {
+          log.debug('History clicked:: Not signed in yet');
+          baseProvider.showNegativeAlert('Sign In', 'Please Sign in to continue', context);
+        }
+        else if(!baseProvider.isActiveUser()) {
+          log.debug('History Clicked:: Incomplete details');
+          baseProvider.showNegativeAlert('Update details', 'Please complete your details to continue', context);
         }
         else
           Navigator.of(context).pushNamed('/history');

@@ -22,8 +22,13 @@ class _OptionsList extends State<ProfileOptions> {
   final ValueChanged<String> onPush;
   Log log = new Log('ProfileOptions');
   BaseUtil baseProvider;
-  final _biggerFont = const TextStyle(fontSize: 18.0);
-  bool isHistoryClicked = false;
+//  final _biggerFont = const TextStyle(
+//      fontSize: 18.0,
+//      color: Colors.grey[100],
+//  );
+//  bool isHistoryClicked = false;
+  static List<OptionDetail> _optionsList;
+
   final List<String> _list = [
     //"History",
     "Update Address",
@@ -34,6 +39,7 @@ class _OptionsList extends State<ProfileOptions> {
   @override
   Widget build(BuildContext context) {
     baseProvider = Provider.of<BaseUtil>(context);
+    _optionsList = _loadOptionsList();
     return new Scaffold(
         appBar: AppBar(
           elevation: 2.0,
@@ -44,67 +50,51 @@ class _OptionsList extends State<ProfileOptions> {
                   fontWeight: FontWeight.w700,
                   fontSize: 30.0)),
         ),
-        body: _buildSuggestions(),
+        body: ListView.builder(
+          padding: const EdgeInsets.all(16.0),
+          itemBuilder: /*1*/ (context, i) {
+            if (i.isOdd) return Divider(); /*2*/
+            final index = i ~/ 2; /*3*/
+            return _buildRow(_optionsList[index]);
+          },
+          itemCount: _list.length*2,
+        )
     );
-
-//    if(isHistoryClicked) {
-//      return HistoryPage();
-//    }
-//    if(!isHistoryClicked) {
-//      return _buildSuggestions();
-//    }
   }
 
-  Widget _buildSuggestions() {
-    return ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemBuilder: /*1*/ (context, i) {
-          if (i.isOdd) return Divider(); /*2*/
-          final index = i ~/ 2; /*3*/
-          return _buildRow(_list[index]);
-        },
-        itemCount: _list.length*2,);
-  }
-
-  Widget _buildRow(String key) {
+  Widget _buildRow(OptionDetail option) {
     return ListTile(
       title: Text(
-        key,
-        style: _biggerFont,
+        option.value,
+        style: (option.isEnabled)?TextStyle(
+          fontSize: 18.0,
+          color: Colors.black
+        ):TextStyle(
+          fontSize: 18.0,
+          color: Colors.grey[400]
+        )
       ),
-      onTap: () => _routeOptionRequest(key),
+      onTap: () {
+        HapticFeedback.vibrate();
+        if(option.isEnabled)_routeOptionRequest(option.key);
+      }
     );
   }
 
   _routeOptionRequest(String key) {
     switch(key) {
-      case "Update Address": {
-        //Navigator.of(context).pushNamed('/history');
-//        isHistoryClicked = true;
-//        Navigator.of(context).popAndPushNamed('/home');
+      case 'upAddress': {
 
+        break;
+      }
+      case 'abUs': {
 
-//        setState(() {
-//
-//        });
-//        onPush('/history');
         break;
       }
-      case "About Us": {
-        _showSnackBar(key);
+      case 'contUs': {
         break;
       }
-      case "Contact Us": {
-//        showDialog(
-//          context: context,
-//          builder: (BuildContext context) => CustomDialog(
-//              title: "Header",
-//              description: "LoReM IpSuM",
-//              buttonText: "Got it!"),
-//        );
-        break;
-      }
-      case "Sign Out": {
+      case 'signOut': {
         showDialog(
           context: context,
           builder: (BuildContext context) => ConfirmActionDialog(
@@ -119,7 +109,7 @@ class _OptionsList extends State<ProfileOptions> {
                   baseProvider.showPositiveAlert('Signed out', 'Hope to see you soon', context);
                   Navigator.of(context).pushReplacementNamed('/onboarding');
                 }else{
-                  baseProvider.showNoInternetAlert(context);  //TODO change this
+                  baseProvider.showNegativeAlert('Sign out failed', 'Couldn\'t signout. Please try again', context);
                   log.error('Sign out process failed');
                 }
               });
@@ -134,10 +124,21 @@ class _OptionsList extends State<ProfileOptions> {
       }
     }
   }
-  _showSnackBar(String key) {
-    final snackBar = SnackBar(
-      content: Text(key + " pressed!"),
-    );
-    Scaffold.of(context).showSnackBar(snackBar);
+
+  List<OptionDetail> _loadOptionsList() {
+    return [
+      new OptionDetail(key: 'upAddress', value: 'Update Address', isEnabled: (baseProvider.isSignedIn() && baseProvider.isActiveUser())),
+      new OptionDetail(key: 'abUs', value: 'About Us', isEnabled: true),
+      new OptionDetail(key: 'contUs', value: 'Contact Us', isEnabled: true),
+      new OptionDetail(key: 'signOut', value: 'Sign Out', isEnabled: (baseProvider.isSignedIn())),
+    ];
   }
+
+}
+
+class OptionDetail {
+  final String key;
+  final String value;
+  final bool isEnabled;
+  OptionDetail({this.key, this.value, this.isEnabled});
 }

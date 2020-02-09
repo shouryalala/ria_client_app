@@ -162,7 +162,7 @@ class BaseUtil extends ChangeNotifier{
     }
   }
 
-  isSignedIn() =>  (firebaseUser != null && myUser != null);
+//  isSignedIn() =>  (firebaseUser != null && myUser != null);
 
   String decodeService(String code) {
     switch(code) {
@@ -256,6 +256,29 @@ class BaseUtil extends ChangeNotifier{
       boxShadows: [BoxShadow(color: Colors.greenAccent, offset: Offset(0.0, 2.0), blurRadius: 3.0,)],
     )..show(context);
   }
+
+  showNegativeAlert(String title, String message, BuildContext context) {
+    Flushbar(
+      flushbarPosition: FlushbarPosition.BOTTOM,
+      flushbarStyle: FlushbarStyle.FLOATING,
+      icon: Icon(
+        Icons.assignment_late,
+        size: 28.0,
+        color: Colors.white,
+      ),
+      margin: EdgeInsets.all(10),
+      borderRadius: 8,
+      title: title,
+      message: message,
+      duration: Duration(seconds: 3),
+      backgroundColor: Colors.blueGrey,
+      boxShadows: [BoxShadow(color: Colors.blueGrey, offset: Offset(0.0, 2.0), blurRadius: 3.0,)],
+    )..show(context);
+  }
+
+  bool isSignedIn() => (firebaseUser != null && firebaseUser.uid != null);
+
+  bool isActiveUser() => (_myUser != null && !_myUser.hasIncompleteDetails());
 
   User get myUser => _myUser;
 
