@@ -26,6 +26,7 @@ class _FormDialogState extends State<ConfirmActionDialog> {
   Log log = new Log('ConfirmActionDialog');
   final _formKey = GlobalKey<FormState>();
   final fdbkController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Dialog(

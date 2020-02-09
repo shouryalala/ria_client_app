@@ -97,4 +97,8 @@ class Api{
   Future<void> addFeedbackDocument(Map data) {
     return _db.collection(Constants.COLN_FEEDBACK).add(data);
   }
+
+  Future<void> addCallbackDocument(Map data) {
+    return _db.collection(Constants.COLN_CALLBACK).add(data);
+  }
 }

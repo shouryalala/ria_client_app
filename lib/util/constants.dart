@@ -9,6 +9,7 @@ class Constants {
   static final String COLN_SOCIETIES = "societies";
   static final String COLN_VISITS = "visits";
   static final String COLN_FEEDBACK = "feedback";
+  static final String COLN_CALLBACK = "callback";
 
   //Sub-collections
   static final String SUBCOLN_USER_ACTIVITY = "activity";

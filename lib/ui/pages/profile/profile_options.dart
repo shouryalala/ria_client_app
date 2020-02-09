@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app/core/ops/db_ops.dart';
 import 'package:flutter_app/ui/dialog/confirm_action_dialog.dart';
+import 'package:flutter_app/ui/dialog/contact_dialog.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:provider/provider.dart';
@@ -22,11 +24,13 @@ class _OptionsList extends State<ProfileOptions> {
   final ValueChanged<String> onPush;
   Log log = new Log('ProfileOptions');
   BaseUtil baseProvider;
+  DBModel reqProvider;
   static List<OptionDetail> _optionsList;
 
   @override
   Widget build(BuildContext context) {
     baseProvider = Provider.of<BaseUtil>(context);
+    reqProvider = Provider.of<DBModel>(context);
     _optionsList = _loadOptionsList();
     return new Scaffold(
         appBar: AppBar(
@@ -80,6 +84,23 @@ class _OptionsList extends State<ProfileOptions> {
         break;
       }
       case 'contUs': {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) => ContactUsDialog(
+                isResident: (baseProvider.isSignedIn() && baseProvider.isActiveUser()),
+                onClick: () {
+                  if(baseProvider.isSignedIn() && baseProvider.isActiveUser()) {
+                    reqProvider.requestCallback(baseProvider.firebaseUser.uid, baseProvider.myUser.mobile).then((flag) {
+                      if(flag) {
+                        baseProvider.showPositiveAlert('Callback placed', 'We\'ll contact you at the earliest!', context);
+                      }
+                    });
+                  }else{
+                    baseProvider.showNegativeAlert('Unavailable', 'Callback is arranged for active users only', context);
+                  }
+                },
+            )
+        );
         break;
       }
       case 'signOut': {
@@ -116,7 +137,7 @@ class _OptionsList extends State<ProfileOptions> {
   List<OptionDetail> _loadOptionsList() {
     return [
       new OptionDetail(key: 'upAddress', value: 'Update Address', isEnabled: (baseProvider.isSignedIn() && baseProvider.isActiveUser())),
-      new OptionDetail(key: 'abUs', value: 'About Us', isEnabled: true),
+      new OptionDetail(key: 'abUs', value: 'About ${Constants.APP_NAME}', isEnabled: true),
       new OptionDetail(key: 'contUs', value: 'Contact Us', isEnabled: true),
       new OptionDetail(key: 'signOut', value: 'Sign Out', isEnabled: (baseProvider.isSignedIn())),
     ];

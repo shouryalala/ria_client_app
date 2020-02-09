@@ -208,4 +208,17 @@ class DBModel extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<bool> requestCallback(String userId, String mobile) async{
+    try {
+      Map<String, dynamic> callbackMap = {'user_id': userId,
+        'timestamp': FieldValue.serverTimestamp(),
+        'mobile': mobile};
+      await _api.addCallbackDocument(callbackMap);
+      return true;
+    }catch(e) {
+      log.error(e.toString());
+      return false;
+    }
+  }
 }
