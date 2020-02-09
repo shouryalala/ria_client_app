@@ -205,6 +205,19 @@ class BaseUtil extends ChangeNotifier{
     String ap = (hours < 12) ? "am" : "pm";
     return "$hours:$minutes $ap";
   }
+  
+  Future<bool> signOut() async{
+    try{
+      await FirebaseAuth.instance.signOut();
+      log.debug('Signed Out Firebase User');
+      await _lModel.deleteLocalAppData();
+      log.debug('Cleared local cache');
+      return true;
+    }catch(e) {
+      log.error('Failed to clear data/sign out user: ' + e.toString());
+      return false;
+    }
+  }
 
   showNoInternetAlert(BuildContext context) {
     Flushbar(

@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:flutter_app/util/ui_constants.dart';
 
-class CustomDialog extends StatefulWidget {
+class FormDialog extends StatefulWidget {
   final String title, description, buttonText;
   final Function dialogAction;
   final Image image;
-  CustomDialog({
+  FormDialog({
     @required this.title,
     @required this.description,
     @required this.buttonText,
@@ -16,12 +16,12 @@ class CustomDialog extends StatefulWidget {
   });
 
   @override
-  State createState() => _CustomDialogState();
+  State createState() => _FormDialogState();
 }
 
 
-class _CustomDialogState extends State<CustomDialog> {
-  Log log = new Log('CustomDialog');
+class _FormDialogState extends State<FormDialog> {
+  Log log = new Log('FormDialog');
   final _formKey = GlobalKey<FormState>();
   final fdbkController = TextEditingController();
   @override

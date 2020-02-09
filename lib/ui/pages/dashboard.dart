@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_app/ui/elements/custom_dialog.dart';
+import 'package:flutter_app/ui/elements/form_dialog.dart';
 import 'package:flutter_app/ui/pages/home/cancelled_visit_layout.dart';
 import 'package:flutter_app/ui/pages/home/home_layout.dart';
 import 'package:flutter_app/ui/pages/home/ongoing_visit_layout.dart';
@@ -136,7 +136,7 @@ class _MainPageState extends State<MainPage> {
                 onTap: () {
                   showDialog(
                     context: context,
-                    builder: (BuildContext context) => CustomDialog(
+                    builder: (BuildContext context) => FormDialog(
                         title: "Tell us what you think",
                         description: "We'd really appreciate it",
                         buttonText: "Submit",

@@ -46,4 +46,15 @@ class LocalDBModel extends ChangeNotifier {
     return _api.writeOnboardFile('$status');
   }
 
+  Future<bool> deleteLocalAppData() async{
+    try{
+      _api.deleteOnboardFile();
+      _api.deleteUserFile();
+      return true;
+    }catch(e) {
+      log.error('Failed to delete onboarding or user file:' + e.toString());
+      return false;
+    }
+  }
+
 }

@@ -32,4 +32,14 @@ class LocalApi{
     final file = await userFile;
     return file.writeAsString(content);
   }
+
+  Future<void> deleteOnboardFile() async{
+    final file = await onboardFile;
+    if(file != null)return file.delete();
+  }
+
+  Future<void> deleteUserFile() async{
+    final file = await userFile;
+    if(file != null)return file.delete();
+  }
 }
