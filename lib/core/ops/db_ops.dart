@@ -190,10 +190,14 @@ class DBModel extends ChangeNotifier {
   }
 
   Stream<QuerySnapshot> getUserVisitHistory(String id){
-    CalendarUtil cal = CalendarUtil();
-    String yearDoc = cal.getCurrentYear();
-    String monthSubColn = cal.getCurrentMonthCode();
-    return _api.getUserVisitDocuments(id, yearDoc, monthSubColn);
+    try {
+      CalendarUtil cal = CalendarUtil();
+      String yearDoc = cal.getCurrentYear();
+      String monthSubColn = cal.getCurrentMonthCode();
+      return _api.getUserVisitDocuments(id, '2019', 'NOV');
+    }catch(e) {
+      log.error('Stream fetch failed: ' + e.toString());
+    }
   }
 
   Future<bool> submitFeedback(String userId, String fdbk) async{

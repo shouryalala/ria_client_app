@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_app/core/model/visit.dart';
 import 'package:flutter_app/core/ops/db_ops.dart';
 import 'package:flutter_app/util/constants.dart';
+import 'package:flutter_app/util/logger.dart';
+import 'package:flutter_app/util/ui_constants.dart';
 import 'package:provider/provider.dart';
 
 import '../../../base_util.dart';
@@ -15,6 +18,7 @@ class HistoryPage extends StatefulWidget{
 }
 
 class _HistoryList extends State<HistoryPage> {
+  Log log = new Log('HistoryList');
   static DBModel _dbProvider;
   static BaseUtil _authProvider;
   final _biggerFont = const TextStyle(fontSize: 18.0);
@@ -36,22 +40,99 @@ class _HistoryList extends State<HistoryPage> {
 //            stream: Firestore.instance.collection("visits").document("2019").collection("AUG").snapshots(),
             stream: _dbProvider.getUserVisitHistory(_authProvider.firebaseUser.uid),
             builder: (context, snapshot) {
+              log.debug(snapshot.error.toString());
               if(!snapshot.hasData) return const Text("Loading..");
               return ListView.builder(
-                itemExtent: 80.0,
+                itemExtent: 180.0,
                 itemCount: snapshot.data.documents.length,
-                itemBuilder: (context, index) => _buildHistoryItem(context, snapshot.data.documents[index]),
+                itemBuilder: (context, index) => _buildCard(context, snapshot.data.documents[index]),
               );
             }
         )
     );
   }
 
-  Widget _buildHistoryItem(BuildContext context, DocumentSnapshot doc) {
-    return ListTile(
-      title: Text(
-        "Assistant: " + doc["ass_id"] + "   User: " + doc["user_id"],
-        style: _biggerFont,),
+//  Widget _buildHistoryItem(BuildContext context, DocumentSnapshot doc) {
+//    Visit vItem = Visit.fromMap(doc.data, '');
+//    return Card(
+//      margin: EdgeInsets.fromLTRB(15, 3, 15, 3),
+//      child: Padding(
+//        padding: const EdgeInsets.all(10.0),
+//        child: ListTile(
+//          leading: CircleAvatar(
+//            backgroundColor: Colors.blueAccent,
+//            radius: UiConstants.avatarRadius-15,
+//          ),
+//          title: Text(
+//            'Date: ${vItem.date}, Start Time: ${vItem.vis_st_time}',
+//            style: _biggerFont,
+//          ),
+//        ),
+//      ),
+//          elevation: 3,
+//    );
+//    return ListTile(
+//      title: Text(
+//        "Assistant: " + doc["ass_id"] + "   User: " + doc["user_id"],
+//        style: _biggerFont,),
+//    );
+//  }
+
+  Widget _buildCard(BuildContext context, DocumentSnapshot doc) {
+    Visit vItem = Visit.fromMap(doc.data, '');
+    return new Container(
+        height: 120.0,
+        margin: const EdgeInsets.symmetric(
+          vertical: 16.0,
+          horizontal: 24.0,
+        ),
+        child: new Stack(
+          children: <Widget>[
+            new Container(
+              height: 159.0,
+              width: double.infinity,
+              margin: new EdgeInsets.only(left: 46.0),
+              decoration: new BoxDecoration(
+                //color: new Color(0xFF333366),
+                color: Colors.white70,
+                shape: BoxShape.rectangle,
+                borderRadius: new BorderRadius.circular(8.0),
+                boxShadow: <BoxShadow>[
+                  new BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10.0,
+                    offset: new Offset(0.0, 10.0),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(40, 20, 20, 20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[ //TODO add cost and rating
+                    Text('Date: ${vItem.date}'),
+                    Text('Assistant: ${vItem.aId}'),
+                    Text('Timing: ${_authProvider.decodeTime(vItem.vis_st_time)} to ${_authProvider.decodeTime(vItem.vis_en_time)}'),
+                    Text('Service: ${_authProvider.decodeService(vItem.service)}'),
+                    //Text('Rating: ${vItem.}')
+                  ],
+                ),
+              )
+            ),
+            new Container(
+              margin: new EdgeInsets.symmetric(
+                  vertical: 16.0
+              ),
+              alignment: FractionalOffset.centerLeft,
+              child: new Image(
+                image: new AssetImage("images/cleaner.png"),    //TODO add image
+                height: 92.0,
+                width: 92.0,
+              ),
+            ),
+          ],
+        )
     );
   }
 }

@@ -91,7 +91,7 @@ class Api{
 
   Stream<QuerySnapshot> getUserVisitDocuments(String userId, String yearDoc, String monthSubColn) {
     CollectionReference _cRef = _db.collection(Constants.COLN_VISITS).document(yearDoc).collection(monthSubColn);
-    return _cRef.where('userId', isEqualTo: userId).orderBy('timestamp',descending: true).getDocuments().asStream();
+    return _cRef.where('user_id', isEqualTo: userId).orderBy('timestamp',descending: true).getDocuments().asStream();
   }
 
   Future<void> addFeedbackDocument(Map data) {
