@@ -5,6 +5,7 @@ import 'package:flutter_app/ui/pages/login/login_controller.dart';
 import 'package:flutter_app/ui/pages/onboarding/onboarding_widget.dart';
 import 'package:flutter_app/ui/pages/profile/history_widget.dart';
 import 'package:flutter_app/ui/pages/profile/profile_options.dart';
+import 'package:flutter_app/ui/pages/profile/update_address.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/locator.dart';
 import 'package:flutter_app/util/ui_constants.dart';
@@ -57,6 +58,7 @@ class App extends StatelessWidget{
             '/login': (BuildContext context) => LoginController(),
             '/history': (BuildContext context) => HistoryPage(),
             '/profile': (BuildContext context) => ProfileOptions(),
+            '/updateAddress': (BuildContext context) => UpdateAddressScreen(),
           },
         )
     );

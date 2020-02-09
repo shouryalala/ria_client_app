@@ -76,7 +76,7 @@ class _OptionsList extends State<ProfileOptions> {
   _routeOptionRequest(String key) {
     switch(key) {
       case 'upAddress': {
-
+        Navigator.of(context).pushNamed('/updateAddress');
         break;
       }
       case 'abUs': {
