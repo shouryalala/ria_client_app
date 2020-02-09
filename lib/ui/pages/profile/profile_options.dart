@@ -95,6 +95,7 @@ class _OptionsList extends State<ProfileOptions> {
                         baseProvider.showPositiveAlert('Callback placed', 'We\'ll contact you at the earliest!', context);
                       }
                     });
+                    Navigator.of(context).pop();
                   }else{
                     baseProvider.showNegativeAlert('Unavailable', 'Callback is arranged for active users only', context);
                   }

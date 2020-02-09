@@ -26,14 +26,16 @@ class MobileInputScreenState extends State<MobileInputScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body:Column(
+//    return Scaffold(
+//      backgroundColor: Colors.transparent,
+//      body:
+      return Column(
         children: <Widget>[
           Center(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 18.0),
-              child:Form(
+              child:
+              Form(
                 key: _formKey,
                 child: TextFormField(
                   keyboardType: TextInputType.number,
@@ -92,7 +94,7 @@ class MobileInputScreenState extends State<MobileInputScreen> {
             ),
           ),
         ],
-      )
+      //)
     );
   }
 

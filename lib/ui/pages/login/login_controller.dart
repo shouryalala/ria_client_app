@@ -268,7 +268,7 @@ class _LoginControllerState extends State<LoginController> {
       case MobileInputScreen.index:
         {
           //in mobile input screen. Get and set mobile/ set error interface if not correct
-          if (_mobileScreenKey.currentState.formKey.validate()) {
+          if (_mobileScreenKey.currentState.formKey.currentState.validate()) {
             log.debug('Mobile number validated: ${_mobileScreenKey.currentState.getMobile()}');
             this.userMobile = _mobileScreenKey.currentState.getMobile();
             this.verificationId = '+91' + this.userMobile;
