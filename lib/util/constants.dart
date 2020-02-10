@@ -92,6 +92,10 @@ class Constants {
   static const String UTENSILS_CDE = "Ux";
   static const String CHORE_CDE = "Chx";
   static const String CLEAN_UTENSIL_CDE = "CUx";
+  static const String CLEAN_DUST_CDE = "CDx";
+  static const String DUST_UTENSIL_CDE = "DUx";
+  static const String CLEAN_DUST_UTENSIL_CDE = "CDUx";
+
   static final String PRIORITY_MIN = "Min";
 
   //DEFAULTS
@@ -103,4 +107,5 @@ class Constants {
   //Home Screen constants
   static const String CLEANING = "Cleaning";
   static const String UTENSILS = "Utensils";
+  static const String DUSTING = "Dusting";
 }

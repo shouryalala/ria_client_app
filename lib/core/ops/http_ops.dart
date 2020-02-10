@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/core/model/request.dart';
 import 'package:flutter_app/core/service/http_api.dart';
@@ -22,7 +24,8 @@ class HttpModel extends ChangeNotifier{
       params['service'] = request.service;
       params['socId'] = request.society_id;
       params['reqTime'] = request.req_time.toString();
-      return await _api.getServiceRequestCost(idToken, params);
+      double cost = await _api.getServiceRequestCost(idToken, params);
+      return double.parse((cost).toStringAsFixed(2));
     }
     else {
       log.error('Couldnt find a auth id token to be attached with request. Header population failed. Not sending request.');

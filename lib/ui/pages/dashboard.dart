@@ -197,7 +197,7 @@ class _MainPageState extends State<MainPage> {
           staggeredTiles: [
             StaggeredTile.extent(2, 110.0),
             //StaggeredTile.fit(2), //for the login button
-            StaggeredTile.extent(2, 300.0),
+            StaggeredTile.extent(2, 360.0),
             StaggeredTile.extent(1, 180.0),
             StaggeredTile.extent(1, 180.0),
             StaggeredTile.extent(2, 110.0),
