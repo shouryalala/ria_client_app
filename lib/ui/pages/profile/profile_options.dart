@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/core/ops/db_ops.dart';
+import 'package:flutter_app/ui/dialog/about_dialog.dart';
 import 'package:flutter_app/ui/dialog/confirm_action_dialog.dart';
 import 'package:flutter_app/ui/dialog/contact_dialog.dart';
 import 'package:flutter_app/util/constants.dart';
@@ -80,7 +81,10 @@ class _OptionsList extends State<ProfileOptions> {
         break;
       }
       case 'abUs': {
-
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => AboutUsDialog()
+          );
         break;
       }
       case 'contUs': {

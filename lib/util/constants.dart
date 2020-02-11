@@ -108,4 +108,19 @@ class Constants {
   static const String CLEANING = "Cleaning";
   static const String UTENSILS = "Utensils";
   static const String DUSTING = "Dusting";
+
+  static const String ABOUT_US_DESCRIPTION = 'Cryb is a simple idea to use technology to uplift the current regime of domestic help, for everyone.\n'
+      'Users can:'
+      'pick an assistant based on their ratings and reviews.'
+      '  Switch assistants in case of delays or unplanned leaves.'
+      'Pay standardized charges based on the services requested.'
+      'Change timings or assistants as per their conveinience'
+      'Assistants can:'
+      'Find more work due to adhoc requests and a managed timetable'
+      'Become technologically empowered and more independent'
+      'Receive pay fairly and consistently'
+      'We are currently in the beta stage where we are slowly getting the assistants accustomed to an app-based roster.'
+      ' We are also using the new ratings to onboard better assistants. Due to this there might be some lapses on our end,'
+      ' which is why, cryb is currently completely free for use. In time this system will become much stronger and will '
+      'ensure that you never have to think about your home requirements ever again!';
 }
