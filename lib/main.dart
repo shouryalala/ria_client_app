@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/ops/db_ops.dart';
+import 'package:flutter_app/item_reviews_page.dart';
 import 'package:flutter_app/ui/pages/dashboard.dart';
 import 'package:flutter_app/ui/pages/login/login_controller.dart';
 import 'package:flutter_app/ui/pages/onboarding/onboarding_widget.dart';
@@ -59,6 +60,7 @@ class App extends StatelessWidget{
             '/history': (BuildContext context) => HistoryPage(),
             '/profile': (BuildContext context) => ProfileOptions(),
             '/updateAddress': (BuildContext context) => UpdateAddressScreen(),
+            '/shops': (BuildContext context) => ItemReviewsPage(),
           },
         )
     );

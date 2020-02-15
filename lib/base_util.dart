@@ -51,7 +51,7 @@ class BaseUtil extends ChangeNotifier{
   /// -Fetches current activity state from user subcollection
   /// -If there is an upcoming visit, it retrieves/updates the local visit object
   /// -Sets the variable used to decide home layout(Default layout, upcoming visit, ongoing visit etc)
-  Future<int> _setupCurrentState() async {
+  Future<void> _setupCurrentState() async {
     int status = Constants.VISIT_STATUS_NONE;
     String vPath;
     Map<String, dynamic> res = await _dbModel.getUserActivityStatus(_myUser);

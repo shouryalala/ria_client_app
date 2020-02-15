@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/fcm_handler.dart';
 import 'package:flutter_app/core/fcm_listener.dart';
+import 'package:flutter_app/ui/elements/launcher_slow_internet_alert.dart';
 import 'package:flutter_app/util/locator.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:provider/provider.dart';
@@ -15,8 +16,11 @@ class SplashScreen extends StatefulWidget {
 
 class LogoFadeIn extends State<SplashScreen> {
   Log log = new Log("SplashScreen");
+  bool _isSlowConnection = false;
+  bool _isAnimVisible = true;
   Timer _timer, _timer2;
   FlutterLogoStyle _logoStyle = FlutterLogoStyle.markOnly;
+
 
   LogoFadeIn() {
     _timer = new Timer(const Duration(seconds: 2), () {
@@ -25,10 +29,15 @@ class LogoFadeIn extends State<SplashScreen> {
         initialize();
       });
     });
-//    _timer2 = new Timer(const Duration(seconds: 6), () {
-//      initialize();
-//    });
+    _timer2 = new Timer(const Duration(seconds: 6), () {
+      //display slow internet message
+        setState(() {
+          _isSlowConnection = true;
+        });
+    });
   }
+
+
 
   initialize() async{
     final onboardProvider = Provider.of<BaseUtil>(context);
@@ -53,12 +62,53 @@ class LogoFadeIn extends State<SplashScreen> {
     //if(!_timer.isActive)initialize();
     return MaterialApp(
       home: Scaffold(
-        body: Center(
-          child: Container(
-            child: new FlutterLogo(
-              size: 200.0, style: _logoStyle,
+        body: Stack(
+          children: <Widget>[
+            Center(
+              child: Container(
+                child: new FlutterLogo(
+                  size: 200.0, style: _logoStyle,
+                ),
+              ),
             ),
-          ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(20, 20, 20, 40),
+                  child: Visibility(
+                    maintainSize: true,
+                    maintainAnimation: true,
+                    maintainState: true,
+                    visible: _isSlowConnection,
+                    child:  PoorConnectionAlert()
+                  )
+              ),
+            )
+          ],
+        )
+      ),
+    );
+  }
+}
+
+class AnimatedLogo extends AnimatedWidget {
+  // Make the Tweens static because they don't change.
+  static final _opacityTween = Tween<double>(begin: 0.1, end: 1);
+  static final _sizeTween = Tween<double>(begin: 0, end: 300);
+
+  AnimatedLogo({Key key, Animation<double> animation})
+      : super(key: key, listenable: animation);
+
+  Widget build(BuildContext context) {
+    final animation = listenable as Animation<double>;
+    return Center(
+      child: Opacity(
+        opacity: _opacityTween.evaluate(animation),
+        child: Container(
+          margin: EdgeInsets.symmetric(vertical: 10),
+          height: _sizeTween.evaluate(animation),
+          width: _sizeTween.evaluate(animation),
+          child: FlutterLogo(),
         ),
       ),
     );
