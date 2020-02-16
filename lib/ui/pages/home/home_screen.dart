@@ -58,7 +58,7 @@ class _HomeControllerState extends State<HomeController> {
     baseProvider = Provider.of<BaseUtil>(context);
     handler = Provider.of<FcmHandler>(context);
     if(handler != null) {
-      handler.setHomeScreenCallback(onAssistantAvailable: (state) => onAssistantAvailable(state));  //register callback to allow handler to notify change in ui
+      //handler.setHomeScreenCallback(onAssistantAvailable: (state) => onAssistantAvailable(state));  //register callback to allow handler to notify change in ui
     }
     switch(homeState) {
       case Constants.VISIT_STATUS_NONE: {

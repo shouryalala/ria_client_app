@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/core/fcm_handler.dart';
 import 'package:flutter_app/core/fcm_listener.dart';
 import 'package:flutter_app/ui/elements/launcher_slow_internet_alert.dart';
+import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/locator.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:provider/provider.dart';
 
 import '../../base_util.dart';
+import 'home/rate_visit_layout.dart';
 
 class SplashScreen extends StatefulWidget {  
   @override State<StatefulWidget> createState() => LogoFadeIn();
@@ -50,9 +52,19 @@ class LogoFadeIn extends State<SplashScreen> {
       Navigator.of(context).pop();
       Navigator.of(context).pushReplacementNamed('/onboarding');
     }else{
-      log.debug("Existing User. Moving to Home..");
-      Navigator.of(context).pop();
-      Navigator.of(context).pushReplacementNamed('/home');
+      //TODO yuck please fix this. shouldnt be here
+      if(onboardProvider.homeState == Constants.VISIT_STATUS_COMPLETED
+          && onboardProvider.currentVisit != null && onboardProvider.currentAssistant != null) {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => RateVisitLayout(
+            rateVisit: onboardProvider.currentVisit,
+            rateAssistant: onboardProvider.currentAssistant,
+            actionComplete: () {})));
+      }
+      else {
+        log.debug("Existing User. Moving to Home..");
+        Navigator.of(context).pop();
+        Navigator.of(context).pushReplacementNamed('/home');
+      }
     }
     //});
   }

@@ -39,12 +39,15 @@ class _MainPageState extends State<MainPage> {
   List<String> selectedServiceList = [Constants.CLEANING];
   CalendarUtil cUtil = new CalendarUtil();
   int homeState = Constants.VISIT_STATUS_NONE;
+  bool _isCallbackInitialized = false;
   StreamSubscription _connectionChangeStream;
   bool _isOffline = false;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   void initState() {
     super.initState();
+    _isCallbackInitialized = false;
     ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
     _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
   }
@@ -59,14 +62,27 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     baseProvider = Provider.of<BaseUtil>(context);
     reqProvider = Provider.of<DBModel>(context);
-    if (handler != null) {
-      handler.setHomeScreenCallback(
-          onAssistantAvailable: (state) => onAssistantAvailable(
-              state)); //register callback to allow handler to notify change in ui
+    handler = Provider.of<FcmHandler>(context);
+    if (handler != null && !_isCallbackInitialized) {
+      _isCallbackInitialized = true;  //requires initialization only once
+      handler.setHomeScreenCallback(onVisitStatusChanged: (status) {  //register callback to allow handler to notify change in ui,
+        log.debug("Visit Status Changed. Refreshing UI");
+        setState(() {
+          homeState = status;
+        });
+      });
+      handler.setVisitCompleteCallback(onVisitCompleted: () {
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) => RateVisitLayout(
+            rateVisit: baseProvider.currentVisit,
+            rateAssistant: baseProvider.currentAssistant,
+            actionComplete: () {
+//                setState(() {
+//                  homeState = Constants.VISIT_STATUS_NONE;
+//                });
+            })));
+      });
     }
-    homeState = (baseProvider.homeState != null)
-        ? baseProvider.homeState
-        : Constants.VISIT_STATUS_NONE;
+    homeState = (baseProvider.homeState != null) ? baseProvider.homeState : Constants.VISIT_STATUS_NONE;
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -357,7 +373,7 @@ class _MainPageState extends State<MainPage> {
 
   Widget __buildVisitLayout(int homeState) {
     switch (homeState) {
-      case Constants.VISIT_STATUS_NONE:
+      case Constants.VISIT_STATUS_NONE: case Constants.VISIT_STATUS_COMPLETED:
         {
           return buildHomeLayout();
         }
@@ -385,19 +401,20 @@ class _MainPageState extends State<MainPage> {
               canVisit: baseProvider.currentVisit,
               canAssistant: baseProvider.currentAssistant);
         }
-      case Constants.VISIT_STATUS_COMPLETED:
-        {
-          if (baseProvider.currentVisit == null ||
-              baseProvider.currentAssistant == null) return buildHomeLayout();
-          return RateVisitLayout(
-              rateVisit: baseProvider.currentVisit,
-              rateAssistant: baseProvider.currentAssistant,
-              actionComplete: () {
-                setState(() {
-                  homeState = Constants.VISIT_STATUS_NONE;
-                });
-              });
-        }
+//      case Constants.VISIT_STATUS_COMPLETED:
+//        {
+//          if (baseProvider.currentVisit == null ||
+//              baseProvider.currentAssistant == null) return buildHomeLayout();
+//          Navigator.of(context).push(MaterialPageRoute(builder: (_) => RateVisitLayout(
+//              rateVisit: baseProvider.currentVisit,
+//              rateAssistant: baseProvider.currentAssistant,
+//              actionComplete: () {
+////                setState(() {
+////                  homeState = Constants.VISIT_STATUS_NONE;
+////                });
+//              })));
+//          break;
+//        }
       default:
         return buildHomeLayout();
     }
@@ -416,8 +433,6 @@ class _MainPageState extends State<MainPage> {
   //state changer when request is confirmed
   onAssistantAvailable(state) {
     setState(() {
-      baseProvider.homeState =
-          state; //TODO should be done in the FCMHandler itself
       homeState = state;
     });
   }

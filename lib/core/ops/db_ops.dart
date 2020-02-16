@@ -80,12 +80,13 @@ class DBModel extends ChangeNotifier {
     if(rating == 0) {
       try {
         log.debug("Rating unavailable. Only updating user status");
-        Map userActMap = {'visit_status': Constants.VISIT_STATUS_NONE,
+        Map<String, dynamic> userActMap = {'visit_status': Constants.VISIT_STATUS_NONE,
           'modified_time': FieldValue.serverTimestamp()};
         await _api.updateUserStatus(userId, userActMap);
         return true;
       }catch(e) {
         log.error("Failed to update user activity status: " + e.toString());
+        return false;
       }
     }
     else{

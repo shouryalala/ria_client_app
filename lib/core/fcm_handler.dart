@@ -13,6 +13,7 @@ class FcmHandler extends ChangeNotifier {
   CacheModel _cModel = locator<CacheModel>();
   BaseUtil _baseUtil = locator<BaseUtil>();
   static ValueChanged<int> aUpdate;
+  static VoidCallback visitComplete;
 
   FcmHandler() {}
 
@@ -51,6 +52,7 @@ class FcmHandler extends ChangeNotifier {
             await _cModel.saveVisit(_baseUtil.currentVisit); //cache visit
             _baseUtil.currentAssistant = await _baseUtil.getAssistant(recVisit.aId);  //fetches and caches assistant
             await _cModel.saveHomeStatus(recVisit.status, recVisit.path);
+            _baseUtil.homeState = recVisit.status; //update baseUtil
             if(_baseUtil.currentAssistant != null){
               if(aUpdate != null) {   //refresh Home Screen UI if its available
                 log.debug("Refreshing Home Screen layout to Upcoming Visit Workflow");
@@ -66,7 +68,7 @@ class FcmHandler extends ChangeNotifier {
           }
           return true;
         }
-        case Constants.COMMAND_VISIT_ONGOING: case Constants.COMMAND_VISIT_CANCELLED:{
+        case Constants.COMMAND_VISIT_ONGOING: case Constants.COMMAND_VISIT_CANCELLED: {
           String visPath;
           int status;
           try {
@@ -86,13 +88,53 @@ class FcmHandler extends ChangeNotifier {
           }
           //Update the current visit details
           _baseUtil.currentVisit = await _baseUtil.getVisit(visPath, true);
-          //}
           if(_baseUtil.currentVisit != null && _baseUtil.currentVisit.path != null && _baseUtil.currentVisit.path.isNotEmpty){
-            _baseUtil.currentAssistant = await _baseUtil.getAssistant(_baseUtil.currentVisit.aId);
+            _baseUtil.currentAssistant = await _baseUtil.getAssistant(_baseUtil.currentVisit.aId);  //update and cache assistant
+            await _cModel.saveHomeStatus(status, visPath);  //cache current status
+            _baseUtil.homeState = status; //update baseUtil
             if(_baseUtil.currentAssistant != null){
-              if(aUpdate != null) {   //refresh Home Screen UI if its available
+              if(aUpdate != null) {   //refresh Home Screen UI if available
                 log.debug("Refreshing Home Screen layout to $command Visit Workflow");
                 aUpdate(status);
+              }
+            }else{
+              log.error("Couldnt fetch ongoing/cancelled visit assistant. Discarding message");
+              return false;
+            }
+          }
+          else{
+            log.error("Couldnt fetch visit object. Discarding message");
+            return false;
+          }
+          return true;
+        }
+        case Constants.COMMAND_VISIT_COMPLETED: {
+          String visPath;
+          int status;
+          try {
+            visPath = data[Visit.fldVID];
+            status = int.parse(data[Visit.fldStatus]);
+          }catch(error){
+            log.error("Couldnt parse status int value: "+ error);
+          }
+          if(visPath == null || visPath.isEmpty) {
+            log.error('Couldnt parse visit Path recevied. Skipping request');
+            return false;
+          }
+          if(status != Constants.VISIT_STATUS_COMPLETED){
+            log.error('Invalid Visit status recevied. Skipping request');
+            return false;
+          }
+          //Update the current visit details
+          _baseUtil.currentVisit = await _baseUtil.getVisit(visPath, true);
+          if(_baseUtil.currentVisit != null && _baseUtil.currentVisit.path != null && _baseUtil.currentVisit.path.isNotEmpty){
+            _baseUtil.currentAssistant = await _baseUtil.getAssistant(_baseUtil.currentVisit.aId);  //update and cache assistant
+            await _cModel.saveHomeStatus(status, visPath);  //cache current status
+            _baseUtil.homeState = status; //update baseUtil
+            if(_baseUtil.currentAssistant != null){
+              if(visitComplete != null) {   //refresh Home Screen UI if available
+                log.debug("Moving to Ratings page");
+                visitComplete();
               }
             }else{
               log.error("Couldnt fetch ongoing/cancelled visit assistant. Discarding message");
@@ -110,7 +152,11 @@ class FcmHandler extends ChangeNotifier {
     return true;
   }
 
-  setHomeScreenCallback({ValueChanged onAssistantAvailable}) {
-    aUpdate = onAssistantAvailable;
+  setHomeScreenCallback({ValueChanged onVisitStatusChanged}) {
+    aUpdate = onVisitStatusChanged;
+  }
+
+  setVisitCompleteCallback({VoidCallback onVisitCompleted}) {
+    visitComplete = onVisitCompleted;
   }
 }

@@ -61,6 +61,7 @@ class Constants {
   static const String COMMAND_REQUEST_CONFIRMED = "RQDP";
   static const String COMMAND_VISIT_ONGOING = "VISON";
   static const String COMMAND_VISIT_CANCELLED = "VISCAN";
+  static const String COMMAND_VISIT_COMPLETED = "VISCOM";
 
 
   //Service decodes

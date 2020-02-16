@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_app/core/model/assistant.dart';
 import 'package:flutter_app/core/model/visit.dart';
 import 'package:flutter_app/ui/dialog/assistant_details_dialog.dart';
-import 'package:flutter_app/ui/dialog/form_dialog.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:provider/provider.dart';
 

@@ -91,7 +91,7 @@ class _FormDialogState extends State<ConfirmActionDialog> {
                       onPressed: () {
                         HapticFeedback.vibrate();
                         log.debug('DialogAction cancelled');
-                        widget.cancelAction();
+                        return widget.cancelAction();
                       },
                       child: Text('Cancel'),
                     ),
@@ -102,7 +102,7 @@ class _FormDialogState extends State<ConfirmActionDialog> {
                       onPressed: () {
                         HapticFeedback.vibrate();
                         log.debug('DialogAction clicked');
-                        widget.confirmAction();
+                        return widget.confirmAction();
                       },
                       child: Text(widget.buttonText),
                     ),
