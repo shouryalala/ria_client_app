@@ -18,6 +18,7 @@ import 'core/model/visit.dart';
 
 class BaseUtil extends ChangeNotifier{
   final Log log = new Log("BaseUtil");
+  static bool _setupTimeElapsed = false;
   LocalDBModel _lModel = locator<LocalDBModel>();
   DBModel _dbModel = locator<DBModel>();
   CacheModel _cModel = locator<CacheModel>();
@@ -34,7 +35,7 @@ class BaseUtil extends ChangeNotifier{
   }
 
   Future init() async {
-    //fetch onboarding status and User details
+    //fetch on-boarding status and User details
     firebaseUser = await FirebaseAuth.instance.currentUser();
     isUserOnboarded = await _lModel.isUserOnboarded()==1;
     _myUser = await _lModel.getUser();
@@ -43,24 +44,30 @@ class BaseUtil extends ChangeNotifier{
     if(_myUser != null && _myUser.mobile != null) {
       //_homeState = await _retrieveCurrentStatus();
       //_homeState = (_homeState == null)?Constants.VISIT_STATUS_NONE:_homeState;
+//      Timer _timer2 = new Timer(const Duration(seconds: 20), () {
+//        _setupTimeElapsed = true;
+//      });
+    //TODO test how long will firebase try to fetch these values. If its too long, it needs to be overridden
       await _setupCurrentState();
     }
   }
 
 
-  /// -Fetches current activity state from user subcollection
+  /// -Fetches current activity state from user sub-collection
   /// -If there is an upcoming visit, it retrieves/updates the local visit object
   /// -Sets the variable used to decide home layout(Default layout, upcoming visit, ongoing visit etc)
   Future<void> _setupCurrentState() async {
-    int status = Constants.VISIT_STATUS_NONE;
-    String vPath;
+    ///initialize values with cache stored values first
+    Map currState = await _cModel.getHomeStatus();
+    int status = (currState != null && currState['visit_status'] != null)?currState['visit_status']:Constants.VISIT_STATUS_NONE;
+    String vPath = (currState != null && currState['visit_id'] != null)?currState['visit_id']:'';
+
     Map<String, dynamic> res = await _dbModel.getUserActivityStatus(_myUser);
     try {
       status = res['visit_status'];
       vPath = res['visit_id'];
     }catch(e) {
-      log.debug("Didnt find the activity subcollection. Defaulting values");
-      status = Constants.VISIT_STATUS_NONE;
+      log.error("Didnt find the activity subcollection. Defaulting values");
     }
     log.debug("Recieved Activity Status:: Status: $status");
     switch(status) {
@@ -102,6 +109,7 @@ class BaseUtil extends ChangeNotifier{
         break;
       }
     }
+    _cModel.saveHomeStatus(status, vPath);  //await not needed
   }
 
   //Path of format: visits/YEAR/MONTH/ID

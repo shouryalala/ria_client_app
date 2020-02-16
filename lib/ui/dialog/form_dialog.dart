@@ -42,12 +42,13 @@ class _FormDialogState extends State<FormDialog> {
         //...bottom card part,
         Container(
           padding: EdgeInsets.only(
-            top: UiConstants.avatarRadius + UiConstants.padding,
+            //top: UiConstants.avatarRadius + UiConstants.padding,
+            top: UiConstants.padding + 30,
             bottom: UiConstants.padding,
             left: UiConstants.padding,
             right: UiConstants.padding,
           ),
-          margin: EdgeInsets.only(top: UiConstants.avatarRadius),
+          //margin: EdgeInsets.only(top: UiConstants.avatarRadius),
           decoration: new BoxDecoration(
             color: Colors.white,
             shape: BoxShape.rectangle,
@@ -118,14 +119,14 @@ class _FormDialogState extends State<FormDialog> {
           ),
         ),
         //...top circlular image part,
-        Positioned(
-          left: UiConstants.padding,
-          right: UiConstants.padding,
-          child: CircleAvatar(
-            backgroundColor: Colors.blueAccent,
-            radius: UiConstants.avatarRadius,
-          ),
-        ),
+//        Positioned(
+//          left: UiConstants.padding,
+//          right: UiConstants.padding,
+//          child: CircleAvatar(
+//            backgroundColor: Colors.blueAccent,
+//            radius: UiConstants.avatarRadius,
+//          ),
+//        ),
       ],
     );
   }

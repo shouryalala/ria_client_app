@@ -49,7 +49,8 @@ class FcmHandler extends ChangeNotifier {
           if(recVisit != null && recVisit.path != null && recVisit.path.isNotEmpty){
             _baseUtil.currentVisit = recVisit;
             await _cModel.saveVisit(_baseUtil.currentVisit); //cache visit
-            _baseUtil.currentAssistant = await _baseUtil.getAssistant(recVisit.aId);
+            _baseUtil.currentAssistant = await _baseUtil.getAssistant(recVisit.aId);  //fetches and caches assistant
+            await _cModel.saveHomeStatus(recVisit.status, recVisit.path);
             if(_baseUtil.currentAssistant != null){
               if(aUpdate != null) {   //refresh Home Screen UI if its available
                 log.debug("Refreshing Home Screen layout to Upcoming Visit Workflow");

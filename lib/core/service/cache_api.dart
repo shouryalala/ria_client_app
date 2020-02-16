@@ -41,4 +41,19 @@ class CacheApi{
     final file = await assistantFile;
     return file.writeAsString(content);
   }
+
+  Future<File> get homeStatusFile async{
+    final path = await _localPath;
+    return File('$path/homestate.txt');
+  }
+
+  Future<String> readHomeStatusFile() async{
+    final file = await homeStatusFile;
+    return file.readAsString();
+  }
+
+  Future<File> writeHomeStatusFile(String content) async{
+    final file = await homeStatusFile;
+    return file.writeAsString(content);
+  }
 }
