@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/core/model/user_status.dart';
 import 'package:flutter_app/core/service/cache_api.dart';
 import 'package:flutter_app/util/locator.dart';
 import 'package:flutter_app/util/logger.dart';
@@ -51,7 +52,7 @@ class CacheModel extends ChangeNotifier {
     }
   }
 
-  Future<Map> getHomeStatus() async{
+  Future<UserState> getHomeStatus() async{
     try{
       String res = await _api.readHomeStatusFile();
       if(res == null || res.isEmpty){
@@ -67,7 +68,7 @@ class CacheModel extends ChangeNotifier {
         int status = int.parse(parts[0]);
         String vPath = parts[1];
         log.debug('Received Home Status entities:: Status: ${status}, Path: ${vPath}');
-        return {'visit_status':status, 'visit_id': vPath};
+        return UserState(visitStatus: status, visitPath: vPath);//{'visit_status':status, 'visit_id': vPath};
       }catch(e) {
         log.error("Failed to convert status part to int");
         return null;
@@ -78,12 +79,12 @@ class CacheModel extends ChangeNotifier {
     }
   }
 
-  Future<bool> saveHomeStatus(int status, String vPath) async{
+  Future<bool> saveHomeStatus(UserState state) async{
     try{
-      if(status == null)return false;
-      if(vPath == null) vPath = '';   //might be null for default home state
-      String res = status.toString() + '\$' + vPath;   //1$2020/02/....
-      await _api.writeHomeStatusFile(res);
+      if(state.visitStatus == null)return false;
+      //if(state.visitPath == null) vPath = '';   //might be null for default home state
+      //String res = status.toString() + '\$' + vPath;   //1$2020/02/....
+      await _api.writeHomeStatusFile(state.toFileString());
       return true;
     }catch(e) {
       log.error("Failed to store home status to local cache: " + e.toString());

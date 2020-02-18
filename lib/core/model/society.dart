@@ -1,3 +1,5 @@
+import 'package:flutter_app/util/constants.dart';
+
 class Society{
   final String sId;
   final String enName;
@@ -9,9 +11,9 @@ class Society{
 
   Society.fromMap(Map<String, dynamic> data, String id) : this (
     sId: id,
-    enName: data['en'],
-    hiName: data['hi'],
-    plot: data['plot'],
-    sector: data['sector']
+    enName: data[Constants.APPT_FIELD_LANG_EN],
+    hiName: data[Constants.APPT_FIELD_LANG_HI],
+    plot: data[Constants.APPT_FIELD_PLOT],
+    sector: data[Constants.APPT_FIELD_SECTOR]
   );
 }

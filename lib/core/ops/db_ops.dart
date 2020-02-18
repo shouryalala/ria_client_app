@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/model/request.dart';
 import 'package:flutter_app/core/model/society.dart';
+import 'package:flutter_app/core/model/user_status.dart';
 import 'package:flutter_app/core/service/api.dart';
 import 'package:flutter_app/util/calendar_util.dart';
 import 'package:flutter_app/util/constants.dart';
@@ -47,12 +48,12 @@ class DBModel extends ChangeNotifier {
     }
   }
 
-  Future<Map> getUserActivityStatus(User user) async{
+  Future<UserState> getUserActivityStatus(User user) async{
     try{
       //String id = user.mobile;
       String id = user.uid;
       var doc = await _api.getUserActivityDocument(id);
-      return doc.data;
+      return UserState.fromMap(doc.data);
     }catch(e) {
       log.error("Failed to fetch user activity status: " + e.toString());
       return null;
@@ -76,13 +77,13 @@ class DBModel extends ChangeNotifier {
   }
 
   ///if rating = 0 , visit rating was skipped
-  Future<bool> rateVisitAndUpdateUserStatus(String userId, String astId, String visPath, int rating, String fdbk) async{
+  Future<bool> rateVisitAndUpdateUserState(String userId, String astId, String visPath, int rating, String fdbk) async{
     if(rating == 0) {
       try {
         log.debug("Rating unavailable. Only updating user status");
         Map<String, dynamic> userActMap = {'visit_status': Constants.VISIT_STATUS_NONE,
           'modified_time': FieldValue.serverTimestamp()};
-        await _api.updateUserStatus(userId, userActMap);
+        await _api.updateUserState(userId, userActMap);
         return true;
       }catch(e) {
         log.error("Failed to update user activity status: " + e.toString());
@@ -102,9 +103,9 @@ class DBModel extends ChangeNotifier {
         if(fdbk != null && fdbk.isNotEmpty) {
           fdbkMap = {'fdbk': fdbk,
           'timestamp': FieldValue.serverTimestamp(),
-          'userId': userId};
+          'user_id': userId};
         }
-        await _api.batchRateAndUpdateStatus(
+        await _api.batchVisitUserActivityFeedbackUpdate(
             userId, astId, vPath[1], vPath[2], vPath[3], userActMap, ratingMap, fdbkMap);
         return true;
       }catch(e) {
@@ -201,6 +202,7 @@ class DBModel extends ChangeNotifier {
     }
   }
 
+  ///User provided General Feedback..updated to Feedback collection
   Future<bool> submitFeedback(String userId, String fdbk) async{
     try {
       Map<String, dynamic> fdbkMap = {'user_id': userId,
@@ -220,6 +222,24 @@ class DBModel extends ChangeNotifier {
         'timestamp': FieldValue.serverTimestamp(),
         'mobile': mobile};
       await _api.addCallbackDocument(callbackMap);
+      return true;
+    }catch(e) {
+      log.error(e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> cancelVisitUpdateStatus(String userId, Visit visit) async{
+    try{
+      String path = visit.path;
+      List<String> vPath = path.split("/");
+      if(vPath[0] == null || vPath[1] == null || vPath[2] == null || vPath[3] == null)return false;
+      Map<String, dynamic> userActMap = UserState(visitStatus: Constants.VISIT_STATUS_NONE).toJson();
+      Map<String, dynamic> visMap = {
+        Visit.fldStatus: Constants.VISIT_STATUS_CANCELLED,
+        Visit.fldCncldByUser: true
+      };  //visit status ends at cancelled
+      await _api.batchVisitUserActivityFeedbackUpdate(userId, visit.aId, vPath[1], vPath[2], vPath[3], userActMap, visMap, null);
       return true;
     }catch(e) {
       log.error(e.toString());

@@ -5,7 +5,7 @@ import 'package:flutter_app/util/logger.dart';
 import 'package:flutter_app/util/ui_constants.dart';
 
 class ConfirmActionDialog extends StatefulWidget {
-  final String title, description, buttonText;
+  final String title, description, buttonText, cancelBtnText;
   final Function confirmAction, cancelAction;
   final Image image;
   ConfirmActionDialog({
@@ -15,6 +15,7 @@ class ConfirmActionDialog extends StatefulWidget {
     @required this.confirmAction,
     @required this.cancelAction,
     this.image,
+    this.cancelBtnText = 'Cancel'
   });
 
   @override
@@ -93,7 +94,7 @@ class _FormDialogState extends State<ConfirmActionDialog> {
                         log.debug('DialogAction cancelled');
                         return widget.cancelAction();
                       },
-                      child: Text('Cancel'),
+                      child: Text(widget.cancelBtnText),
                     ),
                   ),
                   Align(

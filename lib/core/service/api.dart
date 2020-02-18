@@ -33,7 +33,7 @@ class Api{
     return ref.document(Constants.DOC_USER_FCM_TOKEN).setData(data);
   }
 
-  Future<void> updateUserStatus(String userId, Map data) {
+  Future<void> updateUserState(String userId, Map data) {
     ref = _db.collection(Constants.COLN_USERS).document(userId).collection(Constants.SUBCOLN_USER_ACTIVITY);
     return ref.document(Constants.DOC_USER_ACTIVITY_STATUS).setData(data, merge: false);  //fresh doc. remove earlier fields
   }
@@ -71,7 +71,8 @@ class Api{
     return ref.document(id).get();
   }
 
-  Future<void> batchRateAndUpdateStatus(String userId, String astId, String yearDoc, String monthSubColn, String id, Map statusMap, Map visMap, Map fdbkMap) {
+  ///Batch update to the visit object and user activity object, and add feedback for assistant is available
+  Future<void> batchVisitUserActivityFeedbackUpdate(String userId, String astId, String yearDoc, String monthSubColn, String id, Map statusMap, Map visMap, Map fdbkMap) {
     WriteBatch batch = _db.batch();
     DocumentReference ref1 = _db.collection(Constants.COLN_USERS).document(
         userId).collection(Constants.SUBCOLN_USER_ACTIVITY).document(

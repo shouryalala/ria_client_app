@@ -6,7 +6,7 @@ class Visit{
   static Log log = new Log("Visit");
   //Only keeping the required fields in the visit object. Not storing all fields fetched from Document.
   final String path;
-  //final String address;
+  final String uId;
   final String aId;
   final int date;
   final int req_st_time;
@@ -14,10 +14,10 @@ class Visit{
   final int vis_en_time;
   final String service;
   //final String society_id;
-  final int status;
-  final String uId;
+  int status;
+  bool cncld_by_user;
+
   static final String fldVID = "visit_path"; //for local saving
-  //static final String fldAddress = "address";
   static final String fldAID = "ass_id";
   static final String fldUID = "user_id";
   static final String fldDate = "date";
@@ -27,7 +27,9 @@ class Visit{
   static final String fldService = "service";
   //static final String fldSocietyId = "society_id";
   static final String fldStatus = "status";
-  static List<String> _intFldList = [ fldDate, fldReqStTime, fldVisStTime, fldVisEnTime, fldStatus];
+  static final String fldCncldByUser = "cncld_by_user";
+
+  static List<String> _intFldList = [ fldDate, fldReqStTime, fldVisStTime, fldVisEnTime, fldStatus];  //needed for local storage
 
   Visit({this.path, this.aId, this.date, this.req_st_time, this.vis_st_time,
       this.vis_en_time, this.service, this.status, this.uId});
@@ -56,6 +58,7 @@ class Visit{
       fldVisStTime: vis_st_time,
       fldVisEnTime: vis_en_time,
       fldDate: date,
+      fldCncldByUser: cncld_by_user,
     };
   }
 
@@ -71,7 +74,7 @@ class Visit{
     if(req_st_time != null)oContent.writeln(fldReqStTime + '\$' + req_st_time.toString());
     if(vis_st_time != null)oContent.writeln(fldVisStTime + '\$' + vis_st_time.toString());
     if(vis_en_time != null)oContent.writeln(fldVisEnTime + '\$' + vis_en_time.toString());
-
+    //NOt saving cancelled as that will be the last stage for a visit and wont need saving
     log.debug("Generated FileWrite String: " + oContent.toString());
     return oContent.toString();
   }
@@ -110,5 +113,7 @@ class Visit{
       return null;
     }
   }
+
+
 
 }

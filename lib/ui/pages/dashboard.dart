@@ -401,7 +401,7 @@ class _MainPageState extends State<MainPage> {
               canVisit: baseProvider.currentVisit,
               canAssistant: baseProvider.currentAssistant);
         }
-//      case Constants.VISIT_STATUS_COMPLETED:
+//      case Constants.VISIT_STATUS_COMPLETED:  //Wrote shitty code and moved to the initial widget router in the launcher
 //        {
 //          if (baseProvider.currentVisit == null ||
 //              baseProvider.currentAssistant == null) return buildHomeLayout();

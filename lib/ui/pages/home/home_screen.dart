@@ -44,7 +44,6 @@ class _HomeControllerState extends State<HomeController> {
   /// - Visit Completed. Rate Assistant
   ///
 
-  //TODO add call assistant button, add internet connection background checker, add device_id fetch and storer, fix navigation back on exit
   @override
   void initState() {
     super.initState();

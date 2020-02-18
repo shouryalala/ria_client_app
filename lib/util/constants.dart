@@ -36,8 +36,9 @@ class Constants {
   //Appt object fields
   static final String APPT_FIELD_DISTRICT = "district";
   static final String APPT_FIELD_SECTOR = "sector";
-  static final String APPT_FIELD_LANG_ENG = "eng"; //TODO change to en and hi
-  static final String APPT_FIELD_LANG_HIN = "hin";
+  static final String APPT_FIELD_PLOT = "plot";
+  static final String APPT_FIELD_LANG_EN = "en";
+  static final String APPT_FIELD_LANG_HI = "hi";
 
   //Firebase Visit Object fields
   static final String FIELD_ASSISTANT_ID = "ass_id";

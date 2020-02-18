@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/core/model/user_status.dart';
 import 'package:flutter_app/core/ops/cache_ops.dart';
 import 'package:flutter_app/core/ops/db_ops.dart';
 import 'package:flutter_app/core/ops/lcl_db_ops.dart';
@@ -31,7 +32,7 @@ class BaseUtil extends ChangeNotifier{
   Assistant _currentAssistant;
 
   BaseUtil() {
-    //init(); //init called in
+    //init(); //init called during onboarding
   }
 
   Future init() async {
@@ -58,17 +59,22 @@ class BaseUtil extends ChangeNotifier{
   /// -Sets the variable used to decide home layout(Default layout, upcoming visit, ongoing visit etc)
   Future<void> _setupCurrentState() async {
     ///initialize values with cache stored values first
-    Map currState = await _cModel.getHomeStatus();
-    int status = (currState != null && currState['visit_status'] != null)?currState['visit_status']:Constants.VISIT_STATUS_NONE;
-    String vPath = (currState != null && currState['visit_id'] != null)?currState['visit_id']:'';
+    UserState currState = await _cModel.getHomeStatus();
+    int status = (currState != null && currState.visitStatus != null)?currState.visitStatus:Constants.VISIT_STATUS_NONE;
+    String vPath = (currState != null)?currState.visitPath:'';
 
-    Map<String, dynamic> res = await _dbModel.getUserActivityStatus(_myUser);
-    try {
-      status = res['visit_status'];
-      vPath = res['visit_id'];
-    }catch(e) {
-      log.error("Didnt find the activity subcollection. Defaulting values");
+    UserState res = await _dbModel.getUserActivityStatus(_myUser);
+    if(res == null)log.error('Didnt find the activity subcollection. Defaulting values');
+    else{
+      status = res.visitStatus;
+      vPath = res.visitPath;
     }
+//    try {
+//      status = res['visit_status'];
+//      vPath = res['visit_id'];
+//    }catch(e) {
+//      log.error("Didnt find the activity subcollection. Defaulting values");
+//    }
     log.debug("Recieved Activity Status:: Status: $status");
     switch(status) {
       case Constants.VISIT_STATUS_NONE: {
@@ -109,7 +115,7 @@ class BaseUtil extends ChangeNotifier{
         break;
       }
     }
-    _cModel.saveHomeStatus(status, vPath);  //await not needed
+    return updateHomeState(status: status, visitPath: vPath); //await not needed
   }
 
   //Path of format: visits/YEAR/MONTH/ID
@@ -167,6 +173,19 @@ class BaseUtil extends ChangeNotifier{
     }catch(e) {
       log.error("Failed to fetch Storage Download URL: " + e.toString());
       return null;
+    }
+  }
+
+  Future<bool> updateHomeState({@required int status, String visitPath}) async{
+    try {
+      this._homeState = status;
+      UserState cStatus = new UserState(
+          visitStatus: status, visitPath: visitPath);
+      await _cModel.saveHomeStatus(cStatus);
+      return true;
+    }catch(e) {
+      log.error('Failed to cache current home status: ' + e.toString());
+      return false;
     }
   }
 

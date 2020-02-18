@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:call_number/call_number.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/core/model/assistant.dart';
@@ -47,7 +46,10 @@ class _OngoingVisitLayoutState extends State<OngoingVisitLayout> {
                       children: <Widget>[
                         Text(
                           'Ongoing',
-                          style: Theme.of(context).textTheme.display1.copyWith(color: Colors.grey[400]),
+                          style: TextStyle(color: Colors.black,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 30.0
+                          ),
                         ),
                         //time
                         SizedBox(height: 11,),
@@ -72,65 +74,6 @@ class _OngoingVisitLayoutState extends State<OngoingVisitLayout> {
               ],
             )
         )
-    );
-  }
-
-  Widget _buildActionButtonBar() {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child:ListTile(
-        title: Row(
-          children: <Widget>[
-            Expanded(
-              child:
-              //  RaisedButton(onPressed: () {},child: Text("Clear"),color: Colors.black,textColor: Colors.white,)
-              Material(
-                child: MaterialButton(
-                  child:Padding(
-                    padding: EdgeInsets.all(2),
-                    child: Text('Cancel',
-                      style: TextStyle(color: Colors.redAccent),
-                    ),
-                  ),
-                  onPressed: () {
-
-                  },
-                ),
-
-              ),
-            ),
-            Expanded(
-              //child: RaisedButton(onPressed: () {},child: Text("Filter"),color: Colors.black,textColor: Colors.white,)
-              child:Material(
-                child: MaterialButton(
-                  color: Colors.white70,
-                  elevation: 1,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child:Padding(
-                    padding: EdgeInsets.all(20),
-                    child:    Text('Call',
-                      style: TextStyle(
-                          color: Colors.black
-                      ),
-                    ),
-                  ),
-                  onPressed: () {
-                    //UrlLa
-                    try {
-                      _initCall(widget.onAssistant.mobile);
-                    }catch(e) {
-                      log.error('Failed to initiate call. Needs a fix asap');
-                    }
-                  },
-                ),
-
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -209,9 +152,5 @@ class _OngoingVisitLayoutState extends State<OngoingVisitLayout> {
         height: 1,
       ),
     );
-  }
-
-  _initCall(String phone) async {
-    await new CallNumber().callNumber('+91' + phone);
   }
 }

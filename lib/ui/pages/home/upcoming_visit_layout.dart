@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/core/model/assistant.dart';
 import 'package:flutter_app/core/model/visit.dart';
+import 'package:flutter_app/core/ops/db_ops.dart';
 import 'package:flutter_app/ui/dialog/assistant_details_dialog.dart';
+import 'package:flutter_app/ui/dialog/confirm_action_dialog.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:provider/provider.dart';
 
@@ -23,10 +25,12 @@ class UpcomingVisitLayout extends StatefulWidget{
 class _UpcomingVisitLayoutState extends State<UpcomingVisitLayout> {
   Log log = new Log('UpcomingVisitLayout');
   BaseUtil baseProvider;
+  DBModel dbProvider;
 
   @override
   Widget build(BuildContext context) {
     baseProvider = Provider.of<BaseUtil>(context);
+    dbProvider = Provider.of<DBModel>(context);
     return Scaffold(
         body:
         Padding(
@@ -47,7 +51,10 @@ class _UpcomingVisitLayoutState extends State<UpcomingVisitLayout> {
                       children: <Widget>[
                         Text(
                           'Upcoming',
-                          style: Theme.of(context).textTheme.display1.copyWith(color: Colors.grey[400]),
+                          style: TextStyle(color: Colors.black,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 30.0
+                          ),
                         ),
                         //time
                         SizedBox(height: 11,),
@@ -61,31 +68,6 @@ class _UpcomingVisitLayoutState extends State<UpcomingVisitLayout> {
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(height: 11,),
-                        ///photo
-//                        Center(
-//                          child: Padding(
-//                            padding: EdgeInsets.all(20.0),
-//                            child: CachedNetworkImage(
-//                              imageUrl: widget.upAssistant.url,
-//                              placeholder: (context, url) => new CircularProgressIndicator(),
-//                              errorWidget: (context, url, error) => new Icon(Icons.error),
-//                            ),
-//                          ),
-//                        ),
-                        ///name
-//                        Text(widget.upAssistant.name + "," + widget.upAssistant.age.toString(),
-//                          style: Theme.of(context).textTheme.body1.copyWith(color: Colors.grey[800]),
-//                          textAlign: TextAlign.center,
-//                        ),
-//                        ///rating
-//                        Text(widget.upAssistant.rating.toString(),
-//                          style: Theme.of(context).textTheme.headline.copyWith(color: Colors.grey[800]),
-//                          textAlign: TextAlign.center,
-//                        ),
-//                        Text("Completed Visits: " + widget.upAssistant.comp_visits.toString(),
-//                          style: Theme.of(context).textTheme.body1.copyWith(color: Colors.grey[800]),
-//                          textAlign: TextAlign.center,
-//                        ),
                         _buildAssistantTile(),
                         SizedBox(height: 20,),
                         _buildActionButtonBar(),
@@ -118,7 +100,23 @@ class _UpcomingVisitLayoutState extends State<UpcomingVisitLayout> {
                     ),
                   ),
                   onPressed: () {
-
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) => ConfirmActionDialog(
+                          title: 'Are you sure?',
+                          description: 'The assistant\'s schedule will be affected',
+                          buttonText: 'Yes Cancel',
+                          cancelBtnText: 'Back',
+                          confirmAction: () async{
+                            log.debug("User cancelled visit");
+                            await dbProvider.cancelVisitUpdateStatus(baseProvider.firebaseUser.uid, widget.upVisit);
+                          },
+                          cancelAction: () {
+                            Navigator.of(context).pop();
+                            return false;
+                          },
+                        )
+                    );
                   },
                 ),
 
@@ -142,10 +140,10 @@ class _UpcomingVisitLayoutState extends State<UpcomingVisitLayout> {
                     ),
                   ),
                   onPressed: () {
-                      //UrlLa
                     try {
                       _initCall(widget.upAssistant.mobile);
                     }catch(e) {
+                      //TODO
                       log.error('Failed to initiate call. Needs a fix asap');
                     }
                   },
@@ -244,6 +242,7 @@ class _UpcomingVisitLayoutState extends State<UpcomingVisitLayout> {
   }
 
   _initCall(String phone) async {
+    //TODO there is nothing in this dependency. Can be removed
      await new CallNumber().callNumber('+91' + phone);
   }
 }

@@ -51,8 +51,9 @@ class FcmHandler extends ChangeNotifier {
             _baseUtil.currentVisit = recVisit;
             await _cModel.saveVisit(_baseUtil.currentVisit); //cache visit
             _baseUtil.currentAssistant = await _baseUtil.getAssistant(recVisit.aId);  //fetches and caches assistant
-            await _cModel.saveHomeStatus(recVisit.status, recVisit.path);
-            _baseUtil.homeState = recVisit.status; //update baseUtil
+//            await _cModel.saveHomeStatus(recVisit.status, recVisit.path);
+//            _baseUtil.homeState = recVisit.status; //update baseUtil
+            await _baseUtil.updateHomeState(status: recVisit.status, visitPath: recVisit.path);
             if(_baseUtil.currentAssistant != null){
               if(aUpdate != null) {   //refresh Home Screen UI if its available
                 log.debug("Refreshing Home Screen layout to Upcoming Visit Workflow");
@@ -90,8 +91,7 @@ class FcmHandler extends ChangeNotifier {
           _baseUtil.currentVisit = await _baseUtil.getVisit(visPath, true);
           if(_baseUtil.currentVisit != null && _baseUtil.currentVisit.path != null && _baseUtil.currentVisit.path.isNotEmpty){
             _baseUtil.currentAssistant = await _baseUtil.getAssistant(_baseUtil.currentVisit.aId);  //update and cache assistant
-            await _cModel.saveHomeStatus(status, visPath);  //cache current status
-            _baseUtil.homeState = status; //update baseUtil
+            await _baseUtil.updateHomeState(status: status, visitPath: visPath);
             if(_baseUtil.currentAssistant != null){
               if(aUpdate != null) {   //refresh Home Screen UI if available
                 log.debug("Refreshing Home Screen layout to $command Visit Workflow");
@@ -129,7 +129,7 @@ class FcmHandler extends ChangeNotifier {
           _baseUtil.currentVisit = await _baseUtil.getVisit(visPath, true);
           if(_baseUtil.currentVisit != null && _baseUtil.currentVisit.path != null && _baseUtil.currentVisit.path.isNotEmpty){
             _baseUtil.currentAssistant = await _baseUtil.getAssistant(_baseUtil.currentVisit.aId);  //update and cache assistant
-            await _cModel.saveHomeStatus(status, visPath);  //cache current status
+            await _baseUtil.updateHomeState(status: status, visitPath: visPath);
             _baseUtil.homeState = status; //update baseUtil
             if(_baseUtil.currentAssistant != null){
               if(visitComplete != null) {   //refresh Home Screen UI if available
