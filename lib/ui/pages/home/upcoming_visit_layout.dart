@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:call_number/call_number.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/core/model/assistant.dart';
@@ -242,7 +241,8 @@ class _UpcomingVisitLayoutState extends State<UpcomingVisitLayout> {
   }
 
   _initCall(String phone) async {
-    //TODO there is nothing in this dependency. Can be removed
-     await new CallNumber().callNumber('+91' + phone);
+    //TODO there is nothing in this dependency. Can be removed + Release version not working
+
+     //await new CallNumber().callNumber('+91' + phone);
   }
 }
