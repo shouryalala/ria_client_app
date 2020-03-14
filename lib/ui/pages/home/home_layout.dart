@@ -6,8 +6,6 @@ import 'package:flutter_app/core/ops/db_ops.dart';
 import 'package:flutter_app/core/ops/http_ops.dart';
 import 'package:flutter_app/ui/elements/mutli_select_chip.dart';
 import 'package:flutter_app/ui/elements/time_picker_model.dart';
-import 'package:flutter_app/ui/pages/login/screens/mobile_input_screen.dart';
-import 'package:flutter_app/ui/pages/login/screens/name_input_screen.dart';
 import 'package:flutter_app/util/calendar_util.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/logger.dart';
@@ -32,6 +30,7 @@ class _HomeLayoutState extends State<HomeLayout> {
   BaseUtil baseProvider;
   DBModel reqProvider;
   String _time;
+  TimeOfDay _selectedTime;
   DateTime reqTime = new DateTime.now();
   List<String> serviceList = [Constants.CLEANING, Constants.UTENSILS, Constants.DUSTING];
   List<String> selectedServiceList = [Constants.CLEANING];
@@ -120,21 +119,19 @@ class _HomeLayoutState extends State<HomeLayout> {
   }
 
   void onRequest() {
-    if (baseProvider.firebaseUser == null ||
-        baseProvider.myUser == null
-        || baseProvider.myUser.hasIncompleteDetails() ||
-        selectedServiceList.isEmpty) {
-      //validation message to be assigned on priority basis: Not signed in -- Incomplete details -- Service not selected
+    if (baseProvider.firebaseUser == null
+        || baseProvider.myUser == null
+        || baseProvider.myUser.hasIncompleteDetails()
+        || selectedServiceList.isEmpty
+        || _validateTime(_selectedTime)) {
+      ///validation message to be assigned on priority basis: Not signed in -- Incomplete details -- Service not selected
+      ///_selected time validation does'nt need a snack message. done by its validator
       String message = (baseProvider.firebaseUser ==
           null) ? "Please sign in to continue" :
       ((selectedServiceList.isNotEmpty)
           ? "Please add your home address"
           : "Please select atleast one service");
       baseProvider.showNegativeAlert('Action required', message, context);
-//      final snackBar = SnackBar(
-//        content: Text(message),
-//      );
-//      Scaffold.of(context).showSnackBar(snackBar);
       return;
     }
     Request req = Request(
@@ -144,7 +141,7 @@ class _HomeLayoutState extends State<HomeLayout> {
         service: decodeMultiChip(),
         address: baseProvider.myUser.flat_no,
         society_id: baseProvider.myUser.society_id,
-        req_time: baseProvider.encodeTimeRequest(reqTime),
+        req_time: baseProvider.encodeTimeOfDay(_selectedTime),
         timestamp: FieldValue.serverTimestamp());
       showModalBottomSheet(
         backgroundColor: Colors.transparent,
@@ -162,6 +159,51 @@ class _HomeLayoutState extends State<HomeLayout> {
   }
 
   Widget buildTimeButton() {
+    return RaisedButton(
+        shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5.0)
+    ),
+      elevation: 4.0,
+      onPressed: () async{
+          _selectedTime = await showTimePicker(
+            context: context,
+            initialTime: TimeOfDay.now(),
+
+          );
+          log.debug(_selectedTime.toString());
+          _validateTime(_selectedTime);
+      },
+    );
+  }
+
+  bool _validateTime(TimeOfDay time) {
+    bool flag = true;
+    if(time == null) {
+      if(baseProvider != null && context != null) {
+        baseProvider.showNegativeAlert('Enter the time', 'Provide the service time', context);
+      }
+      flag = false;
+    }
+    else {
+      int timeVal = time.hour * 60 + time.minute;
+      int minTimeVal = BaseUtil.dayStartTime.hour * 60 +
+          BaseUtil.dayStartTime.minute;
+      int maxTimeVal = BaseUtil.dayEndTime.hour * 60 +
+          BaseUtil.dayEndTime.minute;
+
+      flag = (timeVal >= minTimeVal && timeVal <= maxTimeVal);
+      if(!flag) {
+        if(baseProvider != null && context != null) {
+          baseProvider.showNegativeAlert('Time Unavailable',
+              '${Constants.APP_NAME} is available from ${BaseUtil.dayStartTime.hour}:${BaseUtil.dayStartTime.minute} AM '
+                  'to ${BaseUtil.dayEndTime.hour}:${BaseUtil.dayEndTime.minute} PM', context, seconds: 6);
+        }
+      }
+    }
+    return flag;
+  }
+
+  Widget buildTimeButton2() {
     return RaisedButton(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5.0)

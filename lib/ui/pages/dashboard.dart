@@ -75,11 +75,17 @@ class _MainPageState extends State<MainPage> {
         Navigator.of(context).push(MaterialPageRoute(builder: (_) => RateVisitLayout(
             rateVisit: baseProvider.currentVisit,
             rateAssistant: baseProvider.currentAssistant,
-            actionComplete: () {
+            actionComplete: () {    //handled in RateVisitLayout
 //                setState(() {
 //                  homeState = Constants.VISIT_STATUS_NONE;
 //                });
             })));
+      });
+      handler.setNoAstAvailableCallback(onNoAStAvailableMsg: () {
+        baseProvider.showNegativeAlert('No Assistant Available', 'Please try again in sometime', context, seconds: 5);
+      });
+      handler.setServerErrorCallback(onServerErrorMsg: () {
+        baseProvider.showNegativeAlert('Internal Error', 'We encountered an issue. Please try again in sometime', context, seconds: 5);
       });
     }
     homeState = (baseProvider.homeState != null) ? baseProvider.homeState : Constants.VISIT_STATUS_NONE;

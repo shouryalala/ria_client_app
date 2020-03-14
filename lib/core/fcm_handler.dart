@@ -14,6 +14,8 @@ class FcmHandler extends ChangeNotifier {
   BaseUtil _baseUtil = locator<BaseUtil>();
   static ValueChanged<int> aUpdate;
   static VoidCallback visitComplete;
+  static VoidCallback noAstAvailable;
+  static VoidCallback serverError;
 
   FcmHandler() {}
 
@@ -147,6 +149,28 @@ class FcmHandler extends ChangeNotifier {
           }
           return true;
         }
+        case Constants.COMMAND_MISC_MESSAGE: {
+          String type;
+          try{
+            type = data['msg_type'];
+          }catch(error) {
+            log.error('Couldnt parse msg_type sent in the MISC MESSAGE command'+  error.toString());
+          }
+          if(type != null) {
+            if(type == Constants.NO_AVAILABLE_AST && noAstAvailable != null) {
+              log.debug('No Assistant Availble message received and posting');
+              noAstAvailable();
+            }
+            else if(type == Constants.SERVER_ERROR && serverError != null) {
+              log.debug('Server Error msg recevied and posting');
+              serverError();
+            }
+            else{
+              log.debug('MISC MESSAGE of type: ' + type + " recevied. Discarding");
+            }
+          }
+          break;
+        }
       }
     }
     return true;
@@ -158,5 +182,13 @@ class FcmHandler extends ChangeNotifier {
 
   setVisitCompleteCallback({VoidCallback onVisitCompleted}) {
     visitComplete = onVisitCompleted;
+  }
+
+  setNoAstAvailableCallback({VoidCallback onNoAStAvailableMsg}) {
+    noAstAvailable = onNoAStAvailableMsg;
+  }
+
+  setServerErrorCallback({VoidCallback onServerErrorMsg}) {
+    serverError = onServerErrorMsg;
   }
 }

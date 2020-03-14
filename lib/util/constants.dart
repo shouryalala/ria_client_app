@@ -63,7 +63,11 @@ class Constants {
   static const String COMMAND_VISIT_ONGOING = "VISON";
   static const String COMMAND_VISIT_CANCELLED = "VISCAN";
   static const String COMMAND_VISIT_COMPLETED = "VISCOM";
-
+  static const String COMMAND_MISC_MESSAGE = "MISC";
+  //misc message type
+  static const String FLD_MISC_MESSAGE = 'msg_type';
+  static const String NO_AVAILABLE_AST = 'NoAvailableAst';
+  static const String SERVER_ERROR = 'ErrorMsg';
 
   //Service decodes
   static final String SERVICE_CLEANING = "Cx";

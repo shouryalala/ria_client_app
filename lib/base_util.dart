@@ -20,6 +20,8 @@ import 'core/model/visit.dart';
 class BaseUtil extends ChangeNotifier{
   final Log log = new Log("BaseUtil");
   static bool _setupTimeElapsed = false;
+  static const TimeOfDay dayStartTime = TimeOfDay(hour:7, minute: 0);
+  static const TimeOfDay dayEndTime = TimeOfDay(hour:19, minute: 0);
   LocalDBModel _lModel = locator<LocalDBModel>();
   DBModel _dbModel = locator<DBModel>();
   CacheModel _cModel = locator<CacheModel>();
@@ -223,6 +225,10 @@ class BaseUtil extends ChangeNotifier{
     return ((time.hour * 3600) + (time.minute * 60));
   }
 
+  int encodeTimeOfDay(TimeOfDay tod) {
+    return ((tod.hour * 3600) + (tod.minute)*60);
+  }
+
   String decodeTime(int enTime) {
     if(enTime == null) return Constants.DEFAULT_TIME;
     //45000 = 12:30pm
@@ -284,7 +290,7 @@ class BaseUtil extends ChangeNotifier{
     )..show(context);
   }
 
-  showNegativeAlert(String title, String message, BuildContext context) {
+  showNegativeAlert(String title, String message, BuildContext context, {int seconds}) {
     Flushbar(
       flushbarPosition: FlushbarPosition.BOTTOM,
       flushbarStyle: FlushbarStyle.FLOATING,
@@ -297,7 +303,7 @@ class BaseUtil extends ChangeNotifier{
       borderRadius: 8,
       title: title,
       message: message,
-      duration: Duration(seconds: 3),
+      duration: Duration(seconds: seconds??3),
       backgroundColor: Colors.blueGrey,
       boxShadows: [BoxShadow(color: Colors.blueGrey, offset: Offset(0.0, 2.0), blurRadius: 3.0,)],
     )..show(context);
