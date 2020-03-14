@@ -41,6 +41,7 @@ class _HomeLayoutState extends State<HomeLayout> {
   Widget build(BuildContext context) {
     baseProvider = Provider.of<BaseUtil>(context);
     reqProvider = Provider.of<DBModel>(context);
+    if(_selectedTime == null)_selectedTime=TimeOfDay.now();
 //    return Scaffold(
 //        body:
         return Padding(
@@ -123,15 +124,14 @@ class _HomeLayoutState extends State<HomeLayout> {
         || baseProvider.myUser == null
         || baseProvider.myUser.hasIncompleteDetails()
         || selectedServiceList.isEmpty
-        || _validateTime(_selectedTime)) {
+        || !_validateTime(_selectedTime)) {
       ///validation message to be assigned on priority basis: Not signed in -- Incomplete details -- Service not selected
-      ///_selected time validation does'nt need a snack message. done by its validator
-      String message = (baseProvider.firebaseUser ==
-          null) ? "Please sign in to continue" :
-      ((selectedServiceList.isNotEmpty)
-          ? "Please add your home address"
-          : "Please select atleast one service");
-      baseProvider.showNegativeAlert('Action required', message, context);
+      String message;
+      //_selected time validation does'nt need a snack message. done by its validator
+      if(selectedServiceList.isEmpty)message="Please select atleast one service";
+      if(baseProvider.myUser.hasIncompleteDetails())message="Please add your home address";
+      if(baseProvider.firebaseUser == null) message="Please sign in to continue";
+      if(message!=null)baseProvider.showNegativeAlert('Action required', message, context);
       return;
     }
     Request req = Request(
@@ -171,17 +171,65 @@ class _HomeLayoutState extends State<HomeLayout> {
 
           );
           log.debug(_selectedTime.toString());
-          _validateTime(_selectedTime);
+          setState(() {
+            if(!_validateTime(_selectedTime))_selectedTime=TimeOfDay.now();
+          });
       },
+      child: Container(
+        alignment: Alignment.center,
+        height: 50.0,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Container(
+                  child: Row(
+                    children: <Widget>[
+                      Icon(
+                        Icons.access_time,
+                        size: 18.0,
+                        color: Colors.teal,
+                      ),
+                      Text(_displayTime(_selectedTime),
+                        style: TextStyle(
+                            color: Colors.teal,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18.0),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+            Text(
+              "  Change",
+              style: TextStyle(
+                  color: Colors.teal,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18.0),
+            ),
+          ],
+        ),
+      ),
+      color: Colors.white,
     );
+  }
+
+  String _displayTime(TimeOfDay time) {
+    if(time == null) return '';
+    String am_pm = (time.hour>11)?'pm':'am';
+    int hr = (time.hour > 12)?time.hour-12:time.hour;
+    String mins = time.minute.toString().padLeft(2, '0');
+    return '${hr.toString()}:${mins} ${am_pm}';
   }
 
   bool _validateTime(TimeOfDay time) {
     bool flag = true;
     if(time == null) {
-      if(baseProvider != null && context != null) {
-        baseProvider.showNegativeAlert('Enter the time', 'Provide the service time', context);
-      }
+//      if(baseProvider != null && context != null) {
+//        baseProvider.showNegativeAlert('Enter the time', 'Provide the service time', context);
+//      }
       flag = false;
     }
     else {
@@ -195,8 +243,8 @@ class _HomeLayoutState extends State<HomeLayout> {
       if(!flag) {
         if(baseProvider != null && context != null) {
           baseProvider.showNegativeAlert('Time Unavailable',
-              '${Constants.APP_NAME} is available from ${BaseUtil.dayStartTime.hour}:${BaseUtil.dayStartTime.minute} AM '
-                  'to ${BaseUtil.dayEndTime.hour}:${BaseUtil.dayEndTime.minute} PM', context, seconds: 6);
+              '${Constants.APP_NAME} is available from ${BaseUtil.dayStartTime.hour}:${BaseUtil.dayStartTime.minute.toString().padLeft(2, '0')} AM '
+                  'to ${BaseUtil.dayEndTime.hour-12}:${BaseUtil.dayEndTime.minute.toString().padLeft(2, '0')} PM', context, seconds: 6);
         }
       }
     }
