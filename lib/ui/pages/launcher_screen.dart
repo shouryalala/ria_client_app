@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/fcm_handler.dart';
 import 'package:flutter_app/core/fcm_listener.dart';
+import 'package:flutter_app/ui/elements/custom_flutter_logo.dart';
+import 'package:flutter_app/ui/elements/flutter_logo_obj.dart';
 import 'package:flutter_app/ui/elements/launcher_slow_internet_alert.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/locator.dart';
@@ -21,13 +23,13 @@ class LogoFadeIn extends State<SplashScreen> {
   bool _isSlowConnection = false;
   bool _isAnimVisible = true;
   Timer _timer, _timer2;
-  FlutterLogoStyle _logoStyle = FlutterLogoStyle.markOnly;
+  FlutterLogoStyleX _logoStyle = FlutterLogoStyleX.markOnly;
 
 
   LogoFadeIn() {
     _timer = new Timer(const Duration(seconds: 2), () {
       setState(() {
-        _logoStyle = FlutterLogoStyle.horizontal;
+        _logoStyle = FlutterLogoStyleX.horizontal;
         initialize();
       });
     });
@@ -78,8 +80,9 @@ class LogoFadeIn extends State<SplashScreen> {
           children: <Widget>[
             Center(
               child: Container(
-                child: new FlutterLogo(
-                  size: 200.0, style: _logoStyle,
+                child: new FlutterLogoX(
+                  size: 200.0,
+                  style: _logoStyle,
                 ),
               ),
             ),
@@ -103,26 +106,26 @@ class LogoFadeIn extends State<SplashScreen> {
   }
 }
 
-class AnimatedLogo extends AnimatedWidget {
-  // Make the Tweens static because they don't change.
-  static final _opacityTween = Tween<double>(begin: 0.1, end: 1);
-  static final _sizeTween = Tween<double>(begin: 0, end: 300);
-
-  AnimatedLogo({Key key, Animation<double> animation})
-      : super(key: key, listenable: animation);
-
-  Widget build(BuildContext context) {
-    final animation = listenable as Animation<double>;
-    return Center(
-      child: Opacity(
-        opacity: _opacityTween.evaluate(animation),
-        child: Container(
-          margin: EdgeInsets.symmetric(vertical: 10),
-          height: _sizeTween.evaluate(animation),
-          width: _sizeTween.evaluate(animation),
-          child: FlutterLogo(),
-        ),
-      ),
-    );
-  }
-}
+//class AnimatedLogo extends AnimatedWidget {
+//  // Make the Tweens static because they don't change.
+//  static final _opacityTween = Tween<double>(begin: 0.1, end: 1);
+//  static final _sizeTween = Tween<double>(begin: 0, end: 300);
+//
+//  AnimatedLogo({Key key, Animation<double> animation})
+//      : super(key: key, listenable: animation);
+//
+//  Widget build(BuildContext context) {
+//    final animation = listenable as Animation<double>;
+//    return Center(
+//      child: Opacity(
+//        opacity: _opacityTween.evaluate(animation),
+//        child: Container(
+//          margin: EdgeInsets.symmetric(vertical: 10),
+//          height: _sizeTween.evaluate(animation),
+//          width: _sizeTween.evaluate(animation),
+//          child: FlutterLogo(),
+//        ),
+//      ),
+//    );
+//  }
+//}
