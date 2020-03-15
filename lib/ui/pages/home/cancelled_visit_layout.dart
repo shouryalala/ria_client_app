@@ -10,10 +10,11 @@ import 'package:provider/provider.dart';
 import '../../../base_util.dart';
 
 class CancelledVisitLayout extends StatefulWidget{
+  final ValueChanged<Visit> onRerouteCancelledVisit;
   final Visit canVisit;
   final Assistant canAssistant;
 
-  CancelledVisitLayout({this.canVisit, this.canAssistant});
+  CancelledVisitLayout({this.canVisit, this.canAssistant, this.onRerouteCancelledVisit});
 
   @override
   State createState() => _CancelledVisitLayoutState();
@@ -65,21 +66,25 @@ class _CancelledVisitLayoutState extends State<CancelledVisitLayout> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5.0)),
                           elevation: 4.0,
-                          child: Text('Request Again'),
+                          child: Text('Request Again'),   //TODO inform user of params before adding request
                           onPressed: () {
                             Request req = Request(
-                                user_id: baseProvider.myUser.uid,
+                                user_id: baseProvider.firebaseUser.uid,
                                 user_mobile: baseProvider.myUser.mobile,
                                 date: cUtil.now.day,
                                 service: widget.canVisit.service,
                                 address: baseProvider.myUser.flat_no,
                                 society_id: baseProvider.myUser.society_id,
+                                cost: widget.canVisit.cost,
                                 req_time: baseProvider.encodeTimeRequest(
                                     new DateTime.now()),
                                 timestamp: FieldValue.serverTimestamp());
 
+                            ////TODO CANCELLED VIST IN RUINS!
+
+
                             req.addException(widget.canAssistant.id);
-                            reqProvider.pushRequest(req);
+                            if(widget.onRerouteCancelledVisit != null)widget.onRerouteCancelledVisit(widget.canVisit);
                           },
                         ),
                       ],

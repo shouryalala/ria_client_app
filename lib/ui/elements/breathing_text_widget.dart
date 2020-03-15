@@ -1,10 +1,14 @@
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 
-class BreathingText extends AnimatedWidget {
+class CustomAnimText extends AnimatedWidget {
   static final _opacityTween = Tween<double>(begin: 0.1, end: 1);
+  final String animText;
+  final TextStyle textStyle;
+
   //final opacityAnimation = Tween<double>(begin: 0.1, end: 1).animate(controller);
-  BreathingText({Key key, Animation<double> animation})
+
+  CustomAnimText({Key key, Animation<double> animation, this.animText, this.textStyle})
       : super(key: key, listenable: animation);
 
   Widget build(BuildContext context) {
@@ -15,8 +19,8 @@ class BreathingText extends AnimatedWidget {
         //width: animation.value,
       opacity: _opacityTween.evaluate(animation),
       child: Text(
-        'Connection is taking longer than usual',
-        style: TextStyle(
+        animText??'Loading',
+        style: textStyle??TextStyle(
             color: Colors.grey[800],
             fontSize: 20
         ),
@@ -26,12 +30,16 @@ class BreathingText extends AnimatedWidget {
   }
 }
 
-class PoorConnectionAlert extends StatefulWidget {
-  _PoorConnectionAlertState createState() => _PoorConnectionAlertState();
+class BreathingText extends StatefulWidget {
+  final String alertText;
+  final TextStyle textStyle;
+  BreathingText({this.alertText, this.textStyle});
+  
+  _BreathingTextState createState() => _BreathingTextState();
 }
 
 // #docregion print-state
-class _PoorConnectionAlertState extends State<PoorConnectionAlert> with SingleTickerProviderStateMixin {
+class _BreathingTextState extends State<BreathingText> with SingleTickerProviderStateMixin {
   Animation<double> animation;
   AnimationController controller;
 
@@ -58,7 +66,7 @@ class _PoorConnectionAlertState extends State<PoorConnectionAlert> with SingleTi
   // #enddocregion print-state
 
   @override
-  Widget build(BuildContext context) => BreathingText(animation: animation);
+  Widget build(BuildContext context) => CustomAnimText(animation: animation, animText: widget.alertText, textStyle: widget.textStyle);
 
   @override
   void dispose() {

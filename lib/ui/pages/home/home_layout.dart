@@ -17,9 +17,11 @@ import 'package:provider/provider.dart';
 import '../../../base_util.dart';
 
 class HomeLayout extends StatefulWidget{
-  final ValueChanged<int> onLoginRequest;
+  final ValueChanged<Map> onInitiateRequest;
+  static const String PARAM_TIME = 'homeTime';
+  static const String PARAM_SERVICE_CODE = 'serviceCode';
 
-  HomeLayout({this.onLoginRequest});
+  HomeLayout({this.onInitiateRequest});
 
   @override
   State createState() => _HomeLayoutState();
@@ -95,7 +97,15 @@ class _HomeLayoutState extends State<HomeLayout> {
                                   fontSize: 20.0
                               ),
                             ),
-                            onPressed: onRequest,
+                            onPressed: () {
+                              if(widget.onInitiateRequest != null) {
+                                Map<String, dynamic> reqParams = {
+                                  HomeLayout.PARAM_TIME: _selectedTime,
+                                  HomeLayout.PARAM_SERVICE_CODE: baseProvider.encodeServiceList(selectedServiceList)
+                                };
+                                widget.onInitiateRequest(reqParams);
+                              }
+                            },
                             minWidth: double.infinity,
                           ),
 
@@ -119,45 +129,6 @@ class _HomeLayoutState extends State<HomeLayout> {
     //);
   }
 
-  void onRequest() {
-    if (baseProvider.firebaseUser == null
-        || baseProvider.myUser == null
-        || baseProvider.myUser.hasIncompleteDetails()
-        || selectedServiceList.isEmpty
-        || !_validateTime(_selectedTime)) {
-      ///validation message to be assigned on priority basis: Not signed in -- Incomplete details -- Service not selected
-      String message;
-      //_selected time validation does'nt need a snack message. done by its validator
-      if(selectedServiceList.isEmpty)message="Please select atleast one service";
-      if(baseProvider.myUser.hasIncompleteDetails())message="Please add your home address";
-      if(baseProvider.firebaseUser == null) message="Please sign in to continue";
-      if(message!=null)baseProvider.showNegativeAlert('Action required', message, context);
-      return;
-    }
-    Request req = Request(
-        user_id: baseProvider.myUser.uid,
-        user_mobile: baseProvider.myUser.mobile,
-        date: cUtil.now.day,
-        service: decodeMultiChip(),
-        address: baseProvider.myUser.flat_no,
-        society_id: baseProvider.myUser.society_id,
-        req_time: baseProvider.encodeTimeOfDay(_selectedTime),
-        timestamp: FieldValue.serverTimestamp());
-      showModalBottomSheet(
-        backgroundColor: Colors.transparent,
-        context: context,
-        builder: (context){
-          return CostConfirmModalSheet(request: req, onRequestConfirmed: (cost) {
-            Navigator.of(context).pop();  //close Cost Sheet
-            //TODO add a spinner here
-            req.cost = cost;
-            log.debug("onRequestConfirmed called for: " + req.toString());
-            reqProvider.pushRequest(req);
-          });
-        }
-    );
-  }
-
   Widget buildTimeButton() {
     return RaisedButton(
         shape: RoundedRectangleBorder(
@@ -168,11 +139,14 @@ class _HomeLayoutState extends State<HomeLayout> {
           _selectedTime = await showTimePicker(
             context: context,
             initialTime: TimeOfDay.now(),
-
           );
           log.debug(_selectedTime.toString());
           setState(() {
-            if(!_validateTime(_selectedTime))_selectedTime=TimeOfDay.now();
+            if(!baseProvider.validateRequestTime(_selectedTime)){
+              baseProvider.showNegativeAlert('Time unavailable', '${Constants.APP_NAME} is available from ${BaseUtil.dayStartTime.hour}:${BaseUtil.dayStartTime.minute.toString().padLeft(2, '0')} AM '
+                  'to ${BaseUtil.dayEndTime.hour-12}:${BaseUtil.dayEndTime.minute.toString().padLeft(2, '0')} PM', context);
+              _selectedTime=TimeOfDay.now();
+            }
           });
       },
       child: Container(
@@ -222,33 +196,6 @@ class _HomeLayoutState extends State<HomeLayout> {
     int hr = (time.hour > 12)?time.hour-12:time.hour;
     String mins = time.minute.toString().padLeft(2, '0');
     return '${hr.toString()}:${mins} ${am_pm}';
-  }
-
-  bool _validateTime(TimeOfDay time) {
-    bool flag = true;
-    if(time == null) {
-//      if(baseProvider != null && context != null) {
-//        baseProvider.showNegativeAlert('Enter the time', 'Provide the service time', context);
-//      }
-      flag = false;
-    }
-    else {
-      int timeVal = time.hour * 60 + time.minute;
-      int minTimeVal = BaseUtil.dayStartTime.hour * 60 +
-          BaseUtil.dayStartTime.minute;
-      int maxTimeVal = BaseUtil.dayEndTime.hour * 60 +
-          BaseUtil.dayEndTime.minute;
-
-      flag = (timeVal >= minTimeVal && timeVal <= maxTimeVal);
-      if(!flag) {
-        if(baseProvider != null && context != null) {
-          baseProvider.showNegativeAlert('Time Unavailable',
-              '${Constants.APP_NAME} is available from ${BaseUtil.dayStartTime.hour}:${BaseUtil.dayStartTime.minute.toString().padLeft(2, '0')} AM '
-                  'to ${BaseUtil.dayEndTime.hour-12}:${BaseUtil.dayEndTime.minute.toString().padLeft(2, '0')} PM', context, seconds: 6);
-        }
-      }
-    }
-    return flag;
   }
 
   Widget buildTimeButton2() {
@@ -312,21 +259,6 @@ class _HomeLayoutState extends State<HomeLayout> {
       ),
       color: Colors.white,
     );
-  }
-
-
-  String decodeMultiChip() {
-    if(selectedServiceList.length == 1) {
-      if(selectedServiceList.contains(Constants.CLEANING)) return Constants.CLEANING_CDE;
-      if(selectedServiceList.contains(Constants.UTENSILS)) return Constants.UTENSILS_CDE;
-      if(selectedServiceList.contains(Constants.DUSTING)) return Constants.DUSTING_CDE;
-    }
-    else if(selectedServiceList.length == 2) {
-      if(selectedServiceList.contains(Constants.CLEANING) && selectedServiceList.contains(Constants.UTENSILS)) return Constants.CLEAN_UTENSIL_CDE;
-      if(selectedServiceList.contains(Constants.CLEANING) && selectedServiceList.contains(Constants.DUSTING)) return Constants.CLEAN_DUST_CDE;
-      if(selectedServiceList.contains(Constants.DUSTING) && selectedServiceList.contains(Constants.UTENSILS)) return Constants.DUST_UTENSIL_CDE;
-    }
-    return Constants.CLEAN_DUST_UTENSIL_CDE;
   }
 
 //  Widget buildLoginButton() {

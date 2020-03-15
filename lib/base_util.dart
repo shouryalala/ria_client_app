@@ -193,14 +193,57 @@ class BaseUtil extends ChangeNotifier{
 
 //  isSignedIn() =>  (firebaseUser != null && myUser != null);
 
+  String encodeServiceList(List<String> selectedServiceList) {
+    if(selectedServiceList == null || selectedServiceList.isEmpty)return null;
+    if(selectedServiceList.length == 1) {
+      if(selectedServiceList.contains(Constants.CLEANING)) return Constants.CLEANING_CDE;
+      if(selectedServiceList.contains(Constants.UTENSILS)) return Constants.UTENSILS_CDE;
+      if(selectedServiceList.contains(Constants.DUSTING)) return Constants.DUSTING_CDE;
+    }
+    else if(selectedServiceList.length == 2) {
+      if(selectedServiceList.contains(Constants.CLEANING) && selectedServiceList.contains(Constants.UTENSILS)) return Constants.CLEAN_UTENSIL_CDE;
+      if(selectedServiceList.contains(Constants.CLEANING) && selectedServiceList.contains(Constants.DUSTING)) return Constants.CLEAN_DUST_CDE;
+      if(selectedServiceList.contains(Constants.DUSTING) && selectedServiceList.contains(Constants.UTENSILS)) return Constants.DUST_UTENSIL_CDE;
+    }
+    return Constants.CLEAN_DUST_UTENSIL_CDE;
+  }
+
   String decodeService(String code) {
     switch(code) {
       case Constants.CLEANING_CDE: return Constants.CLEANING;
       case Constants.UTENSILS_CDE: return Constants.UTENSILS;
-      case Constants.DUSTING_CDE: return "Dusting";
-      case Constants.CLEAN_UTENSIL_CDE: return "Cleaning and Utensils";
+      case Constants.DUSTING_CDE: return Constants.DUSTING;
+      case Constants.CLEAN_UTENSIL_CDE: return '';
+      case Constants.CLEAN_DUST_CDE:  return '';
+      case Constants.DUST_UTENSIL_CDE: return '';
+      case Constants.CLEAN_DUST_UTENSIL_CDE: return '';
       default: return code;
     }
+  }
+
+  bool validateRequestTime(TimeOfDay time) {
+    bool flag = true;
+    if(time == null) {
+//      if(baseProvider != null && context != null) {
+//        baseProvider.showNegativeAlert('Enter the time', 'Provide the service time', context);
+//      }
+      flag = false;
+    }
+    else {
+      int timeVal = time.hour * 60 + time.minute;
+      int minTimeVal = BaseUtil.dayStartTime.hour * 60 +
+          BaseUtil.dayStartTime.minute;
+      int maxTimeVal = BaseUtil.dayEndTime.hour * 60 +
+          BaseUtil.dayEndTime.minute;
+
+      flag = (timeVal >= minTimeVal && timeVal <= maxTimeVal);
+//      if(!flag) {
+//        showNegativeAlert('Time Unavailable',
+//              '${Constants.APP_NAME} is available from ${BaseUtil.dayStartTime.hour}:${BaseUtil.dayStartTime.minute.toString().padLeft(2, '0')} AM '
+//                  'to ${BaseUtil.dayEndTime.hour-12}:${BaseUtil.dayEndTime.minute.toString().padLeft(2, '0')} PM', context, seconds: 6);
+//        }
+      }
+    return flag;
   }
 
   AuthCredential generateAuthCredential(String verificationId, String smsCode) {

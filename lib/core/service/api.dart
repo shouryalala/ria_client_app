@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_app/util/calendar_util.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/logger.dart';
@@ -11,12 +12,22 @@ class Api{
 
   Api();
 
-  Future<DocumentReference> addRequestDocument(Map data) {
-    //ref = _db.collection('request').document()
-    CalendarUtil cal = CalendarUtil();
-    ref = _db.collection(Constants.COLN_REQUESTS).document(cal.getCurrentYear()).collection(cal.getCurrentMonthCode());
-    return ref.add(data);
+  Future<void> batchAddRequestVisitUserActivity(String userId, Map userActMap, String yearDoc, String monthCde, Map requestMap) {
+      WriteBatch batch = _db.batch();
+      DocumentReference ref1 = _db.collection(Constants.COLN_USERS).document(userId).collection(Constants.SUBCOLN_USER_ACTIVITY).document(Constants.DOC_USER_ACTIVITY_STATUS);
+      ref = _db.collection(Constants.COLN_REQUESTS).document(yearDoc).collection(monthCde);
+
+      batch.setData(ref1, userActMap, merge: false);
+      batch.setData(ref.document(), requestMap);
+      return batch.commit();
   }
+
+//  Future<DocumentReference> addRequestDocument(Map data) {
+//    //ref = _db.collection('request').document()
+//    CalendarUtil cal = CalendarUtil();
+//    ref = _db.collection(Constants.COLN_REQUESTS).document(cal.getCurrentYear()).collection(cal.getCurrentMonthCode());
+//    return ref.add(data);
+//  }
 
   Future<void> updateUserDocument(String docId, Map data) {
     ref = _db.collection(Constants.COLN_USERS);

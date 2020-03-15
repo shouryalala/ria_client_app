@@ -14,12 +14,11 @@ import 'package:flutter_app/util/ui_constants.dart';
 import 'package:provider/provider.dart';
 
 import 'base_util.dart';
-import 'core/ops/cache_ops.dart';
 import 'core/fcm_handler.dart';
 import 'core/fcm_listener.dart';
+import 'core/ops/cache_ops.dart';
 import 'core/ops/http_ops.dart';
 import 'core/ops/lcl_db_ops.dart';
-//import 'ui/pages/app_canvas.dart';
 import 'ui/pages/launcher_screen.dart';
 
 void main() {
@@ -51,7 +50,7 @@ class App extends StatelessWidget{
           routes: <String, WidgetBuilder> {
             '/launcher': (BuildContext context) => SplashScreen(),
 //            '/home': (BuildContext context) => AppCanvas(),
-            '/home': (BuildContext context) => MainPage(onLoginRequest: (pageNo) {
+            '/home': (BuildContext context) => Dashboard(onLoginRequest: (pageNo) {
               Navigator.push(context, MaterialPageRoute(
                 builder: (context) => LoginController(initPage: pageNo)
               ));

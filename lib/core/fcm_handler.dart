@@ -151,18 +151,25 @@ class FcmHandler extends ChangeNotifier {
         }
         case Constants.COMMAND_MISC_MESSAGE: {
           String type;
+          int status;
           try{
             type = data['msg_type'];
+            status = int.parse(data[Visit.fldStatus]);
           }catch(error) {
             log.error('Couldnt parse msg_type sent in the MISC MESSAGE command'+  error.toString());
           }
           if(type != null) {
             if(type == Constants.NO_AVAILABLE_AST && noAstAvailable != null) {
               log.debug('No Assistant Availble message received and posting');
+              await _baseUtil.updateHomeState(status: status);
+              _baseUtil.homeState = status; //update baseUtil
               noAstAvailable();
             }
             else if(type == Constants.SERVER_ERROR && serverError != null) {
               log.debug('Server Error msg recevied and posting');
+              await _baseUtil.updateHomeState(status: status);
+              //TODO server error should be able to refresh dashboard to any visit layout for future-proofing
+              _baseUtil.homeState = status; //update baseUtil
               serverError();
             }
             else{

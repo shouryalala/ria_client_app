@@ -158,7 +158,7 @@ class _RateVisitLayoutState extends State<RateVisitLayout> {
                             }
                             if (widget.rateVisit.path != null &&
                                 widget.rateAssistant.id != null)
-                              dbProvider.rateVisitAndUpdateUserState(baseProvider.myUser.uid,
+                              dbProvider.rateVisitAndUpdateUserState(baseProvider.firebaseUser.uid,
                                   widget.rateAssistant.id,widget.rateVisit.path,rating,fdbkController.text)
                                   .then((flag) {
                                 log.debug("Rated Visit, added Feedback, and updated User Activity Status: $flag");
@@ -194,7 +194,7 @@ class _RateVisitLayoutState extends State<RateVisitLayout> {
           confirmAction: () {
             log.debug("User skipped rating for assistant");
             dbProvider.rateVisitAndUpdateUserState(    //Not using await
-                baseProvider.myUser.uid,
+                baseProvider.firebaseUser.uid,
                 widget.rateAssistant.id,
                 widget.rateVisit.path,
                 0,

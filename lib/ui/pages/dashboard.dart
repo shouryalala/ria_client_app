@@ -1,12 +1,16 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app/core/model/request.dart';
+import 'package:flutter_app/core/model/visit.dart';
 import 'package:flutter_app/ui/dialog/form_dialog.dart';
 import 'package:flutter_app/ui/pages/home/cancelled_visit_layout.dart';
 import 'package:flutter_app/ui/pages/home/home_layout.dart';
 import 'package:flutter_app/ui/pages/home/ongoing_visit_layout.dart';
 import 'package:flutter_app/ui/pages/home/rate_visit_layout.dart';
+import 'package:flutter_app/ui/pages/home/searching_visit_layout.dart';
 import 'package:flutter_app/ui/pages/home/upcoming_visit_layout.dart';
 import 'package:flutter_app/util/calendar_util.dart';
 import 'package:flutter_app/util/connection_util.dart';
@@ -19,24 +23,20 @@ import '../../base_util.dart';
 import '../../core/fcm_handler.dart';
 import '../../core/ops/db_ops.dart';
 
-class MainPage extends StatefulWidget {
+class Dashboard extends StatefulWidget {
   final ValueChanged<int> onLoginRequest;
 
-  MainPage({this.onLoginRequest});
+  Dashboard({this.onLoginRequest});
 
   @override
-  _MainPageState createState() => _MainPageState();
+  _DashboardState createState() => _DashboardState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _DashboardState extends State<Dashboard> {
   Log log = new Log("DashboardHomeLayout");
   BaseUtil baseProvider;
   DBModel reqProvider;
   FcmHandler handler;
-  String _time;
-  DateTime reqTime = new DateTime.now();
-  List<String> serviceList = [Constants.CLEANING, Constants.UTENSILS];
-  List<String> selectedServiceList = [Constants.CLEANING];
   CalendarUtil cUtil = new CalendarUtil();
   int homeState = Constants.VISIT_STATUS_NONE;
   bool _isCallbackInitialized = false;
@@ -83,9 +83,15 @@ class _MainPageState extends State<MainPage> {
       });
       handler.setNoAstAvailableCallback(onNoAStAvailableMsg: () {
         baseProvider.showNegativeAlert('No Assistant Available', 'Please try again in sometime', context, seconds: 5);
+        setState(() {
+          homeState = Constants.VISIT_STATUS_NONE;
+        });
       });
       handler.setServerErrorCallback(onServerErrorMsg: () {
         baseProvider.showNegativeAlert('Internal Error', 'We encountered an issue. Please try again in sometime', context, seconds: 5);
+        setState(() {
+          homeState = Constants.VISIT_STATUS_NONE;
+        });
       });
     }
     homeState = (baseProvider.homeState != null) ? baseProvider.homeState : Constants.VISIT_STATUS_NONE;
@@ -379,10 +385,6 @@ class _MainPageState extends State<MainPage> {
 
   Widget __buildVisitLayout(int homeState) {
     switch (homeState) {
-      case Constants.VISIT_STATUS_NONE: case Constants.VISIT_STATUS_COMPLETED:
-        {
-          return buildHomeLayout();
-        }
       case Constants.VISIT_STATUS_UPCOMING:
         {
           if (baseProvider.currentVisit == null ||
@@ -405,7 +407,13 @@ class _MainPageState extends State<MainPage> {
               baseProvider.currentAssistant == null) return buildHomeLayout();
           return CancelledVisitLayout(
               canVisit: baseProvider.currentVisit,
-              canAssistant: baseProvider.currentAssistant);
+              canAssistant: baseProvider.currentAssistant,
+              onRerouteCancelledVisit: (visit) => _rerouteCancelledVisit(visit)
+          );
+        }
+      case Constants.VISIT_STATUS_SEARCHING:
+        {
+          return SearchingVisitLayout();
         }
 //      case Constants.VISIT_STATUS_COMPLETED:  //Wrote shitty code and moved to the initial widget router in the launcher
 //        {
@@ -421,19 +429,137 @@ class _MainPageState extends State<MainPage> {
 //              })));
 //          break;
 //        }
-      default:
-        return buildHomeLayout();
+      case Constants.VISIT_STATUS_NONE:case Constants.VISIT_STATUS_COMPLETED: default:
+        {
+          return buildHomeLayout();
+        }
     }
   }
 
   Widget buildHomeLayout() {
-    return HomeLayout(onLoginRequest: (pageNo) {
-      //wont need onLoginRequest to be passed on to the HomeLayout either
-      if (widget.onLoginRequest != null) {
-        log.debug("onLoginRequest callback for pageNo: " + pageNo.toString());
-        widget.onLoginRequest(pageNo);
-      }
-    });
+    return HomeLayout(
+        onInitiateRequest: (params) {
+          if(params != null && params.isNotEmpty) {
+            try {
+              TimeOfDay reqTime = params[HomeLayout.PARAM_TIME];
+              String serviceCode = params[HomeLayout.PARAM_SERVICE_CODE];
+              //if(reqTime != null && serviceCode != null && serviceCode.isNotEmpty)
+                _onInitiateRequest(reqTime, serviceCode);
+            }catch(error) {
+              log.error('Failed to parse HomeLayout callback Map' + error.toString());
+            }
+          }
+        }
+    );
+  }
+
+//  buildHomeLayout() {
+//    return HomeLayout(onLoginRequest: (pageNo) {
+//      //wont need onLoginRequest to be passed on to the HomeLayout either
+//      if (widget.onLoginRequest != null) {
+//        log.debug("onLoginRequest callback for pageNo: " + pageNo.toString());
+//        widget.onLoginRequest(pageNo);
+//      }
+//    });
+//  }
+
+  ///Validate request and show appropirate messages
+  bool _validateRequest(TimeOfDay requestTime, String serviceCode) {
+    bool flag = true;
+    if(_isOffline){
+      log.debug('No internet connection.');
+      flag = false;
+      baseProvider.showNoInternetAlert(context);
+    }
+    else if(!baseProvider.isSignedIn()) {
+      log.debug('Request check:: Not signed in yet');
+      flag = false;
+      baseProvider.showNegativeAlert('Sign In', 'Please Sign in to continue', context);
+    }
+    else if(!baseProvider.isActiveUser()) {
+      log.debug('Request check:: Incomplete details');
+      flag = false;
+      baseProvider.showNegativeAlert('Update details', 'Please complete your details to continue', context);
+    }
+    else if(serviceCode == null){
+      log.debug('Request check:: Service code invalid');
+      flag = false;
+      baseProvider.showNegativeAlert('Action Required', 'Please select atleast one service', context);
+    }
+    else if(!baseProvider.validateRequestTime(requestTime)) {
+      log.debug('Request check:: Invalid Time');
+      flag = false;
+      baseProvider.showNegativeAlert('Action Required', '${Constants.APP_NAME} is available from ${BaseUtil.dayStartTime.hour}:${BaseUtil.dayStartTime.minute.toString().padLeft(2, '0')} AM '
+          'to ${BaseUtil.dayEndTime.hour-12}:${BaseUtil.dayEndTime.minute.toString().padLeft(2, '0')} PM', context);
+    }
+    return flag;
+  }
+
+  void _onInitiateRequest(TimeOfDay requestTime, String serviceCode) {
+    if(_validateRequest(requestTime, serviceCode)) {
+//    if (baseProvider.firebaseUser == null
+//        || baseProvider.myUser == null
+//        || baseProvider.myUser.hasIncompleteDetails()
+//        || selectedServiceList.isEmpty
+//        || !baseProvider.validateRequestTime(requestTime)) { //TODO fix time validation
+//      ///validation message to be assigned on priority basis: Not signed in -- Incomplete details -- Service not selected
+//      String message;
+//      //_selected time validation does'nt need a snack message. done by its validator
+//      if(!baseProvider.validateRequestTime(requestTime))message='${Constants.APP_NAME} is available from ${BaseUtil.dayStartTime.hour}:${BaseUtil.dayStartTime.minute.toString().padLeft(2, '0')} AM '
+//                  'to ${BaseUtil.dayEndTime.hour-12}:${BaseUtil.dayEndTime.minute.toString().padLeft(2, '0')} PM';
+//      if(selectedServiceList.isEmpty)message="Please select atleast one service";
+//      if(baseProvider.myUser.hasIncompleteDetails())message="Please add your home address";
+//      if(baseProvider.firebaseUser == null) message="Please sign in to continue";
+//      if(message!=null)baseProvider.showNegativeAlert('Action required', message, context);
+//      return;
+//    }
+//    if(_isOffline) baseProvider.showNoInternetAlert(context);
+      Request req = Request(
+          user_id: baseProvider.firebaseUser.uid,
+          user_mobile: baseProvider.myUser.mobile,
+          date: cUtil.now.day,
+          service: serviceCode,
+          address: baseProvider.myUser.flat_no,
+          society_id: baseProvider.myUser.society_id,
+          req_time: baseProvider.encodeTimeOfDay(requestTime),
+          timestamp: FieldValue.serverTimestamp());
+      showModalBottomSheet(
+          backgroundColor: Colors.transparent,
+          context: context,
+          builder: (context) {
+            return CostConfirmModalSheet(
+                request: req, onRequestConfirmed: (cost) async {
+              Navigator.of(context).pop(); //close Cost Sheet
+              req.cost = cost;
+              log.debug("onRequestConfirmed called for: " + req.toString());
+              //if(widget.onPushRequest != null)widget.onPushRequest(req);
+              _onConfirmRequest(baseProvider.firebaseUser.uid, req);
+            });
+          }
+      );
+    }
+  }
+
+  void _rerouteCancelledVisit(Visit canVisit) async{
+
+  }
+
+
+  ///Called by CostConfirmModalSheet
+  void _onConfirmRequest(String userId, Request request) async{
+    if(userId == null || userId.isEmpty || request == null) {
+      log.error('Invalid parameters recevied for new request. Skipping request');
+      //TODO inform user?
+      return;
+    }
+    log.debug('New push request: ' + request.toString());
+    bool flag = await reqProvider.pushRequest(userId, request);
+    if(flag) {
+      baseProvider.updateHomeState(status: Constants.VISIT_STATUS_SEARCHING);
+      setState(() {
+        homeState = Constants.VISIT_STATUS_SEARCHING;
+      });
+    }
   }
 
   //state changer when request is confirmed

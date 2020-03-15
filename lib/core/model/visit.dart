@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:math';
 
 import 'package:flutter_app/util/logger.dart';
 
@@ -13,6 +14,7 @@ class Visit{
   final int vis_st_time;
   final int vis_en_time;
   final String service;
+  final double cost;
   //final String society_id;
   int status;
   bool cncld_by_user;
@@ -27,12 +29,13 @@ class Visit{
   static final String fldService = "service";
   //static final String fldSocietyId = "society_id";
   static final String fldStatus = "status";
+  static final String fldCost = "cost";
   static final String fldCncldByUser = "cncld_by_user";
 
   static List<String> _intFldList = [ fldDate, fldReqStTime, fldVisStTime, fldVisEnTime, fldStatus];  //needed for local storage
 
   Visit({this.path, this.aId, this.date, this.req_st_time, this.vis_st_time,
-      this.vis_en_time, this.service, this.status, this.uId});
+      this.vis_en_time, this.service, this.status, this.cost, this.uId});
 
   //to parse from server/cache
   Visit.fromMap(Map<String, dynamic> data, String path) : this (
@@ -44,6 +47,7 @@ class Visit{
     vis_en_time: data[fldVisEnTime],
     service: data[fldService],
     status: data[fldStatus],
+    cost: data[fldCost],
     uId: data[fldUID],
   );
 
@@ -58,6 +62,7 @@ class Visit{
       fldVisStTime: vis_st_time,
       fldVisEnTime: vis_en_time,
       fldDate: date,
+      fldCost: cost,
       fldCncldByUser: cncld_by_user,
     };
   }
@@ -71,6 +76,7 @@ class Visit{
     if(service != null)oContent.writeln(fldService + '\$' + service.trim());
     if(status != null)oContent.writeln(fldStatus + '\$' + status.toString());
     if(date != null)oContent.writeln(fldDate + '\$' + date.toString());
+    if(cost != null)oContent.writeln(fldCost + '\$' + cost.toString());
     if(req_st_time != null)oContent.writeln(fldReqStTime + '\$' + req_st_time.toString());
     if(vis_st_time != null)oContent.writeln(fldVisStTime + '\$' + vis_st_time.toString());
     if(vis_en_time != null)oContent.writeln(fldVisEnTime + '\$' + vis_en_time.toString());
@@ -94,6 +100,14 @@ class Visit{
             return (res[1] != null && res[1].length > 0) ? res[1] : '';
           });
           continue;
+        }
+        else if(line.contains('$fldCost\$')) {
+          String costStr = line.split('\$')[1];
+          if(costStr != null && costStr.isNotEmpty) {
+            gData.putIfAbsent(fldCost, () {
+              return (double.parse(costStr));
+            });
+          }
         }
         else {
           _intFldList.forEach((fld) {

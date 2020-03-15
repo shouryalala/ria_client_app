@@ -1,13 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/core/fcm_handler.dart';
 import 'package:flutter_app/core/fcm_listener.dart';
+import 'package:flutter_app/ui/elements/breathing_text_widget.dart';
 import 'package:flutter_app/ui/elements/custom_flutter_logo.dart';
 import 'package:flutter_app/ui/elements/flutter_logo_obj.dart';
-import 'package:flutter_app/ui/elements/launcher_slow_internet_alert.dart';
 import 'package:flutter_app/util/constants.dart';
-import 'package:flutter_app/util/locator.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:provider/provider.dart';
 
@@ -95,7 +93,7 @@ class LogoFadeIn extends State<SplashScreen> {
                     maintainAnimation: true,
                     maintainState: true,
                     visible: _isSlowConnection,
-                    child:  PoorConnectionAlert()
+                    child:  BreathingText(alertText: 'Connection is taking longer than usual')
                   )
               ),
             )

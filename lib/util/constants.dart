@@ -87,6 +87,7 @@ class Constants {
   static const int VISIT_STATUS_ONGOING = 2;
   static const int VISIT_STATUS_UPCOMING = 3;
   static const int VISIT_STATUS_NONE = 4;
+  static const int VISIT_STATUS_SEARCHING = 5;
 
   //Shared Preferences
   static final String SP_TOKEN = "client_token";

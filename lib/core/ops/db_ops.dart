@@ -21,9 +21,21 @@ class DBModel extends ChangeNotifier {
   Api _api = locator<Api>();
   final Log log = new Log("DBModel");
 
-  Future pushRequest(Request request) async {
-    var result = await _api.addRequestDocument(request.toJson());
-    return;
+  ///Adds a new Request and updates the current user activity status
+  Future<bool> pushRequest(String userId, Request request) async {
+    try {
+      Map<String, dynamic> userActMap = UserState(visitStatus: Constants.VISIT_STATUS_SEARCHING).toJson();
+      Map<String, dynamic> requestMap = request.toJson();
+      CalendarUtil cal = CalendarUtil();
+      String yearDoc = cal.getCurrentYear();
+      String monthSubColn = cal.getCurrentMonthCode();
+
+      await _api.batchAddRequestVisitUserActivity(userId, userActMap, yearDoc, monthSubColn, requestMap);
+      //var result = await _api.addRequestDocument(request.toJson());
+      return true;
+    }catch(error) {
+      return false;
+    }
   }
 
   Future<User> getUser(String id) async {
