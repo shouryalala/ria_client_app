@@ -213,10 +213,10 @@ class BaseUtil extends ChangeNotifier{
       case Constants.CLEANING_CDE: return Constants.CLEANING;
       case Constants.UTENSILS_CDE: return Constants.UTENSILS;
       case Constants.DUSTING_CDE: return Constants.DUSTING;
-      case Constants.CLEAN_UTENSIL_CDE: return '';
-      case Constants.CLEAN_DUST_CDE:  return '';
-      case Constants.DUST_UTENSIL_CDE: return '';
-      case Constants.CLEAN_DUST_UTENSIL_CDE: return '';
+      case Constants.CLEAN_UTENSIL_CDE: return Constants.CLEANING +' and ' + Constants.UTENSILS;
+      case Constants.CLEAN_DUST_CDE:  return Constants.CLEANING +' and ' + Constants.DUSTING;
+      case Constants.DUST_UTENSIL_CDE: return Constants.DUSTING +' and ' + Constants.UTENSILS;
+      case Constants.CLEAN_DUST_UTENSIL_CDE: return Constants.CLEANING + ', ' + Constants.DUSTING + ' and ' + Constants.UTENSILS;
       default: return code;
     }
   }
