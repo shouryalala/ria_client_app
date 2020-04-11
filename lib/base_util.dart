@@ -117,7 +117,7 @@ class BaseUtil extends ChangeNotifier{
         break;
       }
     }
-    updateHomeState(status: status, visitPath: vPath); //await not needed
+    await updateHomeState(status: status, visitPath: vPath);
   }
 
   //Path of format: visits/YEAR/MONTH/ID

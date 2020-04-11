@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_app/core/model/request.dart';
 import 'package:flutter_app/core/model/visit.dart';
 import 'package:flutter_app/ui/dialog/form_dialog.dart';
+import 'package:flutter_app/ui/elements/request_button.dart';
 import 'package:flutter_app/ui/pages/home/cancelled_visit_layout.dart';
 import 'package:flutter_app/ui/pages/home/home_layout.dart';
 import 'package:flutter_app/ui/pages/home/ongoing_visit_layout.dart';
@@ -44,6 +45,7 @@ class _DashboardState extends State<Dashboard> {
   StreamSubscription _connectionChangeStream;
   bool _isOffline = false;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final RoundedLoadingButtonController _defaultHomeRequestButtonController = new RoundedLoadingButtonController();
 
   @override
   void initState() {
@@ -466,7 +468,8 @@ class _DashboardState extends State<Dashboard> {
               log.error('Failed to parse HomeLayout callback Map' + error.toString());
             }
           }
-        }
+        },
+        reqBtnController: _defaultHomeRequestButtonController,
     );
   }
 
@@ -551,6 +554,7 @@ class _DashboardState extends State<Dashboard> {
               log.debug("onRequestConfirmed called for: " + req.toString());
               //if(widget.onPushRequest != null)widget.onPushRequest(req);
               _onConfirmRequest(baseProvider.firebaseUser.uid, req);
+              _defaultHomeRequestButtonController.start();  //request button animation
             });
           }
       );
@@ -572,6 +576,7 @@ class _DashboardState extends State<Dashboard> {
     log.debug('New push request: ' + request.toString());
     bool flag = await reqProvider.pushRequest(userId, request);
     if(flag) {
+      _defaultHomeRequestButtonController.success();
       baseProvider.updateHomeState(status: Constants.VISIT_STATUS_SEARCHING);
       setState(() {
         homeState = Constants.VISIT_STATUS_SEARCHING;

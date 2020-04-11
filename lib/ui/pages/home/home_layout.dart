@@ -5,6 +5,7 @@ import 'package:flutter_app/core/model/request.dart';
 import 'package:flutter_app/core/ops/db_ops.dart';
 import 'package:flutter_app/core/ops/http_ops.dart';
 import 'package:flutter_app/ui/elements/mutli_select_chip.dart';
+import 'package:flutter_app/ui/elements/request_button.dart';
 import 'package:flutter_app/ui/elements/time_picker_model.dart';
 import 'package:flutter_app/util/calendar_util.dart';
 import 'package:flutter_app/util/constants.dart';
@@ -18,13 +19,21 @@ import '../../../base_util.dart';
 
 class HomeLayout extends StatefulWidget{
   final ValueChanged<Map> onInitiateRequest;
+  final RoundedLoadingButtonController reqBtnController;
   static const String PARAM_TIME = 'homeTime';
   static const String PARAM_SERVICE_CODE = 'serviceCode';
+  bool _isReqProcessing = false;
 
-  HomeLayout({this.onInitiateRequest});
+  HomeLayout({this.onInitiateRequest, this.reqBtnController});
 
   @override
   State createState() => _HomeLayoutState();
+
+  bool get isReqProcessing => _isReqProcessing;
+
+  set isReqProcessing(bool value) {
+    _isReqProcessing = value;
+  }
 }
 
 class _HomeLayoutState extends State<HomeLayout> {
@@ -85,31 +94,8 @@ class _HomeLayoutState extends State<HomeLayout> {
                           ),
                         ),
                         SizedBox(height: 24.0,),
-                        Material(
-                          color: UiConstants.secondaryColor,
-                          borderRadius: new BorderRadius.circular(10.0),
-                          elevation: 3,
-                          child: MaterialButton(
-                            child: Text(
-                              'Request',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20.0
-                              ),
-                            ),
-                            onPressed: () {
-                              if(widget.onInitiateRequest != null) {
-                                Map<String, dynamic> reqParams = {
-                                  HomeLayout.PARAM_TIME: _selectedTime,
-                                  HomeLayout.PARAM_SERVICE_CODE: baseProvider.encodeServiceList(selectedServiceList)
-                                };
-                                widget.onInitiateRequest(reqParams);
-                              }
-                            },
-                            minWidth: double.infinity,
-                          ),
+                        _buildRequestButton(),
 
-                        ),
 //                        RaisedButton(
 //                          shape: RoundedRectangleBorder(
 //                              borderRadius: BorderRadius.circular(5.0)),
@@ -187,6 +173,38 @@ class _HomeLayoutState extends State<HomeLayout> {
         ),
       ),
       color: Colors.white,
+    );
+  }
+
+  Widget _buildRequestButton() {
+    return Material(
+//      color: UiConstants.secondaryColor,
+//      borderRadius: new BorderRadius.circular(10.0),
+//      elevation: 3,
+      child: RoundedLoadingButton(
+        child: Text(
+          'Request',
+          style: TextStyle(
+              color: Colors.white,
+              fontSize: 20.0
+          ),
+        ),
+        color: UiConstants.secondaryColor,
+        onPressed: () {
+          if(widget.onInitiateRequest != null) {
+            Map<String, dynamic> reqParams = {
+              HomeLayout.PARAM_TIME: _selectedTime,
+              HomeLayout.PARAM_SERVICE_CODE: baseProvider.encodeServiceList(selectedServiceList)
+            };
+            widget.onInitiateRequest(reqParams);
+          }
+        },
+        width: double.infinity,
+        controller: widget.reqBtnController,
+        animateOnTap: false,
+        //minWidth: double.infinity,
+      ),
+
     );
   }
 
