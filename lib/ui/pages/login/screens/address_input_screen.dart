@@ -92,7 +92,7 @@ class AddressInputScreenState extends State<AddressInputScreen> {
                   null,
                   isExpanded: true,
                   validator: (value) {
-                    if(value == null)return 'Select your sector';
+                    if(_selected_sector==null)return 'Select your sector';
                     return null;
                   },
                   decoration: InputDecoration(
@@ -123,7 +123,7 @@ class AddressInputScreenState extends State<AddressInputScreen> {
                     icon: Icon(Icons.business)
                   ),
                   validator: (value) {
-                    if(value == null)return 'Select your society';
+                    if(_selected_society==null)return 'Select your society';
                     return null;
                   },
                   items: (dMap == null || _selected_sector == null)?null:
@@ -176,7 +176,7 @@ class AddressInputScreenState extends State<AddressInputScreen> {
                     });
                   },
                   validator: (value) {
-                    return (value == null)? 'Select Appt size': null;
+                    return (_bhk == null)? 'Select Appt size': null;
                   },
                   items: BHK_OPTIONS.map((digit) {
                     return new DropdownMenuItem(

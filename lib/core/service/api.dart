@@ -62,9 +62,10 @@ class Api{
   /**
    * return Doc:: status:  {visit_id: xyz, visit_status: VISIT_CDE}
    * */
-  Future<DocumentSnapshot> getUserActivityDocument(String id) {
+  Stream<DocumentSnapshot> getUserActivityDocumentStream(String id) {
     ref = _db.collection(Constants.COLN_USERS).document(id).collection(Constants.SUBCOLN_USER_ACTIVITY);
-    return ref.document(Constants.DOC_USER_ACTIVITY_STATUS).get();
+    //return ref.document(Constants.DOC_USER_ACTIVITY_STATUS).get();
+    return ref.document(Constants.DOC_USER_ACTIVITY_STATUS).snapshots();
   } 
 
   Future<DocumentSnapshot> getVisitByPath(String yearDoc, String monthSubColn, String id) {

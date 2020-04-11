@@ -20,7 +20,7 @@ import '../model/visit.dart';
 class DBModel extends ChangeNotifier {
   Api _api = locator<Api>();
   final Log log = new Log("DBModel");
-
+  ValueChanged<UserState> userStatusUpdated;
   ///Adds a new Request and updates the current user activity status
   Future<bool> pushRequest(String userId, Request request) async {
     try {
@@ -60,7 +60,7 @@ class DBModel extends ChangeNotifier {
     }
   }
 
-  Future<UserState> getUserActivityStatus(User user) async{
+  /*Future<UserState> getUserActivityStatus(User user) async{
     try{
       //String id = user.mobile;
       String id = user.uid;
@@ -70,6 +70,26 @@ class DBModel extends ChangeNotifier {
       log.error("Failed to fetch user activity status: " + e.toString());
       return null;
     }
+  }*/
+
+  bool subscribeUserActivityStatus(User user) {
+    try{
+      //String id = user.mobile;
+      String id = user.uid;
+      Stream<DocumentSnapshot> stream = _api.getUserActivityDocumentStream(id);
+      stream.listen((snapshot) {
+        if(userStatusUpdated != null)
+            userStatusUpdated(UserState.fromMap(snapshot.data));
+      });
+      return true;
+    }catch(e) {
+      log.error("Failed to suncribe to user activity status: " + e.toString());
+      return false;
+    }
+  }
+
+  addUserStatusListener(ValueChanged<UserState> listener) {
+    userStatusUpdated = listener;
   }
 
   Future<bool> updateClientToken(User user, String token) async{

@@ -92,13 +92,16 @@ class _UpdateAddressScreenState extends State<UpdateAddressScreen> {
                                     dbProvider.updateUser(baseProvider.myUser).then((flag) {
                                       if (flag) {
                                         log.debug("User object saved successfully");
-                                        baseProvider.showPositiveAlert('Complete', 'Address updated', _scaffoldKey.currentContext); //TODO NOT WORKING. Widget already gone before calling snack
+                                        localDbProvider.saveUser(baseProvider.myUser).then((flag) {
+                                          baseProvider.showPositiveAlert('Complete', 'Address updated', _scaffoldKey.currentContext); //TODO NOT WORKING. Widget already gone before calling snack
+                                          Navigator.of(context).pop();
+                                        });
                                       } else {
                                         baseProvider.showNegativeAlert('Failed', 'Address couldnt be updated. Please try again later', _scaffoldKey.currentContext);
+                                        Navigator.of(context).pop();
                                       }
                                     });
                                   }
-                                  Navigator.of(context).pop();
                                 }
                               },
                               highlightColor: Colors.orange.withOpacity(0.5),

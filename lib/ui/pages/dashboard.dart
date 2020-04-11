@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/core/model/request.dart';
@@ -58,12 +59,9 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    baseProvider = Provider.of<BaseUtil>(context);
-    reqProvider = Provider.of<DBModel>(context);
-    handler = Provider.of<FcmHandler>(context);
-    if (handler != null && !_isCallbackInitialized) {
+  _initListeners() {
+    if(_isCallbackInitialized || baseProvider == null)return;
+    if (handler != null) {
       _isCallbackInitialized = true;  //requires initialization only once
       handler.setHomeScreenCallback(onVisitStatusChanged: (status) {  //register callback to allow handler to notify change in ui,
         log.debug("Visit Status Changed. Refreshing UI");
@@ -94,6 +92,25 @@ class _DashboardState extends State<Dashboard> {
         });
       });
     }
+    if(reqProvider != null) {
+      reqProvider.addUserStatusListener((userState) {
+        if(userState.visitStatus != null && userState.visitStatus != homeState??baseProvider.homeState) {
+          baseProvider.setupCurrentState(userState);
+          setState(() {
+            homeState = baseProvider.homeState;
+          });
+        }
+      });
+      reqProvider.subscribeUserActivityStatus(baseProvider.myUser);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    baseProvider = Provider.of<BaseUtil>(context);
+    reqProvider = Provider.of<DBModel>(context);
+    handler = Provider.of<FcmHandler>(context);
+    _initListeners();
     homeState = (baseProvider.homeState != null) ? baseProvider.homeState : Constants.VISIT_STATUS_NONE;
     return Scaffold(
         key: _scaffoldKey,

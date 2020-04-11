@@ -45,13 +45,13 @@ class BaseUtil extends ChangeNotifier{
     ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
     connectionStatus.initialize();
     if(_myUser != null && _myUser.mobile != null) {
-      //_homeState = await _retrieveCurrentStatus();
-      //_homeState = (_homeState == null)?Constants.VISIT_STATUS_NONE:_homeState;
+//      _homeState = await _retrieveCurrentStatus();
+//      _homeState = (_homeState == null)?Constants.VISIT_STATUS_NONE:_homeState;
 //      Timer _timer2 = new Timer(const Duration(seconds: 20), () {
 //        _setupTimeElapsed = true;
 //      });
-    //TODO test how long will firebase try to fetch these values. If its too long, it needs to be overridden
-      await _setupCurrentState();
+//      TODO test how long will firebase try to fetch these values. If its too long, it needs to be overridden
+      await setupCurrentState(null);
     }
   }
 
@@ -59,13 +59,13 @@ class BaseUtil extends ChangeNotifier{
   /// -Fetches current activity state from user sub-collection
   /// -If there is an upcoming visit, it retrieves/updates the local visit object
   /// -Sets the variable used to decide home layout(Default layout, upcoming visit, ongoing visit etc)
-  Future<void> _setupCurrentState() async {
+  Future<void> setupCurrentState(UserState res) async {
     ///initialize values with cache stored values first
     UserState currState = await _cModel.getHomeStatus();
     int status = (currState != null && currState.visitStatus != null)?currState.visitStatus:Constants.VISIT_STATUS_NONE;
     String vPath = (currState != null)?currState.visitPath:'';
 
-    UserState res = await _dbModel.getUserActivityStatus(_myUser);
+    //UserState res = await _dbModel.getUserActivityStatus(_myUser);
     if(res == null)log.error('Didnt find the activity subcollection. Defaulting values');
     else{
       status = res.visitStatus;
@@ -117,7 +117,7 @@ class BaseUtil extends ChangeNotifier{
         break;
       }
     }
-    return updateHomeState(status: status, visitPath: vPath); //await not needed
+    updateHomeState(status: status, visitPath: vPath); //await not needed
   }
 
   //Path of format: visits/YEAR/MONTH/ID
