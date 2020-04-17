@@ -65,19 +65,13 @@ class BaseUtil extends ChangeNotifier{
     UserState currState = await _cModel.getHomeStatus();
     int status = (currState != null && currState.visitStatus != null)?currState.visitStatus:Constants.VISIT_STATUS_NONE;
     String vPath = (currState != null)?currState.visitPath:'';
-
+    int cachedStatus = status;
     //UserState res = await _dbModel.getUserActivityStatus(_myUser);
     if(res == null)log.error('Didnt find the activity subcollection. Defaulting values');
     else{
       status = res.visitStatus;
       vPath = res.visitPath;
     }
-//    try {
-//      status = res['visit_status'];
-//      vPath = res['visit_id'];
-//    }catch(e) {
-//      log.error("Didnt find the activity subcollection. Defaulting values");
-//    }
     log.debug("Recieved Activity Status:: Status: $status");
     switch(status) {
       case Constants.VISIT_STATUS_NONE: {
@@ -114,6 +108,11 @@ class BaseUtil extends ChangeNotifier{
           log.error("Couldnt identify Upcoming Visit Assistant. Defaulting HomeState");
           _homeState = Constants.VISIT_STATUS_NONE;
           break;
+        }
+        if(status == Constants.VISIT_STATUS_COMPLETED
+            && cachedStatus != Constants.VISIT_STATUS_COMPLETED) {
+          //only triggered once after visit completed
+
         }
         break;
       }

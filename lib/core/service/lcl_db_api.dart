@@ -42,4 +42,24 @@ class LocalApi{
     final file = await userFile;
     if(file != null)return file.delete();
   }
+
+  Future<File> get statsFile async {
+    final path = await _localPath;
+    return File('$path/userStats.txt');
+  }
+
+  Future<String> readStatsFile() async{
+    final file = await statsFile;
+    return file.readAsString();
+  }
+
+  Future<File> writeStatsFile(String content) async{
+    final file = await statsFile;
+    return file.writeAsString(content);
+  }
+
+  Future<void> deleteStatsFile() async{
+    final file = await statsFile;
+    if(file != null)return file.delete();
+  }
 }
