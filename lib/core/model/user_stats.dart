@@ -26,6 +26,8 @@ class UserStats{
     };
   }
 
+  bool isValid() {return (this.totalMins != null && this.compVisits != null);}
+
   toFileString() {
     return compVisits.toString() + '\$' + totalMins.toString();
   }

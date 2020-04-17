@@ -15,6 +15,7 @@ import 'package:flutter_app/util/locator.dart';
 import 'package:flutter_app/util/logger.dart';
 
 import 'core/model/user.dart';
+import 'core/model/user_stats.dart';
 import 'core/model/visit.dart';
 
 class BaseUtil extends ChangeNotifier{
@@ -33,6 +34,7 @@ class BaseUtil extends ChangeNotifier{
   User _myUser;
   Visit _currentVisit;
   Assistant _currentAssistant;
+  UserStats userStats;
 
   BaseUtil() {
     //init(); //init called during onboarding
@@ -52,6 +54,7 @@ class BaseUtil extends ChangeNotifier{
 //        _setupTimeElapsed = true;
 //      });
 //      TODO test how long will firebase try to fetch these values. If its too long, it needs to be overridden
+      this.userStats = await getUserStats(false);
       await setupCurrentState(null);
     }
   }
@@ -112,12 +115,25 @@ class BaseUtil extends ChangeNotifier{
         if(status == Constants.VISIT_STATUS_COMPLETED
             && cachedStatus != Constants.VISIT_STATUS_COMPLETED) {
           //only triggered once after visit completed
-
+          this.userStats = await getUserStats(true);
         }
         break;
       }
     }
     updateHomeState(status: status, visitPath: vPath); //await not needed
+  }
+
+  Future<UserStats> getUserStats(bool refreshRequired) async{
+    UserStats stats = await _lModel.getUserStats();
+    if(stats == null || refreshRequired) {
+      stats = await _dbModel.getUserStats(firebaseUser.uid);
+      if(stats != null && stats.isValid()) {
+        _lModel.saveUserStats(stats);
+      }else{
+        _lModel.saveUserStats(new UserStats(compVisits: 0,totalMins: 0));
+      }
+    }
+    return stats;
   }
 
   //Path of format: visits/YEAR/MONTH/ID

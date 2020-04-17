@@ -83,6 +83,11 @@ class Api{
     return ref.document(id).get();
   }
 
+  Future<DocumentSnapshot> getUserStatsDocument(String id) {
+    ref = _db.collection(Constants.COLN_USERS).document(id).collection(Constants.SUBCOLN_USER_ACTIVITY);
+    return ref.document(Constants.DOC_USER_ACTIVITY_STATS).get();
+  }
+
   ///Batch update to the visit object and user activity object, and add feedback for assistant is available
   Future<void> batchVisitUserActivityFeedbackUpdate(String userId, String astId, String yearDoc, String monthSubColn, String id, Map statusMap, Map visMap, Map fdbkMap) {
     WriteBatch batch = _db.batch();

@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/model/request.dart';
 import 'package:flutter_app/core/model/society.dart';
+import 'package:flutter_app/core/model/user_stats.dart';
 import 'package:flutter_app/core/model/user_status.dart';
 import 'package:flutter_app/core/service/api.dart';
 import 'package:flutter_app/util/calendar_util.dart';
@@ -278,4 +279,15 @@ class DBModel extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<UserStats> getUserStats(String userId) async{
+    try{
+      var doc = await _api.getUserStatsDocument(userId);
+      return UserStats.fromMap(doc.data);
+    }catch(e) {
+      log.error(e.toString());
+      return null;
+    }
+  }
+
 }

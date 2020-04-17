@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_app/core/model/request.dart';
 import 'package:flutter_app/core/model/visit.dart';
 import 'package:flutter_app/ui/dialog/form_dialog.dart';
+import 'package:flutter_app/ui/elements/number_counter_text.dart';
 import 'package:flutter_app/ui/pages/home/cancelled_visit_layout.dart';
 import 'package:flutter_app/ui/pages/home/home_layout.dart';
 import 'package:flutter_app/ui/pages/home/ongoing_visit_layout.dart';
@@ -43,12 +44,15 @@ class _DashboardState extends State<Dashboard> {
   bool _isCallbackInitialized = false;
   StreamSubscription _connectionChangeStream;
   bool _isOffline = false;
+  MagicMinutes minuteTileText;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _animateMinuteTile = false;
 
   @override
   void initState() {
     super.initState();
     _isCallbackInitialized = false;
+    _animateMinuteTile = true;
     ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
     _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
   }
@@ -320,6 +324,15 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _buildStatsTile() {
+    minuteTileText = MagicMinutes(
+      value: baseProvider.userStats.totalMins,
+      animate: _animateMinuteTile,
+      textStyle: TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.w700,
+          fontSize: 34.0)
+    );
+    _animateMinuteTile = false;
     return _buildTile(
       //Total Mins used
       Padding(
@@ -334,11 +347,7 @@ class _DashboardState extends State<Dashboard> {
                 children: <Widget>[
                   Text('Total Mins',
                       style: TextStyle(color: Colors.blueAccent)),
-                  Text('49',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 34.0))
+                  minuteTileText
                 ],
               ),
               Material(
@@ -352,6 +361,14 @@ class _DashboardState extends State<Dashboard> {
                   )))
             ]),
       ),
+      onTap: () {
+        baseProvider.getUserStats(true).then((stats) {
+          setState(() {
+            baseProvider.userStats = stats;
+            _animateMinuteTile = true;
+          });
+        });
+      }
     );
   }
   

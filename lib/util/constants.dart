@@ -17,6 +17,7 @@ class Constants {
   static final String DOC_USER_FCM_TOKEN = "client_token";
   static final String DOC_DEVICE_LOG = "DEVICE_LOG";
   static final String DOC_USER_ACTIVITY_STATUS = "status";
+  static final String DOC_USER_ACTIVITY_STATS = "statistics";
   static final String SUBCOLN_AST_FEEDBACK = "feedback";
 
   //Firebase Storage
