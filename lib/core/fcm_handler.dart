@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/base_util.dart';
+import 'package:flutter_app/core/model/user_status.dart';
 import 'package:flutter_app/core/ops/cache_ops.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/locator.dart';
@@ -89,8 +90,13 @@ class FcmHandler extends ChangeNotifier {
             log.error('Invalid Visit status recevied. Skipping request');
             return false;
           }
+          _baseUtil.setupCurrentState(new UserState(visitStatus: status,visitPath: visPath));
+          if(aUpdate != null) {
+            log.debug("Refreshing Home Screen layout to $command Visit Workflow");
+            aUpdate(status);
+          }
           //Update the current visit details
-          _baseUtil.currentVisit = await _baseUtil.getVisit(visPath, true);
+          /*_baseUtil.currentVisit = await _baseUtil.getVisit(visPath, true);
           if(_baseUtil.currentVisit != null && _baseUtil.currentVisit.path != null && _baseUtil.currentVisit.path.isNotEmpty){
             _baseUtil.currentAssistant = await _baseUtil.getAssistant(_baseUtil.currentVisit.aId);  //update and cache assistant
             await _baseUtil.updateHomeState(status: status, visitPath: visPath);
@@ -107,7 +113,7 @@ class FcmHandler extends ChangeNotifier {
           else{
             log.error("Couldnt fetch visit object. Discarding message");
             return false;
-          }
+          }*/
           return true;
         }
         case Constants.COMMAND_VISIT_COMPLETED: {
@@ -128,7 +134,12 @@ class FcmHandler extends ChangeNotifier {
             return false;
           }
           //Update the current visit details
-          _baseUtil.currentVisit = await _baseUtil.getVisit(visPath, true);
+          _baseUtil.setupCurrentState(new UserState(visitStatus: status, visitPath: visPath));
+          if(visitComplete != null) {   //refresh Home Screen UI if available
+            log.debug("Moving to Ratings page");
+            visitComplete();
+          }
+          /*_baseUtil.currentVisit = await _baseUtil.getVisit(visPath, true);
           if(_baseUtil.currentVisit != null && _baseUtil.currentVisit.path != null && _baseUtil.currentVisit.path.isNotEmpty){
             _baseUtil.currentAssistant = await _baseUtil.getAssistant(_baseUtil.currentVisit.aId);  //update and cache assistant
             await _baseUtil.updateHomeState(status: status, visitPath: visPath);
@@ -146,7 +157,7 @@ class FcmHandler extends ChangeNotifier {
           else{
             log.error("Couldnt fetch visit object. Discarding message");
             return false;
-          }
+          }*/
           return true;
         }
         case Constants.COMMAND_MISC_MESSAGE: {

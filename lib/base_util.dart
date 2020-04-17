@@ -21,7 +21,8 @@ class BaseUtil extends ChangeNotifier{
   final Log log = new Log("BaseUtil");
   static bool _setupTimeElapsed = false;
   static const TimeOfDay dayStartTime = TimeOfDay(hour:7, minute: 0);
-  static const TimeOfDay dayEndTime = TimeOfDay(hour:19, minute: 0);
+  //static const TimeOfDay dayEndTime = TimeOfDay(hour:19, minute: 0);
+  static const TimeOfDay dayEndTime = TimeOfDay(hour:23, minute: 0); //test time
   LocalDBModel _lModel = locator<LocalDBModel>();
   DBModel _dbModel = locator<DBModel>();
   CacheModel _cModel = locator<CacheModel>();
@@ -230,18 +231,13 @@ class BaseUtil extends ChangeNotifier{
       flag = false;
     }
     else {
+      int currentTimeVal = (TimeOfDay.now().hour*60) + TimeOfDay.now().minute;
       int timeVal = time.hour * 60 + time.minute;
       int minTimeVal = BaseUtil.dayStartTime.hour * 60 +
           BaseUtil.dayStartTime.minute;
       int maxTimeVal = BaseUtil.dayEndTime.hour * 60 +
           BaseUtil.dayEndTime.minute;
-
-      flag = (timeVal >= minTimeVal && timeVal <= maxTimeVal);
-//      if(!flag) {
-//        showNegativeAlert('Time Unavailable',
-//              '${Constants.APP_NAME} is available from ${BaseUtil.dayStartTime.hour}:${BaseUtil.dayStartTime.minute.toString().padLeft(2, '0')} AM '
-//                  'to ${BaseUtil.dayEndTime.hour-12}:${BaseUtil.dayEndTime.minute.toString().padLeft(2, '0')} PM', context, seconds: 6);
-//        }
+      flag = (timeVal >= currentTimeVal && timeVal >= minTimeVal && timeVal <= maxTimeVal);
       }
     return flag;
   }

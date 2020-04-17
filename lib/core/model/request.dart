@@ -5,6 +5,7 @@ class Request{
   final String service;
   final String user_id;
   final String user_mobile;
+  final int bhk;
   final int date;
   final String address;
   final String society_id;
@@ -15,7 +16,7 @@ class Request{
   double cost;
   List exceptions;
 
-  Request({this.service, this.user_id, this.user_mobile, this.date, this.address, this.society_id,
+  Request({this.service, this.user_id, this.user_mobile, this.bhk, this.date, this.address, this.society_id,
        this.req_time, this.timestamp, this.cost});
 
   //never used
@@ -24,6 +25,7 @@ class Request{
     service: data['service'],
     user_id: data['user_id'],
     user_mobile: data['user_mobile'],
+    bhk: data['bhk'],
     date: data['date'],
     address: data['address'],
     society_id: data['society_id'],
@@ -37,6 +39,7 @@ class Request{
       'service': service,
       'user_id': user_id,
       'user_mobile': user_mobile,
+      'bhk': bhk,
       'date': date,
       'address': address,
       'society_id': society_id,

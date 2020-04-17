@@ -514,26 +514,10 @@ class _DashboardState extends State<Dashboard> {
 
   void _onInitiateRequest(TimeOfDay requestTime, String serviceCode) {
     if(_validateRequest(requestTime, serviceCode)) {
-//    if (baseProvider.firebaseUser == null
-//        || baseProvider.myUser == null
-//        || baseProvider.myUser.hasIncompleteDetails()
-//        || selectedServiceList.isEmpty
-//        || !baseProvider.validateRequestTime(requestTime)) { //TODO fix time validation
-//      ///validation message to be assigned on priority basis: Not signed in -- Incomplete details -- Service not selected
-//      String message;
-//      //_selected time validation does'nt need a snack message. done by its validator
-//      if(!baseProvider.validateRequestTime(requestTime))message='${Constants.APP_NAME} is available from ${BaseUtil.dayStartTime.hour}:${BaseUtil.dayStartTime.minute.toString().padLeft(2, '0')} AM '
-//                  'to ${BaseUtil.dayEndTime.hour-12}:${BaseUtil.dayEndTime.minute.toString().padLeft(2, '0')} PM';
-//      if(selectedServiceList.isEmpty)message="Please select atleast one service";
-//      if(baseProvider.myUser.hasIncompleteDetails())message="Please add your home address";
-//      if(baseProvider.firebaseUser == null) message="Please sign in to continue";
-//      if(message!=null)baseProvider.showNegativeAlert('Action required', message, context);
-//      return;
-//    }
-//    if(_isOffline) baseProvider.showNoInternetAlert(context);
       Request req = Request(
           user_id: baseProvider.firebaseUser.uid,
           user_mobile: baseProvider.myUser.mobile,
+          bhk: baseProvider.myUser.bhk,
           date: cUtil.now.day,
           service: serviceCode,
           address: baseProvider.myUser.flat_no,

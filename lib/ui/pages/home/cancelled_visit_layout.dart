@@ -71,6 +71,7 @@ class _CancelledVisitLayoutState extends State<CancelledVisitLayout> {
                             Request req = Request(
                                 user_id: baseProvider.firebaseUser.uid,
                                 user_mobile: baseProvider.myUser.mobile,
+                                bhk: baseProvider.myUser.bhk,
                                 date: cUtil.now.day,
                                 service: widget.canVisit.service,
                                 address: baseProvider.myUser.flat_no,
