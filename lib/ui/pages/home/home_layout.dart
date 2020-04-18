@@ -142,10 +142,16 @@ class _HomeLayoutState extends State<HomeLayout> {
           );
           log.debug(_selectedTime.toString());
           setState(() {
-            if(!baseProvider.validateRequestTime(_selectedTime)){
-              baseProvider.showNegativeAlert('Time unavailable', '${Constants.APP_NAME} is available from ${BaseUtil.dayStartTime.hour}:${BaseUtil.dayStartTime.minute.toString().padLeft(2, '0')} AM '
-                  'to ${BaseUtil.dayEndTime.hour-12}:${BaseUtil.dayEndTime.minute.toString().padLeft(2, '0')} PM', context);
+            int timeFlag = baseProvider.validateRequestTime(_selectedTime);
+            if(timeFlag == Constants.TIME_ERROR_OUTSIDE_WINDOW || timeFlag == Constants.TIME_ERROR_NOT_SELECTED) {
+              log.debug('Request check:: Invalid Time');
+              baseProvider.showNegativeAlert('Action Required', '${Constants.APP_NAME} is available from ${Constants.dayStartTime.hour}:${Constants.dayStartTime.minute.toString().padLeft(2, '0')} AM '
+                'to ${Constants.dayEndTime.hour-12}:${Constants.dayEndTime.minute.toString().padLeft(2, '0')} PM', context);
               _selectedTime=TimeOfDay.now();
+            }
+            else if(timeFlag == Constants.TIME_ERROR_SERVICE_OFF) {
+              log.debug('Request check:: Invalid Time');
+              //No need to notify unless they initiate request
             }
           });
       },

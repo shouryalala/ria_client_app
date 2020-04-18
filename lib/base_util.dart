@@ -21,9 +21,6 @@ import 'core/model/visit.dart';
 class BaseUtil extends ChangeNotifier{
   final Log log = new Log("BaseUtil");
   static bool _setupTimeElapsed = false;
-  static const TimeOfDay dayStartTime = TimeOfDay(hour:7, minute: 0);
-  //static const TimeOfDay dayEndTime = TimeOfDay(hour:19, minute: 0);
-  static const TimeOfDay dayEndTime = TimeOfDay(hour:23, minute: 0); //test time
   LocalDBModel _lModel = locator<LocalDBModel>();
   DBModel _dbModel = locator<DBModel>();
   CacheModel _cModel = locator<CacheModel>();
@@ -237,24 +234,20 @@ class BaseUtil extends ChangeNotifier{
     }
   }
 
-  bool validateRequestTime(TimeOfDay time) {
-    bool flag = true;
-    if(time == null) {
-//      if(baseProvider != null && context != null) {
-//        baseProvider.showNegativeAlert('Enter the time', 'Provide the service time', context);
-//      }
-      flag = false;
-    }
-    else {
-      int currentTimeVal = (TimeOfDay.now().hour*60) + TimeOfDay.now().minute;
-      int timeVal = time.hour * 60 + time.minute;
-      int minTimeVal = BaseUtil.dayStartTime.hour * 60 +
-          BaseUtil.dayStartTime.minute;
-      int maxTimeVal = BaseUtil.dayEndTime.hour * 60 +
-          BaseUtil.dayEndTime.minute;
-      flag = (timeVal >= currentTimeVal && timeVal >= minTimeVal && timeVal <= maxTimeVal);
-      }
-    return flag;
+  int validateRequestTime(TimeOfDay time) {
+    if(time == null) return Constants.TIME_ERROR_NOT_SELECTED;
+
+    int currentTimeVal = encodeTimeOfDay(TimeOfDay.now());
+    int outOfBoundStart = encodeTimeOfDay(Constants.outOfBoundTimeStart);
+    int outOfBoundEnd = encodeTimeOfDay(Constants.outOfBoundTimeEnd);
+    if(currentTimeVal >= outOfBoundStart && currentTimeVal <= outOfBoundEnd) return Constants.TIME_ERROR_SERVICE_OFF;
+
+    int timeVal = encodeTimeOfDay(time);
+    int serviceTimeStart = encodeTimeOfDay(Constants.dayStartTime);
+    int serviceTimeEnd = encodeTimeOfDay(Constants.dayEndTime);
+
+    return (timeVal >= currentTimeVal && timeVal >= serviceTimeStart && timeVal <= serviceTimeEnd)?
+          Constants.TIME_VERIFIED:Constants.TIME_ERROR_OUTSIDE_WINDOW;
   }
 
   AuthCredential generateAuthCredential(String verificationId, String smsCode) {

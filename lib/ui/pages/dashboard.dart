@@ -46,7 +46,7 @@ class _DashboardState extends State<Dashboard> {
   bool _isOffline = false;
   MagicMinutes minuteTileText;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  bool _animateMinuteTile = false;
+  bool _animateMinuteTile = false;  //TODO on startup fix required
 
   @override
   void initState() {
@@ -500,6 +500,7 @@ class _DashboardState extends State<Dashboard> {
   ///Validate request and show appropirate messages
   bool _validateRequest(TimeOfDay requestTime, String serviceCode) {
     bool flag = true;
+    int timeFlag = baseProvider.validateRequestTime(requestTime);
     if(_isOffline){
       log.debug('No internet connection.');
       flag = false;
@@ -520,11 +521,16 @@ class _DashboardState extends State<Dashboard> {
       flag = false;
       baseProvider.showNegativeAlert('Action Required', 'Please select atleast one service', context);
     }
-    else if(!baseProvider.validateRequestTime(requestTime)) {
+    else if(timeFlag == Constants.TIME_ERROR_OUTSIDE_WINDOW || timeFlag == Constants.TIME_ERROR_NOT_SELECTED) {
       log.debug('Request check:: Invalid Time');
       flag = false;
-      baseProvider.showNegativeAlert('Action Required', '${Constants.APP_NAME} is available from ${BaseUtil.dayStartTime.hour}:${BaseUtil.dayStartTime.minute.toString().padLeft(2, '0')} AM '
-          'to ${BaseUtil.dayEndTime.hour-12}:${BaseUtil.dayEndTime.minute.toString().padLeft(2, '0')} PM', context);
+      baseProvider.showNegativeAlert('Action Required', '${Constants.APP_NAME} is available from ${Constants.dayStartTime.hour}:${Constants.dayStartTime.minute.toString().padLeft(2, '0')} AM '
+          'to ${Constants.dayEndTime.hour-12}:${Constants.dayEndTime.minute.toString().padLeft(2, '0')} PM', context);
+    }
+    else if(timeFlag == Constants.TIME_ERROR_SERVICE_OFF) {
+      log.debug('Request check:: Invalid Time');
+      flag = false;
+      baseProvider.showNegativeAlert('Service Snoozed', '${Constants.APP_NAME} will be again available at ${Constants.outOfBoundTimeEnd.hour}:${Constants.outOfBoundTimeEnd.minute.toString().padLeft(2, '0')} AM', context);
     }
     return flag;
   }

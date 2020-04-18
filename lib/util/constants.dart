@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Constants {
   static const String APP_NAME = "RIA";
   static final String DEBUG_TAG = "DEBUG_KANTA::";
@@ -103,19 +105,28 @@ class Constants {
   static const String CLEAN_DUST_CDE = "CDx";
   static const String DUST_UTENSIL_CDE = "DUx";
   static const String CLEAN_DUST_UTENSIL_CDE = "CDUx";
-
   static final String PRIORITY_MIN = "Min";
-
   //DEFAULTS
   static final String DEFAULT = "X";
   static final String DEFAULT_TIME = "4:20 am";
   static final String DEFAULT_SERVICE = "Cleaning";
   static final String DEFAULT_ADDRESS = "3/202\n Beverly Park Appt\n Sector-22";
-
   //Home Screen constants
   static const String CLEANING = "Cleaning";
   static const String UTENSILS = "Utensils";
   static const String DUSTING = "Dusting";
+
+  static const TimeOfDay dayStartTime = TimeOfDay(hour:7, minute: 0);
+  //static const TimeOfDay dayEndTime = TimeOfDay(hour:19, minute: 0);
+  static const TimeOfDay dayEndTime = TimeOfDay(hour:23, minute: 0); //test time
+  static const TimeOfDay outOfBoundTimeStart = TimeOfDay(hour:0, minute:0);
+  static const TimeOfDay outOfBoundTimeEnd = TimeOfDay(hour:6, minute:0);
+  //Time error codes
+  static const int TIME_ERROR_OUTSIDE_WINDOW = -1;
+  static const int TIME_ERROR_SERVICE_OFF = -2;
+  static const int TIME_ERROR_NOT_SELECTED = -3;
+  static const int TIME_VERIFIED = 0;
+
 
   static const String ABOUT_US_DESCRIPTION = 'Cryb is a simple idea to use technology to uplift the current regime of domestic help, for everyone.\n'
       'Users can:'
