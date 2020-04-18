@@ -20,7 +20,6 @@ import 'core/model/visit.dart';
 
 class BaseUtil extends ChangeNotifier{
   final Log log = new Log("BaseUtil");
-  static bool _setupTimeElapsed = false;
   LocalDBModel _lModel = locator<LocalDBModel>();
   DBModel _dbModel = locator<DBModel>();
   CacheModel _cModel = locator<CacheModel>();
@@ -32,6 +31,8 @@ class BaseUtil extends ChangeNotifier{
   Visit _currentVisit;
   Assistant _currentAssistant;
   UserStats userStats;
+  bool isRequestInitiated = false;
+  static bool _setupTimeElapsed = false;
 
   BaseUtil() {
     //init(); //init called during onboarding

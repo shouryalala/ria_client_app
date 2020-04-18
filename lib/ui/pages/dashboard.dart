@@ -577,13 +577,18 @@ class _DashboardState extends State<Dashboard> {
       return;
     }
     log.debug('New push request: ' + request.toString());
-    bool flag = await reqProvider.pushRequest(userId, request);
-    if(flag) {
-      baseProvider.updateHomeState(status: Constants.VISIT_STATUS_SEARCHING);
-      setState(() {
-        homeState = Constants.VISIT_STATUS_SEARCHING;
-      });
-    }
+    setState(() {
+      baseProvider.isRequestInitiated = true;
+    });
+    reqProvider.pushRequest(userId, request).then((flag) {
+      if(flag) {
+        baseProvider.updateHomeState(status: Constants.VISIT_STATUS_SEARCHING);
+        setState(() {
+          baseProvider.isRequestInitiated = false;
+          homeState = Constants.VISIT_STATUS_SEARCHING;
+        });
+      }
+    });
   }
 
   //state changer when request is confirmed

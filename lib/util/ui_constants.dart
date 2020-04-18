@@ -8,6 +8,7 @@ class UiConstants{
   static final Color accentColor = Colors.grey[800];
   static final Color secondaryColor = Colors.greenAccent;
   static final Color spinnerColor = Colors.grey[400];
+  static final Color spinnerColor2 = Colors.grey[200];
   //dimens
   static final double dialogRadius = 20.0;
   static const double padding = 16.0;

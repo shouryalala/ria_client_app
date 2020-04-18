@@ -90,15 +90,18 @@ class _HomeLayoutState extends State<HomeLayout> {
                           borderRadius: new BorderRadius.circular(10.0),
                           elevation: 3,
                           child: MaterialButton(
-                            child: Text(
+                            child: (!baseProvider.isRequestInitiated)?Text(
                               'Request',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 20.0
                               ),
+                            ):SpinKitThreeBounce(
+                              color: UiConstants.spinnerColor2,
+                              size: 25.0,
                             ),
                             onPressed: () {
-                              if(widget.onInitiateRequest != null) {
+                              if(widget.onInitiateRequest != null && !baseProvider.isRequestInitiated) {
                                 Map<String, dynamic> reqParams = {
                                   HomeLayout.PARAM_TIME: _selectedTime,
                                   HomeLayout.PARAM_SERVICE_CODE: baseProvider.encodeServiceList(selectedServiceList)
