@@ -6,16 +6,19 @@ import 'package:flutter_app/core/model/request.dart';
 import 'package:flutter_app/core/model/visit.dart';
 import 'package:flutter_app/core/ops/db_ops.dart';
 import 'package:flutter_app/util/calendar_util.dart';
+import 'package:flutter_app/util/ui_constants.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
 import '../../../base_util.dart';
 
 class CancelledVisitLayout extends StatefulWidget{
   final ValueChanged<Visit> onRerouteCancelledVisit;
+  final VoidCallback onCancelRerequest;
   final Visit canVisit;
   final Assistant canAssistant;
 
-  CancelledVisitLayout({this.canVisit, this.canAssistant, this.onRerouteCancelledVisit});
+  CancelledVisitLayout({this.canVisit, this.canAssistant, this.onRerouteCancelledVisit, this.onCancelRerequest});
 
   @override
   State createState() => _CancelledVisitLayoutState();
@@ -63,32 +66,6 @@ class _CancelledVisitLayoutState extends State<CancelledVisitLayout> {
                           textAlign: TextAlign.center,
                         ),
                         _buildActionButtonBar(),
-                        /*RaisedButton(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0)),
-                          elevation: 4.0,
-                          child: Text('Request Again'),   //TODO inform user of params before adding request
-                          onPressed: () {
-                            Request req = Request(
-                                user_id: baseProvider.firebaseUser.uid,
-                                user_mobile: baseProvider.myUser.mobile,
-                                bhk: baseProvider.myUser.bhk,
-                                date: cUtil.now.day,
-                                service: widget.canVisit.service,
-                                address: baseProvider.myUser.flat_no,
-                                society_id: baseProvider.myUser.society_id,
-                                cost: widget.canVisit.cost,
-                                req_time: baseProvider.encodeTimeRequest(
-                                    new DateTime.now()),
-                                timestamp: FieldValue.serverTimestamp());
-
-                            ////TODO CANCELLED VIST IN RUINS!
-
-
-                            req.addException(widget.canAssistant.id);
-                            if(widget.onRerouteCancelledVisit != null)widget.onRerouteCancelledVisit(widget.canVisit);
-                          },
-                        ),*/
                       ],
                     ),
                   )
@@ -117,7 +94,7 @@ class _CancelledVisitLayoutState extends State<CancelledVisitLayout> {
                     ),
                   ),
                   onPressed: () {
-
+                    if(widget.onCancelRerequest!=null)widget.onCancelRerequest();
                   },
                 ),
 
@@ -127,23 +104,28 @@ class _CancelledVisitLayoutState extends State<CancelledVisitLayout> {
               //child: RaisedButton(onPressed: () {},child: Text("Filter"),color: Colors.black,textColor: Colors.white,)
               child:Material(
                 child: MaterialButton(
-                  color: Colors.white70,
+                  color: UiConstants.secondaryColor,
                   elevation: 1,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25),
                   ),
                   child:Padding(
                     padding: EdgeInsets.all(20),
-                    child:    Text('Request',
+                    child: (!baseProvider.isRerouteRequestInitiated)?Text('Request',
                       style: TextStyle(
                           color: Colors.black
                       ),
+                    ):SpinKitThreeBounce(
+                      color: UiConstants.spinnerColor2,
+                      size: 20.0,
                     ),
                   ),
                   onPressed: () {
                     if(widget.onRerouteCancelledVisit != null && !baseProvider.isRerouteRequestInitiated) {
-                      baseProvider.isRerouteRequestInitiated = true;
                       widget.onRerouteCancelledVisit(widget.canVisit);
+                      setState(() {
+                        baseProvider.isRerouteRequestInitiated = true;
+                      });
                     }
                   },
                 ),

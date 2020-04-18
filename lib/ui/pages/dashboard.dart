@@ -443,7 +443,12 @@ class _DashboardState extends State<Dashboard> {
           return CancelledVisitLayout(
               canVisit: baseProvider.currentVisit,
               canAssistant: baseProvider.currentAssistant,
-              onRerouteCancelledVisit: (visit) => _rerouteCancelledVisit(baseProvider.currentAssistant,visit)
+              onRerouteCancelledVisit: (visit) => _rerouteCancelledVisit(baseProvider.currentAssistant,visit),
+              onCancelRerequest: () {
+                baseProvider.updateHomeState(status: Constants.VISIT_STATUS_NONE);
+                homeState = Constants.VISIT_STATUS_NONE;
+                setState(() {});
+              },
           );
         }
       case Constants.VISIT_STATUS_SEARCHING:
