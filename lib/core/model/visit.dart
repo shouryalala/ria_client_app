@@ -128,6 +128,8 @@ class Visit{
     }
   }
 
-
-
+  bool isVisitFromToday() {
+    DateTime cDateTime = DateTime.now();
+    return (this.date != null && cDateTime.day==this.date);
+  }
 }

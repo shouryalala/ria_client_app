@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app/core/model/assistant.dart';
 import 'package:flutter_app/core/model/request.dart';
 import 'package:flutter_app/core/model/visit.dart';
 import 'package:flutter_app/ui/dialog/form_dialog.dart';
@@ -437,12 +438,12 @@ class _DashboardState extends State<Dashboard> {
         }
       case Constants.VISIT_STATUS_CANCELLED:
         {
-          if (baseProvider.currentVisit == null ||
+          if (baseProvider.currentVisit == null || !baseProvider.currentVisit.isVisitFromToday() ||
               baseProvider.currentAssistant == null) return buildHomeLayout();
           return CancelledVisitLayout(
               canVisit: baseProvider.currentVisit,
               canAssistant: baseProvider.currentAssistant,
-              onRerouteCancelledVisit: (visit) => _rerouteCancelledVisit(visit)
+              onRerouteCancelledVisit: (visit) => _rerouteCancelledVisit(baseProvider.currentAssistant,visit)
           );
         }
       case Constants.VISIT_STATUS_SEARCHING:
@@ -556,35 +557,54 @@ class _DashboardState extends State<Dashboard> {
               Navigator.of(context).pop(); //close Cost Sheet
               req.cost = cost;
               log.debug("onRequestConfirmed called for: " + req.toString());
-              //if(widget.onPushRequest != null)widget.onPushRequest(req);
-              _onConfirmRequest(baseProvider.firebaseUser.uid, req);
+              _onConfirmRequest(baseProvider.firebaseUser.uid, req, false);
             });
           }
       );
     }
   }
 
-  void _rerouteCancelledVisit(Visit canVisit) async{
+  void _rerouteCancelledVisit(Assistant ast, Visit canVisit) async{
+    int currentTime = baseProvider.encodeTimeOfDay(TimeOfDay.now());
+    int reqTime = (canVisit.req_st_time < currentTime)?currentTime:canVisit.req_st_time;
+    Request req = Request(
+        user_id: baseProvider.firebaseUser.uid,
+        user_mobile: baseProvider.myUser.mobile,
+        bhk: baseProvider.myUser.bhk,
+        date: cUtil.now.day,
+        service: canVisit.service,
+        address: baseProvider.myUser.flat_no,
+        society_id: baseProvider.myUser.society_id,
+        cost: canVisit.cost,
+        req_time: reqTime,
+        timestamp: FieldValue.serverTimestamp());
+    req.addException(ast.id);
 
+    _onConfirmRequest(baseProvider.firebaseUser.uid, req, true);
   }
 
 
-  ///Called by CostConfirmModalSheet
-  void _onConfirmRequest(String userId, Request request) async{
+  ///Called by CostConfirmModalSheet & rerouteRequest handler
+  void _onConfirmRequest(String userId, Request request, bool isRerouteReq) async{
     if(userId == null || userId.isEmpty || request == null) {
       log.error('Invalid parameters recevied for new request. Skipping request');
       //TODO inform user?
       return;
     }
     log.debug('New push request: ' + request.toString());
-    setState(() {
-      baseProvider.isRequestInitiated = true;
-    });
+    if(!isRerouteReq) {
+      setState(() {
+        baseProvider.isRequestInitiated = true;
+      });
+    }
     reqProvider.pushRequest(userId, request).then((flag) {
       if(flag) {
         baseProvider.updateHomeState(status: Constants.VISIT_STATUS_SEARCHING);
         setState(() {
-          baseProvider.isRequestInitiated = false;
+          if(!isRerouteReq)
+            baseProvider.isRequestInitiated = false;
+          else
+            baseProvider.isRerouteRequestInitiated = false;
           homeState = Constants.VISIT_STATUS_SEARCHING;
         });
       }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/model/assistant.dart';
 import 'package:flutter_app/core/model/request.dart';
@@ -45,15 +46,14 @@ class _CancelledVisitLayoutState extends State<CancelledVisitLayout> {
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Text('Service Ongoing!',
+                        Text('Visit Cancelled!',
                           style: Theme
                               .of(context)
                               .textTheme
                               .display1
                               .copyWith(color: Colors.grey[800]),
                           textAlign: TextAlign.center,),
-                        Text('Your Visit has been Cancelled by: ' +
-                            widget.canAssistant.name +
+                        Text('${widget.canAssistant.name} had to cancel her visit. ' +
                             '\n Would you like to request for a different Assistant?',
                           style: Theme
                               .of(context)
@@ -62,7 +62,8 @@ class _CancelledVisitLayoutState extends State<CancelledVisitLayout> {
                               .copyWith(color: Colors.grey[800]),
                           textAlign: TextAlign.center,
                         ),
-                        RaisedButton(
+                        _buildActionButtonBar(),
+                        /*RaisedButton(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5.0)),
                           elevation: 4.0,
@@ -87,7 +88,7 @@ class _CancelledVisitLayoutState extends State<CancelledVisitLayout> {
                             req.addException(widget.canAssistant.id);
                             if(widget.onRerouteCancelledVisit != null)widget.onRerouteCancelledVisit(widget.canVisit);
                           },
-                        ),
+                        ),*/
                       ],
                     ),
                   )
@@ -97,4 +98,61 @@ class _CancelledVisitLayoutState extends State<CancelledVisitLayout> {
       ),
     );
   }
+
+  Widget _buildActionButtonBar() {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child:ListTile(
+        title: Row(
+          children: <Widget>[
+            Expanded(
+              child:
+              //  RaisedButton(onPressed: () {},child: Text("Clear"),color: Colors.black,textColor: Colors.white,)
+              Material(
+                child: MaterialButton(
+                  child:Padding(
+                    padding: EdgeInsets.all(2),
+                    child: Text('Cancel',
+                      style: TextStyle(color: Colors.redAccent),
+                    ),
+                  ),
+                  onPressed: () {
+
+                  },
+                ),
+
+              ),
+            ),
+            Expanded(
+              //child: RaisedButton(onPressed: () {},child: Text("Filter"),color: Colors.black,textColor: Colors.white,)
+              child:Material(
+                child: MaterialButton(
+                  color: Colors.white70,
+                  elevation: 1,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child:Padding(
+                    padding: EdgeInsets.all(20),
+                    child:    Text('Request',
+                      style: TextStyle(
+                          color: Colors.black
+                      ),
+                    ),
+                  ),
+                  onPressed: () {
+                    if(widget.onRerouteCancelledVisit != null && !baseProvider.isRerouteRequestInitiated) {
+                      baseProvider.isRerouteRequestInitiated = true;
+                      widget.onRerouteCancelledVisit(widget.canVisit);
+                    }
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
 }

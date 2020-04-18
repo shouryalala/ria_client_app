@@ -32,6 +32,7 @@ class BaseUtil extends ChangeNotifier{
   Assistant _currentAssistant;
   UserStats userStats;
   bool isRequestInitiated = false;
+  bool isRerouteRequestInitiated = false;
   static bool _setupTimeElapsed = false;
 
   BaseUtil() {
