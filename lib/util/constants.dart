@@ -121,6 +121,10 @@ class Constants {
   static const TimeOfDay dayEndTime = TimeOfDay(hour:23, minute: 0); //test time
   static const TimeOfDay outOfBoundTimeStart = TimeOfDay(hour:0, minute:0);
   static const TimeOfDay outOfBoundTimeEnd = TimeOfDay(hour:6, minute:0);
+
+  static const int ALLOWED_VISIT_SEARCH_BUFFER = 600; //been 10 mins since searching for assistant
+  static const int ALLOWED_VISIT_UPCOMING_BUFFER = 3600; //been an hour since the ast was supposed to checkin
+  static const int ALLOWED_VISIT_ONGOING_BUFFER = 3600; //been an hour since the ast had to checkout
   //Time error codes
   static const int TIME_ERROR_OUTSIDE_WINDOW = -1;
   static const int TIME_ERROR_SERVICE_OFF = -2;

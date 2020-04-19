@@ -109,19 +109,35 @@ class DBModel extends ChangeNotifier {
     }
   }
 
+  Future<bool> updateUserActivityState(String userId, UserState userState) async{
+    try {
+      log.debug("Rating unavailable. Only updating user status");
+      Map<String, dynamic> userActMap = {
+        UserState.fldVisitStatus: userState.visitStatus,
+        UserState.fldVisitPath: userState.visitPath,
+        UserState.fldModifiedTime: userState.modifiedTime};
+      await _api.updateUserState(userId, userActMap);
+      return true;
+    }catch(e) {
+      log.error("Failed to update user activity status: " + e.toString());
+      return false;
+    }
+  }
+
   ///if rating = 0 , visit rating was skipped
   Future<bool> rateVisitAndUpdateUserState(String userId, String astId, String visPath, int rating, String fdbk) async{
     if(rating == 0) {
-      try {
+      /*try {
         log.debug("Rating unavailable. Only updating user status");
-        Map<String, dynamic> userActMap = {'visit_status': Constants.VISIT_STATUS_NONE,
-          'modified_time': FieldValue.serverTimestamp()};
+        Map<String, dynamic> userActMap = {UserState.fldVisitStatus: Constants.VISIT_STATUS_NONE,
+          UserState.fldModifiedTime: FieldValue.serverTimestamp()};
         await _api.updateUserState(userId, userActMap);
         return true;
       }catch(e) {
         log.error("Failed to update user activity status: " + e.toString());
         return false;
-      }
+      }*/
+      return updateUserActivityState(userId, new UserState(visitStatus: Constants.VISIT_STATUS_NONE, modifiedTime: FieldValue.serverTimestamp()));
     }
     else{
       try {

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flushbar/flushbar.dart';
@@ -31,6 +32,7 @@ class BaseUtil extends ChangeNotifier{
   Visit _currentVisit;
   Assistant _currentAssistant;
   UserStats userStats;
+  UserState currentUserState;
   bool isRequestInitiated = false;
   bool isRerouteRequestInitiated = false;
   static bool _setupTimeElapsed = false;
@@ -65,17 +67,21 @@ class BaseUtil extends ChangeNotifier{
   Future<void> setupCurrentState(UserState res) async {
     ///initialize values with cache stored values first
     UserState currState = await _cModel.getHomeStatus();
-    int status = (currState != null && currState.visitStatus != null)?currState.visitStatus:Constants.VISIT_STATUS_NONE;
-    String vPath = (currState != null)?currState.visitPath:'';
-    int cachedStatus = status;
+    if(currState == null) currState = new UserState(visitStatus: Constants.VISIT_STATUS_NONE);
+    int cachedStatus = currState.visitStatus; // incase it gets overridden by server fetch
+
+    //int status = (currState != null && currState.visitStatus != null)?currState.visitStatus:Constants.VISIT_STATUS_NONE;
+    //String vPath = (currState != null)?currState.visitPath:'';
+    //int cachedStatus = status;
     //UserState res = await _dbModel.getUserActivityStatus(_myUser);
-    if(res == null)log.error('Didnt find the activity subcollection. Defaulting values');
-    else{
-      status = res.visitStatus;
-      vPath = res.visitPath;
+    if(res != null){
+      log.debug("Overriding cached UserState with the following: " + res.toString());
+      currState = res;
+      //status = res.visitStatus;
+      //vPath = res.visitPath;
     }
-    log.debug("Recieved Activity Status:: Status: $status");
-    switch(status) {
+    log.debug("Recieved Activity Status:: Status: ${currState.visitStatus}");
+    switch(currState.visitStatus) {
       case Constants.VISIT_STATUS_NONE: {
         //TODO clear existing cache visit object if present
         _homeState = Constants.VISIT_STATUS_NONE;
@@ -89,18 +95,19 @@ class BaseUtil extends ChangeNotifier{
          * Retrieve Upcoming Visit. Ensure not null
          * Retrieve Upcoming visit Assistant. Ensure not null
          * */
-        _homeState = status;
-        if(vPath == null){
+        _homeState = currState.visitStatus;
+        if(currState.visitPath == null || currState.visitPath.isEmpty){
           log.error("Status in VISIT_STATUS_UPCOMING but no visit id found");
+          updateHomeState(status: Constants.VISIT_STATUS_NONE);
           _homeState = Constants.VISIT_STATUS_NONE;
           break;
         }
-        this.currentVisit = await getVisit(vPath, false);
-        if(this.currentVisit != null && this.currentVisit.status != status) {
+        this.currentVisit = await getVisit(currState.visitPath, false);
+        if(this.currentVisit != null && this.currentVisit.status != currState.visitStatus) {
           //received stored visit object which has'nt been updated yet
-          this.currentVisit = await getVisit(vPath, true);
+          this.currentVisit = await getVisit(currState.visitPath, true);
         }
-        if(this.currentVisit == null || this.currentVisit.status != status) {
+        if(this.currentVisit == null || this.currentVisit.status != currState.visitStatus) {
           log.error("Couldnt identify visit. Defaulting HomeState");
           _homeState = Constants.VISIT_STATUS_NONE;
           break;
@@ -111,7 +118,7 @@ class BaseUtil extends ChangeNotifier{
           _homeState = Constants.VISIT_STATUS_NONE;
           break;
         }
-        if(status == Constants.VISIT_STATUS_COMPLETED
+        if(currState.visitStatus == Constants.VISIT_STATUS_COMPLETED
             && cachedStatus != Constants.VISIT_STATUS_COMPLETED) {
           //only triggered once after visit completed
           this.userStats = await getUserStats(true);
@@ -119,7 +126,47 @@ class BaseUtil extends ChangeNotifier{
         break;
       }
     }
-    updateHomeState(status: status, visitPath: vPath); //await not needed
+    if(!_verifyHomeState(currState)) {
+      log.debug("Expired/Irrelevant state still active. Removing state and defaulting to Home");
+      bool flag = await _dbModel.updateUserActivityState(firebaseUser.uid, new UserState(visitStatus: Constants.VISIT_STATUS_NONE));
+      if(flag) currState = new UserState(visitStatus: Constants.VISIT_STATUS_NONE); //update cache only if db change went through
+    }
+    updateHomeState(status: currState.visitStatus, visitPath: currState.visitPath, timestamp: currState.modifiedTime); //await not needed
+  }
+
+  bool _verifyHomeState(UserState presentState) {
+    Timestamp rTime = presentState.modifiedTime;
+    if(rTime == null) return true;  //cant verify without timestamp
+    DateTime dayTime = rTime.toDate();
+    DateTime today = DateTime.now();
+    int dtCode = encodeTimeRequest(dayTime);
+    int nowCode = encodeTimeRequest(today);
+    bool flag = true;
+    switch(_homeState) {
+      case Constants.VISIT_STATUS_NONE:case Constants.VISIT_STATUS_COMPLETED:{
+        log.debug("HomeState verification not required");
+        break;
+      }
+      case Constants.VISIT_STATUS_SEARCHING: {
+        if(today.day != dayTime.day || nowCode-dtCode > Constants.ALLOWED_VISIT_SEARCH_BUFFER) flag = false;
+        break;
+      }
+      case Constants.VISIT_STATUS_UPCOMING: {
+        if(this.currentVisit == null) flag = false;  //visit not available
+        if(today.day != dayTime.day || nowCode-this.currentVisit.vis_st_time > Constants.ALLOWED_VISIT_UPCOMING_BUFFER) flag = false;
+        break;
+      }
+      case Constants.VISIT_STATUS_ONGOING: {
+        if(this.currentVisit == null) flag = false;  //visit not available
+        if(today.day != dayTime.day || nowCode-this.currentVisit.vis_en_time > Constants.ALLOWED_VISIT_ONGOING_BUFFER) flag = false;
+        break;
+      }
+      default: {
+        flag = true;
+        break;
+      }
+    }
+    return flag;
   }
 
   Future<UserStats> getUserStats(bool refreshRequired) async{
@@ -193,11 +240,11 @@ class BaseUtil extends ChangeNotifier{
     }
   }
 
-  Future<bool> updateHomeState({@required int status, String visitPath}) async{
+  Future<bool> updateHomeState({@required int status, String visitPath, Timestamp timestamp}) async{
     try {
       this._homeState = status;
       UserState cStatus = new UserState(
-          visitStatus: status, visitPath: visitPath);
+          visitStatus: status, visitPath: visitPath, modifiedTime: timestamp);
       await _cModel.saveHomeStatus(cStatus);
       return true;
     }catch(e) {

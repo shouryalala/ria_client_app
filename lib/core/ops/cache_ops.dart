@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/model/user_status.dart';
 import 'package:flutter_app/core/service/cache_api.dart';
@@ -60,15 +61,17 @@ class CacheModel extends ChangeNotifier {
         return null;
       }
       List<String> parts = res.split('\$');
-      if(parts.length != 2 || parts[0].length != 1 ) {
+      if(parts.length != 3 || parts[0].length != 1 ) {
         log.error("Invalid cached home status format");
         return null;
       }
       try{
         int status = int.parse(parts[0]);
         String vPath = parts[1];
-        log.debug('Received Home Status entities:: Status: ${status}, Path: ${vPath}');
-        return UserState(visitStatus: status, visitPath: vPath);//{'visit_status':status, 'visit_id': vPath};
+        int milis = int.parse(parts[2]);
+        log.debug('Received Home Status entities:: Status: $status, Path: $vPath');
+        return UserState(visitStatus: status, visitPath: vPath,
+            modifiedTime: new Timestamp.fromMillisecondsSinceEpoch(milis));//{'visit_status':status, 'visit_id': vPath};
       }catch(e) {
         log.error("Failed to convert status part to int");
         return null;

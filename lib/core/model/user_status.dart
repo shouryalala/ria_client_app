@@ -15,7 +15,7 @@ class UserState{
         //assert (_visitStatus != null && _visitStatus is int),
         _visitStatus = visitStatus,
         _visitPath = visitPath,
-        _modifiedTime = modifiedTime;
+        _modifiedTime = modifiedTime??Timestamp.now();  //TODO not sure if this gets called everytime
 
   UserState.fromMap(Map<String, dynamic> data): this(
     visitStatus: data[fldVisitStatus],
@@ -27,16 +27,16 @@ class UserState{
     return {
       fldVisitStatus: visitStatus,
       fldVisitPath: (visitPath.isEmpty)?null:visitPath,
-      fldModifiedTime: modifiedTime??FieldValue.serverTimestamp()
+      //fldModifiedTime: modifiedTime??FieldValue.serverTimestamp()
+      fldModifiedTime: modifiedTime
     };
   }
 
   toFileString() {
-    return (visitPath.isEmpty)?
-      visitStatus.toString():visitStatus.toString() + '\$' + visitPath;
+    return visitStatus.toString() + '\$' + visitPath + '\$' + _modifiedTime.millisecondsSinceEpoch.toString();
   }
 
-  Timestamp get modifiedTime => _modifiedTime;
+  Timestamp get modifiedTime =>_modifiedTime??Timestamp.now();
 
   String get visitPath => _visitPath;
 
