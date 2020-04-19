@@ -112,11 +112,7 @@ class DBModel extends ChangeNotifier {
   Future<bool> updateUserActivityState(String userId, UserState userState) async{
     try {
       log.debug("Rating unavailable. Only updating user status");
-      Map<String, dynamic> userActMap = {
-        UserState.fldVisitStatus: userState.visitStatus,
-        UserState.fldVisitPath: userState.visitPath,
-        UserState.fldModifiedTime: userState.modifiedTime};
-      await _api.updateUserState(userId, userActMap);
+      await _api.updateUserState(userId, userState.toJson());
       return true;
     }catch(e) {
       log.error("Failed to update user activity status: " + e.toString());

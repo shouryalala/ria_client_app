@@ -132,7 +132,7 @@ class Constants {
   static const int TIME_VERIFIED = 0;
 
 
-  static const String ABOUT_US_DESCRIPTION = 'Cryb is a simple idea to use technology to uplift the current regime of domestic help, for everyone.\n'
+  static const String ABOUT_US_DESCRIPTION = '$APP_NAME is a simple idea to use technology to uplift the current regime of domestic help, for everyone.\n'
       'Users can:'
       'pick an assistant based on their ratings and reviews.'
       '  Switch assistants in case of delays or unplanned leaves.'

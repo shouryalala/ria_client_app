@@ -102,7 +102,7 @@ class _DashboardState extends State<Dashboard> {
         if(userState.visitStatus != null && userState.visitStatus != homeState??baseProvider.homeState) {
           baseProvider.setupCurrentState(userState);
           setState(() {
-            homeState = baseProvider.homeState;
+            //homeState = baseProvider.homeState;
           });
         }
       });

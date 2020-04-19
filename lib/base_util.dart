@@ -70,6 +70,9 @@ class BaseUtil extends ChangeNotifier{
     if(currState == null) currState = new UserState(visitStatus: Constants.VISIT_STATUS_NONE);
     int cachedStatus = currState.visitStatus; // incase it gets overridden by server fetch
 
+    UserState dave = new UserState(visitStatus: Constants.VISIT_STATUS_NONE);
+    log.debug("Dave2d here: " + dave.toString());
+
     //int status = (currState != null && currState.visitStatus != null)?currState.visitStatus:Constants.VISIT_STATUS_NONE;
     //String vPath = (currState != null)?currState.visitPath:'';
     //int cachedStatus = status;
@@ -83,8 +86,7 @@ class BaseUtil extends ChangeNotifier{
     log.debug("Recieved Activity Status:: Status: ${currState.visitStatus}");
     switch(currState.visitStatus) {
       case Constants.VISIT_STATUS_NONE: {
-        //TODO clear existing cache visit object if present
-        _homeState = Constants.VISIT_STATUS_NONE;
+        currState = new UserState(visitStatus: Constants.VISIT_STATUS_NONE);
         break;
       }
       case Constants.VISIT_STATUS_UPCOMING:
@@ -95,11 +97,12 @@ class BaseUtil extends ChangeNotifier{
          * Retrieve Upcoming Visit. Ensure not null
          * Retrieve Upcoming visit Assistant. Ensure not null
          * */
-        _homeState = currState.visitStatus;
+        //_homeState = currState.visitStatus;
         if(currState.visitPath == null || currState.visitPath.isEmpty){
           log.error("Status in VISIT_STATUS_UPCOMING but no visit id found");
-          updateHomeState(status: Constants.VISIT_STATUS_NONE);
-          _homeState = Constants.VISIT_STATUS_NONE;
+          currState = new UserState(visitStatus: Constants.VISIT_STATUS_NONE);
+          //updateHomeState(status: Constants.VISIT_STATUS_NONE);
+          //_homeState = Constants.VISIT_STATUS_NONE;
           break;
         }
         this.currentVisit = await getVisit(currState.visitPath, false);
@@ -109,13 +112,15 @@ class BaseUtil extends ChangeNotifier{
         }
         if(this.currentVisit == null || this.currentVisit.status != currState.visitStatus) {
           log.error("Couldnt identify visit. Defaulting HomeState");
-          _homeState = Constants.VISIT_STATUS_NONE;
+//          _homeState = Constants.VISIT_STATUS_NONE;
+          currState = new UserState(visitStatus: Constants.VISIT_STATUS_NONE);
           break;
         }
         this.currentAssistant = await getAssistant(this.currentVisit.aId);
         if(this.currentAssistant == null) {
           log.error("Couldnt identify Upcoming Visit Assistant. Defaulting HomeState");
-          _homeState = Constants.VISIT_STATUS_NONE;
+//          _homeState = Constants.VISIT_STATUS_NONE;
+          currState = new UserState(visitStatus: Constants.VISIT_STATUS_NONE);
           break;
         }
         if(currState.visitStatus == Constants.VISIT_STATUS_COMPLETED
@@ -131,6 +136,7 @@ class BaseUtil extends ChangeNotifier{
       bool flag = await _dbModel.updateUserActivityState(firebaseUser.uid, new UserState(visitStatus: Constants.VISIT_STATUS_NONE));
       if(flag) currState = new UserState(visitStatus: Constants.VISIT_STATUS_NONE); //update cache only if db change went through
     }
+    _homeState = currState.visitStatus;
     updateHomeState(status: currState.visitStatus, visitPath: currState.visitPath, timestamp: currState.modifiedTime); //await not needed
   }
 
@@ -142,7 +148,7 @@ class BaseUtil extends ChangeNotifier{
     int dtCode = encodeTimeRequest(dayTime);
     int nowCode = encodeTimeRequest(today);
     bool flag = true;
-    switch(_homeState) {
+    switch(presentState.visitStatus) {
       case Constants.VISIT_STATUS_NONE:case Constants.VISIT_STATUS_COMPLETED:{
         log.debug("HomeState verification not required");
         break;
