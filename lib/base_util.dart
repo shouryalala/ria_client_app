@@ -70,9 +70,6 @@ class BaseUtil extends ChangeNotifier{
     if(currState == null) currState = new UserState(visitStatus: Constants.VISIT_STATUS_NONE);
     int cachedStatus = currState.visitStatus; // incase it gets overridden by server fetch
 
-    UserState dave = new UserState(visitStatus: Constants.VISIT_STATUS_NONE);
-    log.debug("Dave2d here: " + dave.toString());
-
     //int status = (currState != null && currState.visitStatus != null)?currState.visitStatus:Constants.VISIT_STATUS_NONE;
     //String vPath = (currState != null)?currState.visitPath:'';
     //int cachedStatus = status;
@@ -301,8 +298,9 @@ class BaseUtil extends ChangeNotifier{
     int serviceTimeStart = encodeTimeOfDay(Constants.dayStartTime);
     int serviceTimeEnd = encodeTimeOfDay(Constants.dayEndTime);
 
-    return (timeVal >= currentTimeVal && timeVal >= serviceTimeStart && timeVal <= serviceTimeEnd)?
-          Constants.TIME_VERIFIED:Constants.TIME_ERROR_OUTSIDE_WINDOW;
+    if(timeVal < (currentTimeVal+60))return Constants.TIME_ERROR_PAST; //give a room of one minute while validating
+    else if(timeVal < serviceTimeStart || timeVal > serviceTimeEnd)return Constants.TIME_ERROR_OUTSIDE_WINDOW;
+    else return Constants.TIME_VERIFIED;
   }
 
   AuthCredential generateAuthCredential(String verificationId, String smsCode) {

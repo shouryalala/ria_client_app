@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_app/core/model/request.dart';
 import 'package:flutter_app/core/ops/db_ops.dart';
 import 'package:flutter_app/core/ops/http_ops.dart';
+import 'package:flutter_app/ui/elements/home_time_widget.dart';
 import 'package:flutter_app/ui/elements/mutli_select_chip.dart';
 import 'package:flutter_app/ui/elements/time_picker_model.dart';
 import 'package:flutter_app/util/calendar_util.dart';
@@ -70,7 +71,12 @@ class _HomeLayoutState extends State<HomeLayout> {
                           ),
                         ),
                         SizedBox(height: 24.0,),
-                        buildTimeButton(),
+                        HomeTimeWidget(homeContext: context,
+                        onValidTimeSelected: (time) {
+                          _selectedTime = time;
+                          log.debug(_selectedTime.toString());
+                          setState(() {});
+                        }),
                         SizedBox(height: 24.0,),
                         Container(
                           child: MultiSelectChip(
@@ -133,7 +139,11 @@ class _HomeLayoutState extends State<HomeLayout> {
   }
 
   Widget buildTimeButton() {
-    return RaisedButton(
+    return null;
+
+
+
+    /*return RaisedButton(
         shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(5.0)
     ),
@@ -196,16 +206,9 @@ class _HomeLayoutState extends State<HomeLayout> {
         ),
       ),
       color: Colors.white,
-    );
+    );*/
   }
 
-  String _displayTime(TimeOfDay time) {
-    if(time == null) return '';
-    String am_pm = (time.hour>11)?'pm':'am';
-    int hr = (time.hour > 12)?time.hour-12:time.hour;
-    String mins = time.minute.toString().padLeft(2, '0');
-    return '${hr.toString()}:${mins} ${am_pm}';
-  }
 
   Widget buildTimeButton2() {
     return RaisedButton(

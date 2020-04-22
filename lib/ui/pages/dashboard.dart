@@ -527,7 +527,12 @@ class _DashboardState extends State<Dashboard> {
       flag = false;
       baseProvider.showNegativeAlert('Action Required', 'Please select atleast one service', context);
     }
-    else if(timeFlag == Constants.TIME_ERROR_OUTSIDE_WINDOW || timeFlag == Constants.TIME_ERROR_NOT_SELECTED) {
+    else if(timeFlag == Constants.TIME_ERROR_PAST || timeFlag == Constants.TIME_ERROR_NOT_SELECTED) {
+      log.debug('Request check:: Time already past');
+      flag = false;
+      baseProvider.showNegativeAlert('Action Required', 'Please select a valid time', context);
+    }
+    else if(timeFlag == Constants.TIME_ERROR_OUTSIDE_WINDOW) {
       log.debug('Request check:: Invalid Time');
       flag = false;
       baseProvider.showNegativeAlert('Action Required', '${Constants.APP_NAME} is available from ${Constants.dayStartTime.hour}:${Constants.dayStartTime.minute.toString().padLeft(2, '0')} AM '

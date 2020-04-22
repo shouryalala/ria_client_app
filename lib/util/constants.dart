@@ -129,6 +129,7 @@ class Constants {
   static const int TIME_ERROR_OUTSIDE_WINDOW = -1;
   static const int TIME_ERROR_SERVICE_OFF = -2;
   static const int TIME_ERROR_NOT_SELECTED = -3;
+  static const int TIME_ERROR_PAST = -4;
   static const int TIME_VERIFIED = 0;
 
 
