@@ -33,18 +33,18 @@ class _HomeLayoutState extends State<HomeLayout> {
   BaseUtil baseProvider;
   DBModel reqProvider;
   String _time;
-  TimeOfDay _selectedTime;
+//  TimeOfDay _selectedTime;
   DateTime reqTime = new DateTime.now();
   List<String> serviceList = [Constants.CLEANING, Constants.UTENSILS, Constants.DUSTING];
   List<String> selectedServiceList = [Constants.CLEANING];
   CalendarUtil cUtil = new CalendarUtil();
-  _HomeLayoutState();
+  final _timeWidgetKey = GlobalKey<HomeTimeWidgetState>();
 
   @override
   Widget build(BuildContext context) {
     baseProvider = Provider.of<BaseUtil>(context);
     reqProvider = Provider.of<DBModel>(context);
-    if(_selectedTime == null)_selectedTime=TimeOfDay.now();
+//    if(_selectedTime == null)_selectedTime=TimeOfDay.now();
 //    return Scaffold(
 //        body:
         return Padding(
@@ -72,11 +72,13 @@ class _HomeLayoutState extends State<HomeLayout> {
                         ),
                         SizedBox(height: 24.0,),
                         HomeTimeWidget(homeContext: context,
-                        onValidTimeSelected: (time) {
-                          _selectedTime = time;
-                          log.debug(_selectedTime.toString());
-                          setState(() {});
-                        }),
+                          key: _timeWidgetKey,
+//                        onValidTimeSelected: (time) {
+//                          _selectedTime = time;
+//                          log.debug(_selectedTime.toString());
+//                          setState(() {});
+//                        }
+                        ),
                         SizedBox(height: 24.0,),
                         Container(
                           child: MultiSelectChip(
@@ -109,7 +111,7 @@ class _HomeLayoutState extends State<HomeLayout> {
                             onPressed: () {
                               if(widget.onInitiateRequest != null && !baseProvider.isRequestInitiated) {
                                 Map<String, dynamic> reqParams = {
-                                  HomeLayout.PARAM_TIME: _selectedTime,
+                                  HomeLayout.PARAM_TIME: _timeWidgetKey.currentState.selectedTime,
                                   HomeLayout.PARAM_SERVICE_CODE: baseProvider.encodeServiceList(selectedServiceList)
                                 };
                                 widget.onInitiateRequest(reqParams);

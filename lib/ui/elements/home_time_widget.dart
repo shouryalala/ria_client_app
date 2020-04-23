@@ -10,15 +10,14 @@ import '../../base_util.dart';
 
 class HomeTimeWidget extends StatefulWidget{
   final BuildContext homeContext;
-  final ValueChanged<TimeOfDay> onValidTimeSelected;
 
-  HomeTimeWidget({this.homeContext, this.onValidTimeSelected});
+  HomeTimeWidget({this.homeContext, Key key}):super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _HomeTimeWidgetState();
+  State<StatefulWidget> createState() => HomeTimeWidgetState();
 }
 
-class _HomeTimeWidgetState extends State<HomeTimeWidget> {
+class HomeTimeWidgetState extends State<HomeTimeWidget> {
   Log log = new Log('HomeTimeWidget');
   BaseUtil baseProvider;
   TimeOfDay _selectedTime;
@@ -78,8 +77,8 @@ class _HomeTimeWidgetState extends State<HomeTimeWidget> {
 //            //No need to notify unless they initiate request
 //          }
           else {
-            if (widget.onValidTimeSelected != null)
-              widget.onValidTimeSelected(_selectedTime);
+//            if (widget.onValidTimeSelected != null)
+//              widget.onValidTimeSelected(_selectedTime);
           }
           setState(() {
             log.debug("Inner state refreshed");
@@ -133,4 +132,8 @@ class _HomeTimeWidgetState extends State<HomeTimeWidget> {
     String mins = time.minute.toString().padLeft(2, '0');
     return '${hr.toString()}:$mins $am_pm';
   }
+
+  TimeOfDay get selectedTime => _selectedTime;
+
+
 }
