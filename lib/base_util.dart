@@ -298,7 +298,7 @@ class BaseUtil extends ChangeNotifier{
     int serviceTimeStart = encodeTimeOfDay(Constants.dayStartTime);
     int serviceTimeEnd = encodeTimeOfDay(Constants.dayEndTime);
 
-    if((timeVal-currentTimeVal).abs()>60)return Constants.TIME_ERROR_PAST; //give a room of one minute while validating
+    if(timeVal+60 < currentTimeVal)return Constants.TIME_ERROR_PAST; //give a room of one minute while validating
     else if(timeVal < serviceTimeStart || timeVal > serviceTimeEnd)return Constants.TIME_ERROR_OUTSIDE_WINDOW;
     else return Constants.TIME_VERIFIED;
   }
