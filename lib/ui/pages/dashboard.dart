@@ -74,16 +74,8 @@ class _DashboardState extends State<Dashboard> {
           homeState = status;
         });
       });
-      handler.setVisitCompleteCallback(onVisitCompleted: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (_) => RateVisitLayout(
-            rateVisit: baseProvider.currentVisit,
-            rateAssistant: baseProvider.currentAssistant,
-            actionComplete: () {    //handled in RateVisitLayout
-//                setState(() {
-//                  homeState = Constants.VISIT_STATUS_NONE;
-//                });
-            })));
-      });
+      handler.setVisitCompleteCallback(onVisitCompleted: () => pushRatingsPage());
+
       handler.setNoAstAvailableCallback(onNoAStAvailableMsg: () {
         baseProvider.showNegativeAlert('No Assistant Available', 'Please try again in sometime', context, seconds: 5);
         setState(() {
@@ -98,12 +90,29 @@ class _DashboardState extends State<Dashboard> {
       });
     }
     if(reqProvider != null) {
-      reqProvider.addUserStatusListener((userState) {
+      reqProvider.addUserStatusListener((userState) async{
         if(userState.visitStatus != null && userState.visitStatus != homeState??baseProvider.homeState) {
-          baseProvider.setupCurrentState(userState);
-          setState(() {
-            //homeState = baseProvider.homeState;
-          });
+          await baseProvider.setupCurrentState(userState);
+          if (baseProvider.homeState == Constants.VISIT_STATUS_COMPLETED)
+            pushRatingsPage();
+          else if (baseProvider.homeState != homeState) {
+            homeState = baseProvider.homeState;
+            setState(() {
+              //homeState = baseProvider.homeState;
+              if (userState.statusChangeReason != null && userState.statusChangeReason.isNotEmpty) {
+                if (userState.statusChangeReason == Constants.NO_AVAILABLE_AST) {
+                  baseProvider.showNegativeAlert(
+                      'No Assistant Available', 'Please try again in sometime',
+                      context, seconds: 7);
+                } else
+                if (userState.statusChangeReason == Constants.SERVER_ERROR) {
+                  baseProvider.showNegativeAlert('Internal Error',
+                      'We encountered an issue. Please try again in sometime',
+                      context, seconds: 5);
+                }
+              }
+            });
+          }
         }
       });
       reqProvider.subscribeUserActivityStatus(baseProvider.myUser);
@@ -619,6 +628,17 @@ class _DashboardState extends State<Dashboard> {
         });
       }
     });
+  }
+
+  pushRatingsPage() {
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => RateVisitLayout(
+        rateVisit: baseProvider.currentVisit,
+        rateAssistant: baseProvider.currentAssistant,
+        actionComplete: () {    //handled in RateVisitLayout
+//                setState(() {
+//                  homeState = Constants.VISIT_STATUS_NONE;
+//                });
+        })));
   }
 
   //state changer when request is confirmed

@@ -41,6 +41,12 @@ class FcmListener extends ChangeNotifier{
           await _handler.handleMessage(message['data']);
         }
       },
+//      onBackgroundMessage: (Map<String, dynamic> message) async {
+//        log.debug("onBackgroundMessage recieved: " + message.toString());
+//        if(message['data'] != null) {
+//          //await _handler.handleMessage(message['data']);
+//        }
+//      },
     );
     //TODO to be tested
     if(Platform.isIOS) {

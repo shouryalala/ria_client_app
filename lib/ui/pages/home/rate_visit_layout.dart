@@ -189,7 +189,7 @@ class _RateVisitLayoutState extends State<RateVisitLayout> {
         context: context,
         builder: (BuildContext context) => ConfirmActionDialog(
           title: 'Skip Rating',
-          description: 'Ratings help us serve you better',  //TODO change this goddamn description
+          description: 'Ratings help us serve you better',  //TODO change this description please
           buttonText: 'Skip',
           confirmAction: () {
             log.debug("User skipped rating for assistant");

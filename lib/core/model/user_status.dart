@@ -7,20 +7,24 @@ class UserState{
   final int _visitStatus;
   final String _visitPath;
   final Timestamp _modifiedTime;
+  final String _statusChangeReason;
   static const String fldVisitStatus = 'visit_status';
   static const String fldVisitPath = 'visit_id';
   static const String fldModifiedTime = 'modified_time';
+  static const String fldStatusChangeReasonCode = 'change_reason';
 
-  UserState({@required visitStatus, visitPath='', modifiedTime}):
+  UserState({@required visitStatus, visitPath='', modifiedTime, changeReason=''}):
         //assert (_visitStatus != null && _visitStatus is int),
         _visitStatus = visitStatus,
         _visitPath = visitPath,
-        _modifiedTime = modifiedTime??Timestamp.now();  //TODO not sure if this gets called everytime
+        _modifiedTime = modifiedTime??Timestamp.now(),
+        _statusChangeReason = changeReason;
 
   UserState.fromMap(Map<String, dynamic> data): this(
     visitStatus: data[fldVisitStatus],
     visitPath: data[fldVisitPath],
-    modifiedTime: data[fldModifiedTime]
+    modifiedTime: data[fldModifiedTime],
+    changeReason: data[fldStatusChangeReasonCode]
   );
 
   toJson() {
@@ -28,7 +32,8 @@ class UserState{
       fldVisitStatus: visitStatus,
       fldVisitPath: (visitPath.isEmpty)?null:visitPath,
       //fldModifiedTime: modifiedTime??FieldValue.serverTimestamp()
-      fldModifiedTime: modifiedTime
+      fldModifiedTime: modifiedTime,
+      //fldStatusChangeReasonCode: null
     };
   }
 
@@ -41,5 +46,8 @@ class UserState{
   String get visitPath => _visitPath;
 
   int get visitStatus => _visitStatus;
+
+  String get statusChangeReason => _statusChangeReason;
+
 
 }

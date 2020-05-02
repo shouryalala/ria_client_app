@@ -84,7 +84,7 @@ class DBModel extends ChangeNotifier {
       });
       return true;
     }catch(e) {
-      log.error("Failed to suncribe to user activity status: " + e.toString());
+      log.error("Failed to subscribe to user activity status: " + e.toString());
       return false;
     }
   }
@@ -133,7 +133,7 @@ class DBModel extends ChangeNotifier {
         log.error("Failed to update user activity status: " + e.toString());
         return false;
       }*/
-      return updateUserActivityState(userId, new UserState(visitStatus: Constants.VISIT_STATUS_NONE, modifiedTime: FieldValue.serverTimestamp()));
+      return updateUserActivityState(userId, new UserState(visitStatus: Constants.VISIT_STATUS_NONE, modifiedTime: Timestamp.now()));
     }
     else{
       try {
@@ -142,7 +142,7 @@ class DBModel extends ChangeNotifier {
         if (vPath[0] == null || vPath[1] == null || vPath[2] == null ||
             vPath[3] == null) return null;
         Map<String, dynamic> userActMap = {'visit_status': Constants.VISIT_STATUS_NONE,
-          'modified_time': FieldValue.serverTimestamp()};
+          'modified_time': Timestamp.now()};
         Map<String, dynamic> ratingMap = {'rating': rating};
         Map<String, dynamic> fdbkMap;
         if(fdbk != null && fdbk.isNotEmpty) {
@@ -264,7 +264,7 @@ class DBModel extends ChangeNotifier {
   Future<bool> requestCallback(String userId, String mobile) async{
     try {
       Map<String, dynamic> callbackMap = {'user_id': userId,
-        'timestamp': FieldValue.serverTimestamp(),
+        'timestamp': Timestamp.now(),
         'mobile': mobile};
       await _api.addCallbackDocument(callbackMap);
       return true;

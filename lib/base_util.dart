@@ -55,7 +55,7 @@ class BaseUtil extends ChangeNotifier{
 //        _setupTimeElapsed = true;
 //      });
 //      TODO test how long will firebase try to fetch these values. If its too long, it needs to be overridden
-      this.userStats = await getUserStats(false);
+      this.userStats = await getUserStats(false); //get user statistics
       await setupCurrentState(null);
     }
   }
@@ -64,12 +64,11 @@ class BaseUtil extends ChangeNotifier{
   /// -Fetches current activity state from user sub-collection
   /// -If there is an upcoming visit, it retrieves/updates the local visit object
   /// -Sets the variable used to decide home layout(Default layout, upcoming visit, ongoing visit etc)
-  Future<void> setupCurrentState(UserState res) async {
+  Future<int> setupCurrentState(UserState res) async {
     ///initialize values with cache stored values first
     UserState currState = await _cModel.getHomeStatus();
     if(currState == null) currState = new UserState(visitStatus: Constants.VISIT_STATUS_NONE);
     int cachedStatus = currState.visitStatus; // incase it gets overridden by server fetch
-
     //int status = (currState != null && currState.visitStatus != null)?currState.visitStatus:Constants.VISIT_STATUS_NONE;
     //String vPath = (currState != null)?currState.visitPath:'';
     //int cachedStatus = status;
@@ -77,8 +76,6 @@ class BaseUtil extends ChangeNotifier{
     if(res != null){
       log.debug("Overriding cached UserState with the following: " + res.toString());
       currState = res;
-      //status = res.visitStatus;
-      //vPath = res.visitPath;
     }
     log.debug("Recieved Activity Status:: Status: ${currState.visitStatus}");
     switch(currState.visitStatus) {
@@ -135,6 +132,7 @@ class BaseUtil extends ChangeNotifier{
     }
     _homeState = currState.visitStatus;
     updateHomeState(status: currState.visitStatus, visitPath: currState.visitPath, timestamp: currState.modifiedTime); //await not needed
+    return _homeState;
   }
 
   bool _verifyHomeState(UserState presentState) {

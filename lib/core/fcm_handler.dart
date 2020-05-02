@@ -21,6 +21,10 @@ class FcmHandler extends ChangeNotifier {
   FcmHandler() {}
 
   Future<bool> handleMessage(Map data) async{
+    return true;
+  }
+
+  /*Future<bool> handleMessage(Map data) async{
     log.debug("Data Message Recieved: " + data.toString());
     String command = data['command'];
     if(command != null && command.isNotEmpty) {
@@ -192,7 +196,7 @@ class FcmHandler extends ChangeNotifier {
       }
     }
     return true;
-  }
+  }*/
 
   setHomeScreenCallback({ValueChanged onVisitStatusChanged}) {
     aUpdate = onVisitStatusChanged;
