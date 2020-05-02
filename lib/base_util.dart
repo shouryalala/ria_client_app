@@ -130,7 +130,7 @@ class BaseUtil extends ChangeNotifier{
       bool flag = await _dbModel.updateUserActivityState(firebaseUser.uid, new UserState(visitStatus: Constants.VISIT_STATUS_NONE));
       if(flag) currState = new UserState(visitStatus: Constants.VISIT_STATUS_NONE); //update cache only if db change went through
     }
-    _homeState = currState.visitStatus;
+
     updateHomeState(status: currState.visitStatus, visitPath: currState.visitPath, timestamp: currState.modifiedTime); //await not needed
     return _homeState;
   }
@@ -244,9 +244,9 @@ class BaseUtil extends ChangeNotifier{
   Future<bool> updateHomeState({@required int status, String visitPath, Timestamp timestamp}) async{
     try {
       this._homeState = status;
-      UserState cStatus = new UserState(
+      currentUserState = new UserState(
           visitStatus: status, visitPath: visitPath, modifiedTime: timestamp);
-      await _cModel.saveHomeStatus(cStatus);
+      await _cModel.saveHomeStatus(currentUserState);
       return true;
     }catch(e) {
       log.error('Failed to cache current home status: ' + e.toString());

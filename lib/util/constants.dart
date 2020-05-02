@@ -118,7 +118,7 @@ class Constants {
 
   static const TimeOfDay dayStartTime = TimeOfDay(hour:7, minute: 0);
   //static const TimeOfDay dayEndTime = TimeOfDay(hour:19, minute: 0);
-  static const TimeOfDay dayEndTime = TimeOfDay(hour:23, minute: 0); //test time
+  static const TimeOfDay dayEndTime = TimeOfDay(hour:23, minute: 59); //test time
   static const TimeOfDay outOfBoundTimeStart = TimeOfDay(hour:0, minute:0);
   static const TimeOfDay outOfBoundTimeEnd = TimeOfDay(hour:6, minute:0);
 

@@ -50,14 +50,16 @@ class LogoFadeIn extends State<SplashScreen> {
       log.debug("New user. Moving to Onboarding..");
       Navigator.of(context).pop();
       Navigator.of(context).pushReplacementNamed('/onboarding');
-    }else if(onboardProvider.homeState == Constants.VISIT_STATUS_COMPLETED
-        && onboardProvider.currentVisit != null && onboardProvider.currentAssistant != null){
-       //TODO disgusting code.. please refactor dude
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => RateVisitLayout(
-            rateVisit: onboardProvider.currentVisit,
-            rateAssistant: onboardProvider.currentAssistant,
-            actionComplete: () {})));
-    }else {
+    }
+//    else if(onboardProvider.homeState == Constants.VISIT_STATUS_COMPLETED
+//        && onboardProvider.currentVisit != null && onboardProvider.currentAssistant != null){
+//       //TODO disgusting code.. please refactor dude
+//        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => RateVisitLayout(
+//            rateVisit: onboardProvider.currentVisit,
+//            rateAssistant: onboardProvider.currentAssistant,
+//            actionComplete: () {})));
+//    }
+    else {
       log.debug("Existing User. Moving to Home..");
       Navigator.of(context).pop();
       Navigator.of(context).pushReplacementNamed('/home');

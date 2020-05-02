@@ -66,29 +66,6 @@ class _DashboardState extends State<Dashboard> {
 
   _initListeners() {
     if(_isCallbackInitialized || baseProvider == null)return;
-    if (handler != null) {
-      _isCallbackInitialized = true;  //requires initialization only once
-      handler.setHomeScreenCallback(onVisitStatusChanged: (status) {  //register callback to allow handler to notify change in ui,
-        log.debug("Visit Status Changed. Refreshing UI");
-        setState(() {
-          homeState = status;
-        });
-      });
-      handler.setVisitCompleteCallback(onVisitCompleted: () => pushRatingsPage());
-
-      handler.setNoAstAvailableCallback(onNoAStAvailableMsg: () {
-        baseProvider.showNegativeAlert('No Assistant Available', 'Please try again in sometime', context, seconds: 5);
-        setState(() {
-          homeState = Constants.VISIT_STATUS_NONE;
-        });
-      });
-      handler.setServerErrorCallback(onServerErrorMsg: () {
-        baseProvider.showNegativeAlert('Internal Error', 'We encountered an issue. Please try again in sometime', context, seconds: 5);
-        setState(() {
-          homeState = Constants.VISIT_STATUS_NONE;
-        });
-      });
-    }
     if(reqProvider != null) {
       reqProvider.addUserStatusListener((userState) async{
         if(userState.visitStatus != null && userState.visitStatus != homeState??baseProvider.homeState) {
@@ -98,19 +75,8 @@ class _DashboardState extends State<Dashboard> {
           else if (baseProvider.homeState != homeState) {
             homeState = baseProvider.homeState;
             setState(() {
-              //homeState = baseProvider.homeState;
-              if (userState.statusChangeReason != null && userState.statusChangeReason.isNotEmpty) {
-                if (userState.statusChangeReason == Constants.NO_AVAILABLE_AST) {
-                  baseProvider.showNegativeAlert(
-                      'No Assistant Available', 'Please try again in sometime',
-                      context, seconds: 7);
-                } else
-                if (userState.statusChangeReason == Constants.SERVER_ERROR) {
-                  baseProvider.showNegativeAlert('Internal Error',
-                      'We encountered an issue. Please try again in sometime',
-                      context, seconds: 5);
-                }
-              }
+              if (userState.statusChangeReason != null && userState.statusChangeReason.isNotEmpty)
+                displayAlerts(context, userState.statusChangeReason);
             });
           }
         }
@@ -618,6 +584,7 @@ class _DashboardState extends State<Dashboard> {
     }
     reqProvider.pushRequest(userId, request).then((flag) {
       if(flag) {
+        homeState = Constants.VISIT_STATUS_SEARCHING;
         baseProvider.updateHomeState(status: Constants.VISIT_STATUS_SEARCHING);
         setState(() {
           if(!isRerouteReq)
@@ -641,10 +608,15 @@ class _DashboardState extends State<Dashboard> {
         })));
   }
 
-  //state changer when request is confirmed
-  onAssistantAvailable(state) {
-    setState(() {
-      homeState = state;
-    });
+  displayAlerts(BuildContext dContext, String alertCode) {
+    if (alertCode == Constants.NO_AVAILABLE_AST) {
+      baseProvider.showNegativeAlert(
+          'No Assistant Available', 'Please try again in sometime',
+          dContext, seconds: 5);
+    } else if (alertCode == Constants.SERVER_ERROR) {
+      baseProvider.showNegativeAlert('Internal Error',
+          'We encountered an issue. Please try again in sometime',
+          dContext, seconds: 5);
+    }
   }
 }

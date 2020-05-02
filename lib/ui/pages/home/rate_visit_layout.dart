@@ -162,8 +162,7 @@ class _RateVisitLayoutState extends State<RateVisitLayout> {
                                   widget.rateAssistant.id,widget.rateVisit.path,rating,fdbkController.text)
                                   .then((flag) {
                                 log.debug("Rated Visit, added Feedback, and updated User Activity Status: $flag");
-                                baseProvider.homeState = Constants.VISIT_STATUS_NONE;
-                                //TODO cache status required?
+                                baseProvider.updateHomeState(status: Constants.VISIT_STATUS_NONE);
                                 Navigator.of(context).pushNamed('/home');
 
 //                                if (widget.actionComplete != null) {
