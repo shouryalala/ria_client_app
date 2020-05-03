@@ -97,7 +97,7 @@ class OtpInputScreenState extends State<OtpInputScreen> {
     setState(() {
       _otpFieldEnabled = true;
       _autoDetectingOtp = false;
-      _loaderMessage = "Couldn't auto-detect otp";
+      _loaderMessage = "Couldn't auto-detect otp. Please enter the received otp";
     });
   }
 

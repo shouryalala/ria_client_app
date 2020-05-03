@@ -136,9 +136,11 @@ class _OptionsList extends State<ProfileOptions> {
               baseProvider.signOut().then((flag) {
                 if(flag) {
                   log.debug('Sign out process complete');
+                  Navigator.of(context).pop();
                   Navigator.of(context).pushReplacementNamed('/onboarding');
                   baseProvider.showPositiveAlert('Signed out', 'Hope to see you soon', context);
                 }else{
+                  Navigator.of(context).pop();
                   baseProvider.showNegativeAlert('Sign out failed', 'Couldn\'t signout. Please try again', context);
                   log.error('Sign out process failed');
                 }
