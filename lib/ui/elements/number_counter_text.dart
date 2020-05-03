@@ -23,8 +23,8 @@ class MagicMinutesState extends State<MagicMinutes> with SingleTickerProviderSta
   @override
   void initState() {
     super.initState();
-    controller =
-        AnimationController(duration: const Duration(seconds: 2), vsync: this);
+    controller = AnimationController(duration: const Duration(seconds: 2), vsync: this);
+    if(widget.value>0 && widget.animate??false) animateMinutes(widget.value);
   }
 
   void animateMinutes(int val) {

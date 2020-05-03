@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:flutter_app/util/ui_constants.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class ContactUsDialog extends StatefulWidget {
 //  final String title, description, buttonText;
@@ -24,6 +25,8 @@ class _ContactUsState extends State<ContactUsDialog> {
   Log log = new Log('FormDialog');
   final _formKey = GlobalKey<FormState>();
   final fdbkController = TextEditingController();
+  static bool _isCallbackInitiated = false;
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -82,16 +85,25 @@ class _ContactUsState extends State<ContactUsDialog> {
               Material(
                 color: (widget.isResident)?Colors.black:Colors.grey,
                 child: MaterialButton(
-                child: Text(
+                child: (!_isCallbackInitiated)?Text(
                     'Request a callback',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20.0
                   ),
+                ):SpinKitThreeBounce(
+                  color: UiConstants.spinnerColor2,
+                  size: 25.0,
                 ),
                 minWidth: double.infinity,
                 onPressed: () {
-                  widget.onClick();
+                  if(!_isCallbackInitiated) {
+                    HapticFeedback.vibrate();
+                    setState(() {
+                      _isCallbackInitiated = true;
+                    });
+                    widget.onClick();
+                  }
                 },
               ),
                 borderRadius: new BorderRadius.circular(10.0),

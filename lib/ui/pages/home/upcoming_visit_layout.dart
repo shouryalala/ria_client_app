@@ -109,6 +109,7 @@ class _UpcomingVisitLayoutState extends State<UpcomingVisitLayout> {
                           confirmAction: () async{
                             log.debug("User cancelled visit");
                             await dbProvider.cancelVisitUpdateStatus(baseProvider.firebaseUser.uid, widget.upVisit);
+                            Navigator.of(context).pop();
                           },
                           cancelAction: () {
                             Navigator.of(context).pop();

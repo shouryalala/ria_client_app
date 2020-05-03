@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_app/core/ops/db_ops.dart';
 import 'package:flutter_app/ui/dialog/about_dialog.dart';
 import 'package:flutter_app/ui/dialog/confirm_action_dialog.dart';
 import 'package:flutter_app/ui/dialog/contact_dialog.dart';
+import 'package:flutter_app/util/connection_util.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +30,20 @@ class _OptionsList extends State<ProfileOptions> {
   BaseUtil baseProvider;
   DBModel reqProvider;
   static List<OptionDetail> _optionsList;
+  bool _isOffline = false;
+  StreamSubscription _connectionChangeStream;
+
+  @override
+  void initState() {
+    ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
+    _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
+  }
+
+  void connectionChanged(dynamic hasConnection) {
+    setState(() {
+      _isOffline = !hasConnection;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +94,10 @@ class _OptionsList extends State<ProfileOptions> {
   _routeOptionRequest(String key) {
     switch(key) {
       case 'upAddress': {
-        Navigator.of(context).pushNamed('/updateAddress');
+        if(_isOffline)
+          baseProvider.showNoInternetAlert(context);
+        else
+          Navigator.of(context).pushNamed('/updateAddress');
         break;
       }
       case 'abUs': {
@@ -90,18 +110,22 @@ class _OptionsList extends State<ProfileOptions> {
       case 'contUs': {
         showDialog(
             context: context,
-            builder: (BuildContext context) => ContactUsDialog(
+            builder: (BuildContext dialogContext) => ContactUsDialog(
                 isResident: (baseProvider.isSignedIn() && baseProvider.isActiveUser()),
                 onClick: () {
+                  if(_isOffline) {
+                    baseProvider.showNoInternetAlert(context);
+                    return;
+                  }
                   if(baseProvider.isSignedIn() && baseProvider.isActiveUser()) {
                     reqProvider.requestCallback(baseProvider.firebaseUser.uid, baseProvider.myUser.mobile).then((flag) {
                       if(flag) {
-                        baseProvider.showPositiveAlert('Callback placed', 'We\'ll contact you at the earliest!', context);
+                        baseProvider.showPositiveAlert('Callback placed!', 'We\'ll contact you soon on your registered mobile', context);
+                        Navigator.of(context).pop();
                       }
                     });
-                    Navigator.of(context).pop();
                   }else{
-                    baseProvider.showNegativeAlert('Unavailable', 'Callback is arranged for active users only', context);
+                    baseProvider.showNegativeAlert('Unavailable', 'Callbacks are reserved for active users', context);
                   }
                 },
             )
@@ -111,7 +135,7 @@ class _OptionsList extends State<ProfileOptions> {
       case 'signOut': {
         showDialog(
           context: context,
-          builder: (BuildContext context) => ConfirmActionDialog(
+          builder: (BuildContext dialogContext) => ConfirmActionDialog(
             title: 'Confirm',
             description: 'Are you sure you want to sign out?',
             buttonText: 'Yes',

@@ -42,17 +42,15 @@ class _DashboardState extends State<Dashboard> {
   FcmHandler handler;
   CalendarUtil cUtil = new CalendarUtil();
   int homeState = Constants.VISIT_STATUS_NONE;
-  bool _isCallbackInitialized = false;
   StreamSubscription _connectionChangeStream;
   bool _isOffline = false;
   MagicMinutes minuteTileText;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  bool _animateMinuteTile = false;  //TODO on startup fix required
+  bool _animateMinuteTile = false;
 
   @override
   void initState() {
     super.initState();
-    _isCallbackInitialized = false;
     _animateMinuteTile = true;
     ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
     _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
@@ -65,24 +63,24 @@ class _DashboardState extends State<Dashboard> {
   }
 
   _initListeners() {
-    if(_isCallbackInitialized || baseProvider == null)return;
-    if(reqProvider != null) {
-      reqProvider.addUserStatusListener((userState) async{
-        if(userState.visitStatus != null && userState.visitStatus != homeState??baseProvider.homeState) {
-          await baseProvider.setupCurrentState(userState);
-          if (baseProvider.homeState == Constants.VISIT_STATUS_COMPLETED)
-            pushRatingsPage();
-          else if (baseProvider.homeState != homeState) {
-            homeState = baseProvider.homeState;
-            setState(() {
-              if (userState.statusChangeReason != null && userState.statusChangeReason.isNotEmpty)
-                displayAlerts(context, userState.statusChangeReason);
-            });
-          }
+    if(reqProvider == null || baseProvider == null)return;
+    reqProvider.addUserStatusListener((userState) async{
+      if(userState.visitStatus != null && userState.visitStatus != homeState??baseProvider.homeState) {
+        await baseProvider.setupCurrentState(userState);
+        if (baseProvider.homeState == Constants.VISIT_STATUS_COMPLETED) {
+          _animateMinuteTile = true;  //set tile true for when returned to dashboard
+          pushRatingsPage();
         }
-      });
-      reqProvider.subscribeUserActivityStatus(baseProvider.myUser);
-    }
+        else if (baseProvider.homeState != homeState) {
+          homeState = baseProvider.homeState;
+          setState(() {
+            if (userState.statusChangeReason != null && userState.statusChangeReason.isNotEmpty)
+              displayAlerts(context, userState.statusChangeReason);
+          });
+        }
+      }
+    });
+    reqProvider.subscribeUserActivityStatus(baseProvider.myUser);
   }
 
   @override
@@ -430,7 +428,7 @@ class _DashboardState extends State<Dashboard> {
         {
           return SearchingVisitLayout();
         }
-//      case Constants.VISIT_STATUS_COMPLETED:  //Wrote shitty code and moved to the initial widget router in the launcher
+//      case Constants.VISIT_STATUS_COMPLETED:
 //        {
 //          if (baseProvider.currentVisit == null ||
 //              baseProvider.currentAssistant == null) return buildHomeLayout();
