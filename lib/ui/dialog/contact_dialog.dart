@@ -11,21 +11,28 @@ class ContactUsDialog extends StatefulWidget {
 //  final Image image;
 final bool isResident;
 final Function onClick;
+final bool isUnavailable;
   ContactUsDialog({
     @required this.isResident,
-    @required this.onClick
+    @required this.onClick,
+    @required this.isUnavailable
   });
 
   @override
   State createState() => _ContactUsState();
 }
 
-
 class _ContactUsState extends State<ContactUsDialog> {
   Log log = new Log('FormDialog');
   final _formKey = GlobalKey<FormState>();
   final fdbkController = TextEditingController();
   static bool _isCallbackInitiated = false;
+
+  @override
+  void dispose() {
+    _isCallbackInitiated = false;
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +92,7 @@ class _ContactUsState extends State<ContactUsDialog> {
               Material(
                 color: (widget.isResident)?Colors.black:Colors.grey,
                 child: MaterialButton(
-                child: (!_isCallbackInitiated)?Text(
+                child: (!_isCallbackInitiated||widget.isUnavailable)?Text(
                     'Request a callback',
                   style: TextStyle(
                     color: Colors.white,
@@ -97,7 +104,8 @@ class _ContactUsState extends State<ContactUsDialog> {
                 ),
                 minWidth: double.infinity,
                 onPressed: () {
-                  if(!_isCallbackInitiated) {
+                  if(widget.isUnavailable)widget.onClick();
+                  else if(!_isCallbackInitiated) {
                     HapticFeedback.vibrate();
                     setState(() {
                       _isCallbackInitiated = true;

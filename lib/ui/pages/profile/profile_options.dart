@@ -30,13 +30,14 @@ class _OptionsList extends State<ProfileOptions> {
   BaseUtil baseProvider;
   DBModel reqProvider;
   static List<OptionDetail> _optionsList;
-  bool _isOffline = false;
+  bool _isOffline = true;
   StreamSubscription _connectionChangeStream;
 
   @override
   void initState() {
     ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
     _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
+    super.initState();
   }
 
   void connectionChanged(dynamic hasConnection) {
@@ -112,6 +113,7 @@ class _OptionsList extends State<ProfileOptions> {
             context: context,
             builder: (BuildContext dialogContext) => ContactUsDialog(
                 isResident: (baseProvider.isSignedIn() && baseProvider.isActiveUser()),
+                isUnavailable: _isOffline,
                 onClick: () {
                   if(_isOffline) {
                     baseProvider.showNoInternetAlert(context);
@@ -121,9 +123,9 @@ class _OptionsList extends State<ProfileOptions> {
                     reqProvider.requestCallback(baseProvider.firebaseUser.uid, baseProvider.myUser.mobile).then((flag) {
                       if(flag) {
                         baseProvider.showPositiveAlert('Callback placed!', 'We\'ll contact you soon on your registered mobile', context);
-                        Navigator.of(context).pop();
                       }
                     });
+                    Navigator.of(context).pop();
                   }else{
                     baseProvider.showNegativeAlert('Unavailable', 'Callbacks are reserved for active users', context);
                   }

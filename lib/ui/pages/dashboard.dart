@@ -43,7 +43,7 @@ class _DashboardState extends State<Dashboard> {
   CalendarUtil cUtil = new CalendarUtil();
   int homeState = Constants.VISIT_STATUS_NONE;
   StreamSubscription _connectionChangeStream;
-  bool _isOffline = false;
+  bool _isOffline = true;
   MagicMinutes minuteTileText;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _animateMinuteTile = false;
@@ -213,7 +213,8 @@ class _DashboardState extends State<Dashboard> {
                           )))
                     ]),
               ),
-              onTap: () =>Navigator.of(context).pushNamed('/profile')  
+              checkNetwork: false,
+              onTap: () =>Navigator.of(context).pushNamed('/profile')
                   //Navigator.of(context).push(MaterialPageRoute(builder: (_) => ShopItemsPage())),
             )
           ],
@@ -228,7 +229,7 @@ class _DashboardState extends State<Dashboard> {
         ));
   }
 
-  Widget _buildTile(Widget child, {Function() onTap}) {
+  Widget _buildTile(Widget child, {bool checkNetwork=true, Function() onTap}) {
     return Material(
         elevation: 14.0,
         borderRadius: BorderRadius.circular(12.0),
@@ -237,7 +238,7 @@ class _DashboardState extends State<Dashboard> {
             onTap: onTap != null
                 ? () {
                 HapticFeedback.vibrate();
-                if(_isOffline){
+                if(checkNetwork && _isOffline){
                   log.debug('No internet connection.');
                   baseProvider.showNoInternetAlert(context);
                 }
