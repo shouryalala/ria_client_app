@@ -66,24 +66,29 @@ class MobileInputScreenState extends State<MobileInputScreen> {
             ),
           ),
           SizedBox(
-            height: 12,
+            height: 20,
           ),
           Container(
-            width: 150.0,
-            height: 50.0,
+            width: 230.0,
+            height: 60.0,
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               borderRadius: new BorderRadius.circular(30.0),
-              border: Border.all(color: Colors.green, width: 1.0),
+              border: Border.all(color: Colors.green, width: 1.5),
               color: Colors.transparent,
             ),
+            child:Tooltip(
+            message:'Check here',
             child: new Material(
               child: MaterialButton(
-                child: Text('We are currently servicing only select societies',
+                child: Text(
+                  'We are currently servicing only select societies',
+                  textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.button.copyWith(color: Colors.green),
                 ),
                 onPressed: (){
                   showDialog(context: context,
-                    builder: (BuildContext context) => LocationAvailabilityDialog()
+                      builder: (BuildContext context) => LocationAvailabilityDialog()
                   );
                 },
                 highlightColor: Colors.white30,
@@ -91,6 +96,7 @@ class MobileInputScreenState extends State<MobileInputScreen> {
               ),
               color: Colors.transparent,
               borderRadius: new BorderRadius.circular(30.0),
+            ),
             ),
           ),
         ],

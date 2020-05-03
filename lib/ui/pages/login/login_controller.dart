@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/core/fcm_listener.dart';
 import 'package:flutter_app/core/ops/db_ops.dart';
 import 'package:flutter_app/core/ops/lcl_db_ops.dart';
 import 'package:flutter_app/core/model/society.dart';
@@ -37,6 +38,8 @@ class _LoginControllerState extends State<LoginController> {
   static BaseUtil baseProvider;
   static DBModel dbProvider;
   static LocalDBModel localDbProvider;
+  static FcmListener fcmProvider;
+
   String userMobile;
 //  static MobileInputScreen mobileInScreen;
 //  static OtpInputScreen otpInScreen;
@@ -86,25 +89,29 @@ class _LoginControllerState extends State<LoginController> {
           duration: Duration(milliseconds: 300), curve: Curves.easeIn);
     };
 
-    final PhoneVerificationCompleted verifiedSuccess = (AuthCredential user) {
+    final PhoneVerificationCompleted verifiedSuccess = (AuthCredential user) async{
       log.debug("Verified automagically!");
       if(_currentPage == OtpInputScreen.index){
-        UiConstants.offerSnacks(context, "Mobile verified!");
+      //  UiConstants.offerSnacks(context, "Mobile verified!");
 //        otpInScreen.onOtpReceived();
           _otpScreenKey.currentState.onOtpReceived();
       }
-      baseProvider.authenticateUser(user).then((flag) {
+      log.debug("Now verifying user");
+      bool flag = await baseProvider.authenticateUser(user);//.then((flag) {
         if (flag) {
           log.debug("User signed in successfully");
           onSignInSuccess();
         } else {
           log.error("User auto sign in didnt work");
         }
-      });
+//      });
     };
 
     final PhoneVerificationFailed veriFailed = (AuthException exception) {
       //codes: 'quotaExceeded'
+      if(exception.code == 'quotaExceeded') {
+        log.error("Quota for otps exceeded");
+      }
       log.error("Verification process failed:  ${exception.message}");
     };
 
@@ -112,7 +119,7 @@ class _LoginControllerState extends State<LoginController> {
         phoneNumber: this.verificationId,
         codeAutoRetrievalTimeout: autoRetrieve,
         codeSent: smsCodeSent,
-        timeout: const Duration(seconds: 30),
+        timeout: const Duration(seconds: 10),
         verificationCompleted: verifiedSuccess,
         verificationFailed: veriFailed);
   }
@@ -122,6 +129,7 @@ class _LoginControllerState extends State<LoginController> {
     baseProvider = Provider.of<BaseUtil>(context);
     dbProvider = Provider.of<DBModel>(context);
     localDbProvider = Provider.of<LocalDBModel>(context);
+    fcmProvider = Provider.of<FcmListener>(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 2.0,
@@ -263,7 +271,7 @@ class _LoginControllerState extends State<LoginController> {
     );
   }
 
-  processScreenInput(int currentPage) {
+  processScreenInput(int currentPage) async{
     switch (currentPage) {
       case MobileInputScreen.index:
         {
@@ -288,18 +296,16 @@ class _LoginControllerState extends State<LoginController> {
         {
           String otp = _otpScreenKey.currentState.otp; //otpInScreen.getOtp();
           if (otp != null && otp.isNotEmpty && otp.length == 6) {
-            baseProvider
-                .authenticateUser(
-                    baseProvider.generateAuthCredential(verificationId, otp))
-                .then((flag) {
+            bool flag = await baseProvider.authenticateUser(baseProvider.generateAuthCredential(verificationId, otp));
+                //.then((flag) {
               if (flag) {
 //                otpInScreen.onOtpReceived();
                 _otpScreenKey.currentState.onOtpReceived();
                 onSignInSuccess();
               } else {
-                UiConstants.offerSnacks(context, 'Please enter a valid otp');
+                baseProvider.showNegativeAlert('Invalid Otp', 'Please enter a valid otp', context);
               }
-            });
+//            });
           } else {
             //TODO set otp error
           }
@@ -339,14 +345,14 @@ class _LoginControllerState extends State<LoginController> {
               baseProvider.myUser.sector = selSociety.sector;
               baseProvider.myUser.bhk = selBhk;
               //if nothing was invalid:
-              dbProvider.updateUser(baseProvider.myUser).then((flag) {
-                if (flag) {
-                  log.debug("User object saved successfully");
-                  onSignUpComplete();
-                } else {
-                  //TODO signup failed! YIKES please try again later
-                }
-              });
+              bool flag = await dbProvider.updateUser(baseProvider.myUser);//.then((flag) {
+              if (flag) {
+                log.debug("User object saved successfully");
+                onSignUpComplete();
+              } else {
+                baseProvider.showNegativeAlert('Update failed', 'Please try again in sometime', context);
+              }
+//              });
             }
           }
 //          Society selSociety = addressInScreen.getSociety();
@@ -396,48 +402,53 @@ class _LoginControllerState extends State<LoginController> {
     return null;
   }
 
-  void onSignInSuccess() {
+  void onSignInSuccess() async{
     log.debug("User authenticated. Now check if details previously available.");
     //FirebaseAuth.instance.currentUser().then((fUser) => baseProvider.firebaseUser);
-    FirebaseAuth.instance.currentUser().then((fUser) {
-      baseProvider.firebaseUser = fUser;
-      log.debug("User is set: " + fUser.uid);
+    baseProvider.firebaseUser = await FirebaseAuth.instance.currentUser();//.then((fUser) {
+      //baseProvider.firebaseUser = fUser;
+    log.debug("User is set: " + baseProvider.firebaseUser.uid);
       //dbProvider.getUser(this.userMobile).then((user) {
-      dbProvider.getUser(fUser.uid).then((user) {
-        //user variable is pre cast into User object
-        dbProvider.logDeviceId(fUser.uid); //no await needed. async can complete in its own time
-        if (user == null || (user != null && user.hasIncompleteDetails())) {
-          log.debug(
-              "No existing user details found or found incomplete details for user. Moving to details page");
-          baseProvider.myUser = user ?? User.newUser(fUser.uid, this.userMobile);
-          //Move to name input page
-          //_currentPage = NameInputScreen.index;
-          _controller.animateToPage(NameInputScreen.index,
-              duration: Duration(milliseconds: 300), curve: Curves.easeIn);
-        } else {
-          log.debug("User details available: Name: " +
-              user.name +
-              "\nAddress: " +
-              user.flat_no);
-          baseProvider.myUser = user;
-          //baseProvider.myUser.mobile = userMobile;
-          onSignUpComplete();
-        }
-      });
-    });
+    User user = await dbProvider.getUser(baseProvider.firebaseUser.uid);//.then((user) {
+    //user variable is pre cast into User object
+    //dbProvider.logDeviceId(fUser.uid); //TODO do someday
+    if (user == null || (user != null && user.hasIncompleteDetails())) {
+      log.debug("No existing user details found or found incomplete details for user. Moving to details page");
+      baseProvider.myUser = user ?? User.newUser(baseProvider.firebaseUser.uid, this.userMobile);
+      //Move to name input page
+      //_currentPage = NameInputScreen.index;
+      _controller.animateToPage(NameInputScreen.index,
+          duration: Duration(milliseconds: 300), curve: Curves.easeIn);
+    } else {
+      log.debug("User details available: Name: " +
+          user.name +
+          "\nAddress: " +
+          user.flat_no);
+      baseProvider.myUser = user;
+      //baseProvider.myUser.mobile = userMobile;
+      onSignUpComplete();
+    }
+//    });
+//    });
   }
 
-  void onSignUpComplete() {
-    //TODO add client token fetch method here!!
-    localDbProvider.saveUser(baseProvider.myUser).then((flag) {
-      if (flag) {
-        log.debug("User object saved locally");
-        Navigator.of(context).pop();
-        Navigator.of(context).pushReplacementNamed('/home');
-      }
-      //process complete
-      //move to home through animation
-    });
+  Future onSignUpComplete() async{
+    bool flag = await localDbProvider.saveUser(baseProvider.myUser);
+    if(flag) {
+      log.debug("User object saved locally");
+      await baseProvider.init();
+      await fcmProvider.setupFcm();
+      Navigator.of(context).pop();
+      Navigator.of(context).pushReplacementNamed('/home');
+      baseProvider.showPositiveAlert('Sign In Complete',
+          'Welcome to ${Constants.APP_NAME}, ${baseProvider.myUser.name}',
+          context);
+    }else{
+      log.error("Failed to save user data to local db");
+      baseProvider.showNegativeAlert('Sign In Failed', 'Please restart ${Constants.APP_NAME} and try again', context);
+    }
+    //process complete
+    //move to home through animation
     //TODO
   }
 }

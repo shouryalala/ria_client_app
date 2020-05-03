@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Constants {
-  static const String APP_NAME = "RIA";
+  static const String APP_NAME = "CRYB";
   static final String DEBUG_TAG = "DEBUG_KANTA::";
   //Collections
   static final String COLN_REQUESTS = "requests";

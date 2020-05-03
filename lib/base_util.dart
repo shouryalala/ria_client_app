@@ -36,6 +36,7 @@ class BaseUtil extends ChangeNotifier{
   bool isRequestInitiated = false;
   bool isRerouteRequestInitiated = false;
   static bool _setupTimeElapsed = false;
+  static bool isDeviceOffline = false;
 
   BaseUtil() {
     //init(); //init called during onboarding
@@ -46,20 +47,11 @@ class BaseUtil extends ChangeNotifier{
     firebaseUser = await FirebaseAuth.instance.currentUser();
     isUserOnboarded = await _lModel.isUserOnboarded()==1;
     _myUser = await _lModel.getUser();
-    ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
-    connectionStatus.initialize();
     if(_myUser != null && _myUser.mobile != null) {
-//      _homeState = await _retrieveCurrentStatus();
-//      _homeState = (_homeState == null)?Constants.VISIT_STATUS_NONE:_homeState;
-//      Timer _timer2 = new Timer(const Duration(seconds: 20), () {
-//        _setupTimeElapsed = true;
-//      });
-//      TODO test how long will firebase try to fetch these values. If its too long, it needs to be overridden
       this.userStats = await getUserStats(false); //get user statistics
       await setupCurrentState(null);
     }
   }
-
 
   /// -Fetches current activity state from user sub-collection
   /// -If there is an upcoming visit, it retrieves/updates the local visit object
@@ -310,6 +302,7 @@ class BaseUtil extends ChangeNotifier{
   }
 
   Future<bool> authenticateUser(AuthCredential credential) {
+    log.debug("Verification credetials: " + credential.toString());
     return FirebaseAuth.instance.signInWithCredential(credential).then((res) {
       this.firebaseUser = res.user;
       return true;

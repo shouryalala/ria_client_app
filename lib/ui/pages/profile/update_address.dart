@@ -78,7 +78,7 @@ class _UpdateAddressScreenState extends State<UpdateAddressScreen> {
                               child: Text('UPDATE',
                                 style: Theme.of(context).textTheme.button.copyWith(color: Colors.white),
                               ),
-                              onPressed: (){
+                              onPressed: () async{
                                 if(_addressScreenKey.currentState.formKey.currentState.validate()) {
                                   Society selSociety = _addressScreenKey.currentState.selected_society;
                                   String selFlatNo = _addressScreenKey.currentState.flat_no;
@@ -89,18 +89,15 @@ class _UpdateAddressScreenState extends State<UpdateAddressScreen> {
                                     baseProvider.myUser.sector = selSociety.sector;
                                     baseProvider.myUser.bhk = selBhk;
                                     //if nothing was invalid:
-                                    dbProvider.updateUser(baseProvider.myUser).then((flag) {
-                                      if (flag) {
-                                        log.debug("User object saved successfully");
-                                        localDbProvider.saveUser(baseProvider.myUser).then((flag) {
-                                          baseProvider.showPositiveAlert('Complete', 'Address updated', _scaffoldKey.currentContext); //TODO NOT WORKING. Widget already gone before calling snack
-                                          Navigator.of(context).pop();
-                                        });
-                                      } else {
-                                        baseProvider.showNegativeAlert('Failed', 'Address couldnt be updated. Please try again later', _scaffoldKey.currentContext);
-                                        Navigator.of(context).pop();
-                                      }
-                                    });
+                                    bool flag = await dbProvider.updateUser(baseProvider.myUser);
+                                    Navigator.pop(context);
+                                    if(flag){
+                                      await localDbProvider.saveUser(baseProvider.myUser);
+                                      baseProvider.showPositiveAlert('Complete', 'Your address has been updated', context);
+                                    }
+                                    else{
+                                      baseProvider.showNegativeAlert('Failed', 'Your address couldnt be updated. Please try again in sometime', context);
+                                    }
                                   }
                                 }
                               },

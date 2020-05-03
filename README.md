@@ -1,3 +1,3 @@
-# Project RIA
+# Project CRYB
 
-Flutter Client App for RIA.
+Flutter Client App for CRYB.

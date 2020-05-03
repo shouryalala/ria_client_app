@@ -92,7 +92,7 @@ class _ContactUsState extends State<ContactUsDialog> {
               Material(
                 color: (widget.isResident)?Colors.black:Colors.grey,
                 child: MaterialButton(
-                child: (!_isCallbackInitiated||widget.isUnavailable)?Text(
+                child: (!_isCallbackInitiated)?Text(
                     'Request a callback',
                   style: TextStyle(
                     color: Colors.white,
@@ -104,7 +104,7 @@ class _ContactUsState extends State<ContactUsDialog> {
                 ),
                 minWidth: double.infinity,
                 onPressed: () {
-                  if(widget.isUnavailable)widget.onClick();
+                  if(widget.isUnavailable||!widget.isResident)widget.onClick();
                   else if(!_isCallbackInitiated) {
                     HapticFeedback.vibrate();
                     setState(() {

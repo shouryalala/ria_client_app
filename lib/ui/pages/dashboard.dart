@@ -42,7 +42,6 @@ class _DashboardState extends State<Dashboard> {
   FcmHandler handler;
   CalendarUtil cUtil = new CalendarUtil();
   int homeState = Constants.VISIT_STATUS_NONE;
-  StreamSubscription _connectionChangeStream;
   bool _isOffline = true;
   MagicMinutes minuteTileText;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -53,17 +52,20 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
     _animateMinuteTile = true;
     ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
-    _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
+    connectionStatus.initialize();
+    connectionStatus.connectionChange.listen(connectionChanged);
   }
 
   void connectionChanged(dynamic hasConnection) {
+    log.debug("Internet connection change: " + hasConnection.toString());
+    BaseUtil.isDeviceOffline = !hasConnection;
     setState(() {
       _isOffline = !hasConnection;
     });
   }
 
   _initListeners() {
-    if(reqProvider == null || baseProvider == null)return;
+    if(reqProvider == null || baseProvider == null || !baseProvider.isSignedIn() || !baseProvider.isActiveUser())return;
     reqProvider.addUserStatusListener((userState) async{
       if(userState.visitStatus != null && userState.visitStatus != homeState??baseProvider.homeState) {
         await baseProvider.setupCurrentState(userState);
@@ -253,11 +255,13 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _buildLoginTile() {
-    String btnText = "Login";
+    String btnText = "Sign In";
+    String description = "to avail services";
     int pageNo = 0; //mobile no page
     if (baseProvider.firebaseUser != null) {
       //user logged in but has incomplete details
       btnText = "Confirm Details";
+      description = "Required to schedule tasks";
       pageNo = 2; //name input page
     }
     return _buildTile(
@@ -275,13 +279,14 @@ class _DashboardState extends State<Dashboard> {
                         style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.w700,
-                            fontSize: 34.0)),
-                    Text('click to ${btnText} ',
-                        style: TextStyle(color: Colors.black45)),
+                            fontSize: 30.0)),
+                    Text(description,
+                        style: TextStyle(color: Colors.blueAccent),
+                    ),
                   ],
                 ),
                 Material(
-                    color: Colors.greenAccent,
+                    color: Colors.blueAccent,
                     borderRadius: BorderRadius.circular(24.0),
                     child: Center(
                         child: Padding(

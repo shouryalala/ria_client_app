@@ -30,20 +30,10 @@ class _OptionsList extends State<ProfileOptions> {
   BaseUtil baseProvider;
   DBModel reqProvider;
   static List<OptionDetail> _optionsList;
-  bool _isOffline = true;
-  StreamSubscription _connectionChangeStream;
 
   @override
   void initState() {
-    ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
-    _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
     super.initState();
-  }
-
-  void connectionChanged(dynamic hasConnection) {
-    setState(() {
-      _isOffline = !hasConnection;
-    });
   }
 
   @override
@@ -95,7 +85,7 @@ class _OptionsList extends State<ProfileOptions> {
   _routeOptionRequest(String key) {
     switch(key) {
       case 'upAddress': {
-        if(_isOffline)
+        if(BaseUtil.isDeviceOffline)
           baseProvider.showNoInternetAlert(context);
         else
           Navigator.of(context).pushNamed('/updateAddress');
@@ -113,19 +103,19 @@ class _OptionsList extends State<ProfileOptions> {
             context: context,
             builder: (BuildContext dialogContext) => ContactUsDialog(
                 isResident: (baseProvider.isSignedIn() && baseProvider.isActiveUser()),
-                isUnavailable: _isOffline,
+                isUnavailable: BaseUtil.isDeviceOffline,
                 onClick: () {
-                  if(_isOffline) {
+                  if(BaseUtil.isDeviceOffline) {
                     baseProvider.showNoInternetAlert(context);
                     return;
                   }
                   if(baseProvider.isSignedIn() && baseProvider.isActiveUser()) {
                     reqProvider.requestCallback(baseProvider.firebaseUser.uid, baseProvider.myUser.mobile).then((flag) {
                       if(flag) {
+                        Navigator.of(context).pop();
                         baseProvider.showPositiveAlert('Callback placed!', 'We\'ll contact you soon on your registered mobile', context);
                       }
                     });
-                    Navigator.of(context).pop();
                   }else{
                     baseProvider.showNegativeAlert('Unavailable', 'Callbacks are reserved for active users', context);
                   }
@@ -146,8 +136,8 @@ class _OptionsList extends State<ProfileOptions> {
               baseProvider.signOut().then((flag) {
                 if(flag) {
                   log.debug('Sign out process complete');
-                  baseProvider.showPositiveAlert('Signed out', 'Hope to see you soon', context);
                   Navigator.of(context).pushReplacementNamed('/onboarding');
+                  baseProvider.showPositiveAlert('Signed out', 'Hope to see you soon', context);
                 }else{
                   baseProvider.showNegativeAlert('Sign out failed', 'Couldn\'t signout. Please try again', context);
                   log.error('Sign out process failed');
