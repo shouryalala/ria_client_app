@@ -25,7 +25,7 @@ class LogoFadeIn extends State<SplashScreen> {
 
 
   LogoFadeIn() {
-    _timer = new Timer(const Duration(seconds: 2), () {
+    _timer = new Timer(const Duration(seconds: 1), () {
       setState(() {
         _logoStyle = FlutterLogoStyleX.horizontal;
         initialize();
@@ -53,7 +53,6 @@ class LogoFadeIn extends State<SplashScreen> {
     }
 //    else if(onboardProvider.homeState == Constants.VISIT_STATUS_COMPLETED
 //        && onboardProvider.currentVisit != null && onboardProvider.currentAssistant != null){
-//       //TODO disgusting code.. please refactor dude
 //        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => RateVisitLayout(
 //            rateVisit: onboardProvider.currentVisit,
 //            rateAssistant: onboardProvider.currentAssistant,

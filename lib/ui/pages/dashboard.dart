@@ -544,7 +544,7 @@ class _DashboardState extends State<Dashboard> {
             return CostConfirmModalSheet(
                 request: req, onRequestConfirmed: (cost) async {
               Navigator.of(context).pop(); //close Cost Sheet
-              req.cost = cost;
+              //req.cost = cost;  //TODO not adding cost in this object
               log.debug("onRequestConfirmed called for: " + req.toString());
               _onConfirmRequest(baseProvider.firebaseUser.uid, req, false);
             });

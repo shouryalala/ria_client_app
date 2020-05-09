@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -337,6 +339,7 @@ class CostConfirmModalSheet extends StatefulWidget {
 
 class _CostConfirmModalSheetState extends State<CostConfirmModalSheet> with SingleTickerProviderStateMixin {
   _CostConfirmModalSheetState();
+
   Log log = new Log('CostConfirmModalSheet');
   var heightOfModalBottomSheet = 100.0;
   bool _isCostRequestCalled = false;
@@ -370,92 +373,114 @@ class _CostConfirmModalSheetState extends State<CostConfirmModalSheet> with Sing
   }
 
   Widget _costConfirmDialog(Request request) {
-    if(!_isCostRequestCalled) {
+    if (!_isCostRequestCalled) {
       _isCostRequestCalled = true;
-      httpProvider.getRequestCost(request).then((resCost) {
-        setState(() {
-          _isCostFetched = true;
-          if(resCost == -1.0) {
-            _isCostAvailable = false;
-            _requestCostWidget = new Text('Couldnt fetch the cost at this moment. Please try again soon.');
-          }
-          else{
-            _isCostAvailable = true;
-            _requestCostWidget = new Column(
-              children: <Widget>[
-                new Text(
-                  'Service: ${baseProvider.decodeService(widget.request.service)}'
-                      '\nTime: ${baseProvider.decodeTime(widget.request.req_time)}',  //TODO add address
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  children: <Widget>[
-                    new Text(
-                      'Charge: ',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    (widget.isFree)?Row(
-                     children: <Widget>[
-                       Text(
-                           '₹${resCost}',
-                           style: TextStyle(
-                               fontSize: 24,
-                               fontWeight: FontWeight.w600,
-                               decoration: TextDecoration.lineThrough
-                           )
-                       ),
-                       Text(
-                           '\t₹0',
-                           style: TextStyle(
-                               fontSize: 24,
-                               fontWeight: FontWeight.w600,
-                           )
-                       ),
-                     ],
-                    ):
-                    new Text(
-                      resCost.toString(),
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
+      Timer(const Duration(seconds: 1), () {
+        _onCostRetrieved(69.0);
+      });
+      //TODO disabling cost fetch for now
+      //httpProvider.getRequestCost(request).then((resCost) => _onCostRetrieved(resCost));
+      if (!_isCostFetched) {
+        _requestCostWidget = SpinKitDoubleBounce(
+          color: UiConstants.spinnerColor,
+          size: 50.0,
+          //controller: AnimationController(vsync: this, duration: const Duration(milliseconds: 1200)),
+        );
+      }
+    }
+    return _requestCostWidget;
+  }
 
-                SizedBox(height: 30,),
-                Material(
-                  color: UiConstants.secondaryColor,
-                  borderRadius: new BorderRadius.circular(10.0),
-                  elevation: 3,
-                  child: MaterialButton(
-                    child: Text(
-                      'Confirm',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20.0
-                      ),
+  _onCostRetrieved(double resCost) {
+    setState(() {
+      _isCostFetched = true;
+      if (resCost == -1.0) {
+        _isCostAvailable = false;
+        _requestCostWidget = new Text(
+            'Couldnt fetch the cost at this moment. Please try again soon.');
+      }
+      else {
+        _isCostAvailable = true;
+        _requestCostWidget = new Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            _modalSheetTextRow(null, 'Service',
+                baseProvider.decodeService(widget.request.service)),
+            _modalSheetTextRow(
+                null, 'Time', baseProvider.decodeTime(widget.request.req_time)),
+            Padding(
+              padding: EdgeInsets.all(3),
+              child: Row(
+                children: <Widget>[
+                  new Text(
+                    'Cost: ',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
                     ),
-                    onPressed: () {
-                      if(widget.onRequestConfirmed != null) {
-                        log.debug('Confirm Request clicked. Sending callback to homeScreen');
-                        widget.onRequestConfirmed(resCost);
-                      }else{
-                        log.error('Callback not set. Cost confirmation discarded');
-                      }
-                    },
-                    minWidth: double.infinity,
+                  ),
+                  (widget.isFree) ? Row(
+                    children: <Widget>[
+//                      Text(
+//                          '₹$resCost',
+//                          style: TextStyle(
+//                              fontSize: 24,
+//                              fontWeight: FontWeight.w400,
+//                              decoration: TextDecoration.lineThrough
+//                          )
+//                      ),
+                      Text(
+                          '₹0\t',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w400,
+                          )
+                      ),
+                      GestureDetector(
+                        child: Icon(Icons.info_outline, color: Colors.black54),
+                        onTap: () {
+                          HapticFeedback.vibrate();
+                          log.debug('Clicked');
+                        },
+                      ),
+                    ],
+                  ) :
+                  new Text(
+                    resCost.toString(),
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 30,),
+            Material(
+              color: UiConstants.secondaryColor,
+              borderRadius: new BorderRadius.circular(10.0),
+              elevation: 3,
+              child: MaterialButton(
+                child: Text(
+                  'Confirm',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20.0
                   ),
                 ),
+                onPressed: () {
+                  if (widget.onRequestConfirmed != null) {
+                    log.debug(
+                        'Confirm Request clicked. Sending callback to homeScreen');
+                    widget.onRequestConfirmed(resCost);
+                  } else {
+                    log.error('Callback not set. Cost confirmation discarded');
+                  }
+                },
+                minWidth: double.infinity,
+              ),
+            ),
 //                new RaisedButton(
 //                  shape: RoundedRectangleBorder(
 //                      borderRadius: BorderRadius.circular(5.0)),
@@ -470,20 +495,34 @@ class _CostConfirmModalSheetState extends State<CostConfirmModalSheet> with Sing
 //                  },
 //                  child: Text('Confirm'),
 //                ),
-              ],
-            );
-          }
-        });
-      });
-      if(!_isCostFetched) {
-        _requestCostWidget = SpinKitDoubleBounce(
-          color: UiConstants.spinnerColor,
-          size: 50.0,
-          //controller: AnimationController(vsync: this, duration: const Duration(milliseconds: 1200)),
+          ],
         );
       }
-    }
-    return _requestCostWidget;
+    });
+  }
+
+  _modalSheetTextRow(Icon icon, String header, String text) {
+    return Padding(
+        padding: EdgeInsets.all(3.0),
+        child:Row(
+            children: <Widget>[
+              Text(
+                '$header: ',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                '$text',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w400,
+                ),
+              )
+            ]
+        )
+    );
   }
 }
 
