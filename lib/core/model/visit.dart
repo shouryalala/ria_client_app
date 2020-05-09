@@ -9,6 +9,7 @@ class Visit{
   final String path;
   final String uId;
   final String aId;
+  final String ast_name;
   final int date;
   final int req_st_time;
   final int vis_st_time;
@@ -21,6 +22,7 @@ class Visit{
 
   static final String fldVID = "visit_path"; //for local saving
   static final String fldAID = "ass_id";
+  static final String fldAstName = "ast_name";
   static final String fldUID = "user_id";
   static final String fldDate = "date";
   static final String fldReqStTime = "req_st_time";
@@ -34,13 +36,14 @@ class Visit{
 
   static List<String> _intFldList = [ fldDate, fldReqStTime, fldVisStTime, fldVisEnTime, fldStatus];  //needed for local storage
 
-  Visit({this.path, this.aId, this.date, this.req_st_time, this.vis_st_time,
+  Visit({this.path, this.aId, this.ast_name, this.date, this.req_st_time, this.vis_st_time,
       this.vis_en_time, this.service, this.status, this.cost, this.uId});
 
   //to parse from server/cache
   Visit.fromMap(Map<String, dynamic> data, String path) : this (
     path: path,
     aId: data[fldAID],
+    ast_name: data[fldAstName],
     date: data[fldDate],
     req_st_time: data[fldReqStTime],
     vis_st_time: data[fldVisStTime],
@@ -73,6 +76,7 @@ class Visit{
     oContent.writeln(fldVID + '\$' + path.trim());
     if(aId != null)oContent.writeln(fldAID + '\$' + aId.trim());
     if(uId != null)oContent.writeln(fldUID + '\$' + uId.trim());
+    if(ast_name != null)oContent.writeln(fldAstName + '\$' + ast_name.trim());
     if(service != null)oContent.writeln(fldService + '\$' + service.trim());
     if(status != null)oContent.writeln(fldStatus + '\$' + status.toString());
     if(date != null)oContent.writeln(fldDate + '\$' + date.toString());
@@ -94,7 +98,8 @@ class Visit{
           path = line.split('\$')[1];
           continue;
         }
-        if (line.contains('$fldAID\$') || line.contains('$fldUID\$') || line.contains('$fldService\$')) {
+        if (line.contains('$fldAID\$') || line.contains('$fldUID\$') ||
+            line.contains('$fldService\$') || line.contains('$fldAstName\$')) {
           List<String> res = line.split('\$');
           gData.putIfAbsent(res[0], () {
             return (res[1] != null && res[1].length > 0) ? res[1] : '';

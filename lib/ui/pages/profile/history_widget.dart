@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/model/visit.dart';
 import 'package:flutter_app/core/ops/db_ops.dart';
+import 'package:flutter_app/util/assets.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:flutter_app/util/ui_constants.dart';
@@ -96,7 +99,7 @@ class _HistoryList extends State<HistoryPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         new Image(
-                          image: new AssetImage("images/cleaner.png"),
+                          image: new AssetImage(Assets.pose1),
                           height: 92.0,
                           width: 92.0,
                         ),
@@ -181,9 +184,9 @@ class _HistoryList extends State<HistoryPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[ //TODO add cost and rating
+                  children: <Widget>[ //TODO add cost and rating, actual start end times
                     Text('Date: ${vItem.date}'),
-                    Text('Assistant: ${vItem.aId}'),
+                    Text('Assistant: ${vItem.ast_name}'),
                     Text('Timing: ${_authProvider.decodeTime(vItem.vis_st_time)} to ${_authProvider.decodeTime(vItem.vis_en_time)}'),
                     Text('Service: ${_authProvider.decodeService(vItem.service)}'),
                     //Text('Rating: ${vItem.}')
@@ -197,7 +200,9 @@ class _HistoryList extends State<HistoryPage> {
               ),
               alignment: FractionalOffset.centerLeft,
               child: new Image(
-                image: new AssetImage("images/cleaner.png"),    //TODO add image
+                image: new AssetImage(
+                    Assets.type2Assistant[Random().nextInt(4)]  //use a worker graphic at Random
+                ),
                 height: 92.0,
                 width: 92.0,
               ),

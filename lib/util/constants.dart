@@ -108,7 +108,7 @@ class Constants {
   static final String PRIORITY_MIN = "Min";
   //DEFAULTS
   static final String DEFAULT = "X";
-  static final String DEFAULT_TIME = "4:20 am";
+  static final String DEFAULT_TIME = "N/A";
   static final String DEFAULT_SERVICE = "Cleaning";
   static final String DEFAULT_ADDRESS = "3/202\n Beverly Park Appt\n Sector-22";
   //Home Screen constants
