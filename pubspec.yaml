@@ -66,6 +66,12 @@ flutter:
   assets:
     - images/pose.png
     - images/cleaner.png
+    - images/history/cleaning-avatar-type-2-task-1.png
+    - images/history/cleaning-avatar-type-2-task-2.png
+    - images/history/cleaning-avatar-type-2-task-3.png
+    - images/history/cleaning-avatar-type-2-task-4.png
+    - images/cleaning-avatar-type-1-splash-1.png
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

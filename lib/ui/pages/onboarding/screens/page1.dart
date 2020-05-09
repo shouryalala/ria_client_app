@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/ui/elements/circles_with_image.dart';
 import 'package:flutter_app/util/assets.dart';
 
+const double IMAGE_SIZE = 320.0;
+
 class Page1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -35,7 +37,7 @@ class Page1 extends StatelessWidget {
               children: <Widget>[
                 SizedBox(
                   child: Image(
-                    image: AssetImage(Assets.pose1),
+                    image: AssetImage(Assets.type1Assistant[0]),
                     fit: BoxFit.fitHeight,
                   ),
                   height: IMAGE_SIZE,

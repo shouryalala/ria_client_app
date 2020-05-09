@@ -11,7 +11,7 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="CRYB"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/mockup">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

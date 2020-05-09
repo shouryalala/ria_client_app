@@ -163,7 +163,7 @@ class _HistoryList extends State<HistoryPage> {
         child: new Stack(
           children: <Widget>[
             new Container(
-              height: 159.0,
+              height: 160.0,
               width: double.infinity,
               margin: new EdgeInsets.only(left: 46.0),
               decoration: new BoxDecoration(
@@ -203,8 +203,8 @@ class _HistoryList extends State<HistoryPage> {
                 image: new AssetImage(
                     Assets.type2Assistant[Random().nextInt(4)]  //use a worker graphic at Random
                 ),
-                height: 92.0,
-                width: 92.0,
+                height: 130.0,
+                width: 76.0,
               ),
             ),
           ],

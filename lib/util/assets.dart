@@ -8,4 +8,8 @@ class Assets {
     'images/history/cleaning-avatar-type-2-task-3.png',
     'images/history/cleaning-avatar-type-2-task-4.png'
   ];
+  static final List<String> type1Assistant = [
+    'images/cleaning-avatar-type-1-splash-1.png'
+  ];
+  static final String mockIcon = 'images/mockup-1.1.png';
 }
