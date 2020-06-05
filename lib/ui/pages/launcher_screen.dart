@@ -20,25 +20,28 @@ class LogoFadeIn extends State<SplashScreen> {
   Log log = new Log("SplashScreen");
   bool _isSlowConnection = false;
   bool _isAnimVisible = true;
-  Timer _timer, _timer2;
+  Timer _timer, _timer2, _timer3;
   FlutterLogoStyleX _logoStyle = FlutterLogoStyleX.markOnly;
 
 
   LogoFadeIn() {
     _timer = new Timer(const Duration(seconds: 1), () {
       setState(() {
-        _logoStyle = FlutterLogoStyleX.horizontal;
+        _logoStyle = FlutterLogoStyleX.stacked;
+      });
+    });
+    _timer2 = new Timer(const Duration(seconds: 2), () {
+      setState(() {
         initialize();
       });
     });
-    _timer2 = new Timer(const Duration(seconds: 6), () {
+    _timer3 = new Timer(const Duration(seconds: 6), () {
       //display slow internet message
         setState(() {
           _isSlowConnection = true;
         });
     });
   }
-
 
 
   initialize() async{
