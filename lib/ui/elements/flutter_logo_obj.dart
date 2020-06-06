@@ -1,12 +1,8 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+import 'dart:ui' as ui show lerpDouble, Image, instantiateImageCodec;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/ui/elements/custom_flutter_logo.dart';
-
-//import 'colors.dart';
 
 /// The Flutter logo, in widget form. This widget respects the [IconTheme].
 /// For guidelines on using the Flutter logo, visit https://flutter.dev/brand.
@@ -28,6 +24,7 @@ class FlutterLogoX extends StatelessWidget {
     this.style = FlutterLogoStyleX.markOnly,
     this.duration = const Duration(milliseconds: 750),
     this.curve = Curves.fastOutSlowIn,
+    this.img = null,
   }) : super(key: key);
 
   /// The size of the logo in logical pixels.
@@ -68,6 +65,8 @@ class FlutterLogoX extends StatelessWidget {
   /// change.
   final Curve curve;
 
+  final ui.Image img;
+
   @override
   Widget build(BuildContext context) {
     final IconThemeData iconTheme = IconTheme.of(context);
@@ -83,7 +82,10 @@ class FlutterLogoX extends StatelessWidget {
         darkColor: logoColors.shade900,
         style: style,
         textColor: textColor,
+        logo: img,
       ),
     );
   }
+
+
 }

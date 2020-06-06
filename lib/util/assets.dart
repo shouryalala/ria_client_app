@@ -12,4 +12,5 @@ class Assets {
     'images/cleaning-avatar-type-1-splash-1.png'
   ];
   static final String mockIcon = 'images/mockup-1.1.png';
+  static final String logoMaxSize = 'images/logo_full_size.png';
 }

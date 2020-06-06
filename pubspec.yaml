@@ -71,6 +71,7 @@ flutter:
     - images/history/cleaning-avatar-type-2-task-3.png
     - images/history/cleaning-avatar-type-2-task-4.png
     - images/cleaning-avatar-type-1-splash-1.png
+    - images/logo_full_size.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

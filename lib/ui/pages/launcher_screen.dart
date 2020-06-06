@@ -1,16 +1,20 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/fcm_listener.dart';
 import 'package:flutter_app/ui/elements/breathing_text_widget.dart';
 import 'package:flutter_app/ui/elements/custom_flutter_logo.dart';
 import 'package:flutter_app/ui/elements/flutter_logo_obj.dart';
+import 'package:flutter_app/util/assets.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:provider/provider.dart';
 
 import '../../base_util.dart';
 import 'home/rate_visit_layout.dart';
+import 'dart:ui' as ui show lerpDouble, Image, instantiateImageCodec;
+import 'package:flutter/services.dart' show rootBundle;
 
 class SplashScreen extends StatefulWidget {  
   @override State<StatefulWidget> createState() => LogoFadeIn();
@@ -22,15 +26,16 @@ class LogoFadeIn extends State<SplashScreen> {
   bool _isAnimVisible = true;
   Timer _timer, _timer2, _timer3;
   FlutterLogoStyleX _logoStyle = FlutterLogoStyleX.markOnly;
-
+  ui.Image logo;
 
   LogoFadeIn() {
-    _timer = new Timer(const Duration(seconds: 1), () {
+    loadImageAsset(Assets.logoMaxSize);
+    _timer = new Timer(const Duration(seconds: 2), () {
       setState(() {
         _logoStyle = FlutterLogoStyleX.stacked;
       });
     });
-    _timer2 = new Timer(const Duration(seconds: 2), () {
+    _timer2 = new Timer(const Duration(seconds: 3), () {
       setState(() {
         initialize();
       });
@@ -75,14 +80,15 @@ class LogoFadeIn extends State<SplashScreen> {
       home: Scaffold(
         body: Stack(
           children: <Widget>[
-            Center(
+            (logo != null)?Center(
               child: Container(
                 child: new FlutterLogoX(
-                  size: 200.0,
+                  size: 160.0,
                   style: _logoStyle,
+                  img: logo,
                 ),
               ),
-            ),
+            ):Text('Loading..'),
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
@@ -101,6 +107,20 @@ class LogoFadeIn extends State<SplashScreen> {
       ),
     );
   }
+
+  Future<ui.Image> loadImageAsset(String assetName) async{
+    var bd = await rootBundle.load(assetName);//.then( (bd) {
+    Uint8List lst = new Uint8List.view(bd.buffer);
+    var codec = await ui.instantiateImageCodec(lst);//.then( (codec) {
+    var frameInfo = await codec.getNextFrame();//.then(
+//                (frameInfo) {
+    logo = frameInfo.image;
+    print ("bkImage instantiated: $logo");
+    setState(() {
+
+    });
+  }
+
 }
 
 //class AnimatedLogo extends AnimatedWidget {
