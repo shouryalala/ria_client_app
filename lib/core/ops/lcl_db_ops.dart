@@ -88,8 +88,17 @@ class LocalDBModel extends ChangeNotifier {
   Future<bool> deleteLocalAppData() async{
     try{
       await _api.deleteOnboardFile();
-      await _api.deleteUserFile();
+    }catch(e) {
+      log.error('Failed to delete onboarding file:' + e.toString());
+    }
+    try{
       await _api.deleteStatsFile();
+    }catch(e) {
+      log.error('Failed to delete onboarding or user file:' + e.toString());
+    }
+    //User file deletion is crucial for return flag. Rest can be missing
+    try{
+      await _api.deleteUserFile();
       return true;
     }catch(e) {
       log.error('Failed to delete onboarding or user file:' + e.toString());
