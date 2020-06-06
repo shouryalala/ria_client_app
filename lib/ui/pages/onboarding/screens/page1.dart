@@ -37,8 +37,8 @@ class Page1 extends StatelessWidget {
               children: <Widget>[
                 SizedBox(
                   child: Image(
-                    image: AssetImage(Assets.type1Assistant[0]),
-                    fit: BoxFit.fitHeight,
+                    image: AssetImage(Assets.onboardingSlide[0]),
+                    fit: BoxFit.contain,
                   ),
                   height: IMAGE_SIZE,
                   width: IMAGE_SIZE,
@@ -46,12 +46,12 @@ class Page1 extends StatelessWidget {
                 new Padding(
                   //padding: const EdgeInsets.all(18.0),
                   padding: const EdgeInsets.fromLTRB(18.0, 25, 18.0, 18.0),
-                  child: Text('Ria gets you an assitant, when you need her',
+                  child: Text(Assets.onboardingHeader[0],
                     style: Theme.of(context).textTheme.display1.copyWith(color: Colors.grey[800]),
                     textAlign: TextAlign.center,
                   ),
                 ),
-                Text('Dude obviously this is still dummy text',
+                Text(Assets.onboardingDesc[0],
                   style: Theme.of(context).textTheme.body1.copyWith(color: Colors.grey[800]),
                   textAlign: TextAlign.center,
                 )

@@ -6,6 +6,7 @@ import 'package:flutter_app/ui/elements/dots_indicator.dart';
 import 'package:flutter_app/ui/pages/onboarding/screens/page1.dart';
 import 'package:flutter_app/ui/pages/onboarding/screens/page2.dart';
 import 'package:flutter_app/ui/pages/onboarding/screens/page3.dart';
+import 'package:flutter_app/ui/pages/onboarding/screens/page4.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:provider/provider.dart';
 
@@ -16,14 +17,15 @@ class _OnboardingMainPageState extends State<OnboardingMainPage> {
     Page1(),
     Page2(),
     Page3(),
+    Page4(),
   ];
   int page = 0;
 
   @override
   void initState() {
     super.initState();
-    Timer.periodic(Duration(seconds: 5), (Timer timer) {
-      if (page < 2) {
+    Timer.periodic(Duration(seconds: 4), (Timer timer) {
+      if (page < 3) {
         page++;
       } else {
         page = 0;

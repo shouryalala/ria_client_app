@@ -1,20 +1,18 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'dart:ui' as ui show Image, instantiateImageCodec;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_app/core/fcm_listener.dart';
 import 'package:flutter_app/ui/elements/breathing_text_widget.dart';
 import 'package:flutter_app/ui/elements/custom_flutter_logo.dart';
 import 'package:flutter_app/ui/elements/flutter_logo_obj.dart';
 import 'package:flutter_app/util/assets.dart';
-import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:provider/provider.dart';
 
 import '../../base_util.dart';
-import 'home/rate_visit_layout.dart';
-import 'dart:ui' as ui show lerpDouble, Image, instantiateImageCodec;
-import 'package:flutter/services.dart' show rootBundle;
 
 class SplashScreen extends StatefulWidget {  
   @override State<StatefulWidget> createState() => LogoFadeIn();
@@ -29,7 +27,7 @@ class LogoFadeIn extends State<SplashScreen> {
   ui.Image logo;
 
   LogoFadeIn() {
-    loadImageAsset(Assets.logoMaxSize);
+    _loadImageAsset(Assets.logoMediumSize);
     _timer = new Timer(const Duration(seconds: 2), () {
       setState(() {
         _logoStyle = FlutterLogoStyleX.stacked;
@@ -47,7 +45,6 @@ class LogoFadeIn extends State<SplashScreen> {
         });
     });
   }
-
 
   initialize() async{
     final onboardProvider = Provider.of<BaseUtil>(context);
@@ -108,41 +105,14 @@ class LogoFadeIn extends State<SplashScreen> {
     );
   }
 
-  Future<ui.Image> loadImageAsset(String assetName) async{
-    var bd = await rootBundle.load(assetName);//.then( (bd) {
+  void _loadImageAsset(String assetName) async{
+    var bd = await rootBundle.load(assetName);
     Uint8List lst = new Uint8List.view(bd.buffer);
-    var codec = await ui.instantiateImageCodec(lst);//.then( (codec) {
-    var frameInfo = await codec.getNextFrame();//.then(
-//                (frameInfo) {
+    var codec = await ui.instantiateImageCodec(lst);
+    var frameInfo = await codec.getNextFrame();
     logo = frameInfo.image;
     print ("bkImage instantiated: $logo");
-    setState(() {
-
-    });
+    setState(() {});
   }
-
 }
 
-//class AnimatedLogo extends AnimatedWidget {
-//  // Make the Tweens static because they don't change.
-//  static final _opacityTween = Tween<double>(begin: 0.1, end: 1);
-//  static final _sizeTween = Tween<double>(begin: 0, end: 300);
-//
-//  AnimatedLogo({Key key, Animation<double> animation})
-//      : super(key: key, listenable: animation);
-//
-//  Widget build(BuildContext context) {
-//    final animation = listenable as Animation<double>;
-//    return Center(
-//      child: Opacity(
-//        opacity: _opacityTween.evaluate(animation),
-//        child: Container(
-//          margin: EdgeInsets.symmetric(vertical: 10),
-//          height: _sizeTween.evaluate(animation),
-//          width: _sizeTween.evaluate(animation),
-//          child: FlutterLogo(),
-//        ),
-//      ),
-//    );
-//  }
-//}

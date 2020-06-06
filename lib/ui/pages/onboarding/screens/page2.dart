@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/ui/elements/circles_with_image.dart';
 import 'package:flutter_app/util/assets.dart';
 
-const double IMAGE_SIZE = 200.0;
+const double IMAGE_SIZE = 370.0;
 
 class Page2 extends StatelessWidget {
   @override
@@ -37,21 +37,21 @@ class Page2 extends StatelessWidget {
               children: <Widget>[
                 SizedBox(
                   child: Image(
-                    image: AssetImage(Assets.pose2),
-                    fit: BoxFit.fitHeight,
+                    image: AssetImage(Assets.onboardingSlide[1]),
+                    fit: BoxFit.contain,
                   ),
                   height: IMAGE_SIZE,
                   width: IMAGE_SIZE,
                 ),
                 new Padding(
                   padding: const EdgeInsets.fromLTRB(18.0, 25, 18.0, 18.0),
-                  child: Text('Varied Workouts\nBuilt Skills',
-                    style: Theme.of(context).textTheme.display1.copyWith(color: Colors.white),
+                  child: Text(Assets.onboardingHeader[1],
+                    style: Theme.of(context).textTheme.display1.copyWith(color: Colors.grey[800]),
                     textAlign: TextAlign.center,
                   ),
                 ),
-                Text('Take your workouts to the next level\nand become a BEAST!',
-                  style: Theme.of(context).textTheme.body1.copyWith(color: Colors.white),
+                Text(Assets.onboardingDesc[1],
+                  style: Theme.of(context).textTheme.body1.copyWith(color: Colors.grey[800]),
                   textAlign: TextAlign.center,
                 )
               ],

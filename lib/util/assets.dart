@@ -8,9 +8,27 @@ class Assets {
     'images/history/cleaning-avatar-type-2-task-3.png',
     'images/history/cleaning-avatar-type-2-task-4.png'
   ];
-  static final List<String> type1Assistant = [
-    'images/cleaning-avatar-type-1-splash-1.png'
+  static final List<String> onboardingSlide = [
+    'images/onboarding/splash-1.png',
+    'images/onboarding/splash-2.png',
+    'images/onboarding/splash-3.png',
+    'images/onboarding/splash-4.png'
   ];
   static final String mockIcon = 'images/mockup-1.1.png';
   static final String logoMaxSize = 'images/logo_full_size.png';
+  static final String logoMediumSize = 'images/logo_full_size.png';
+
+  static final List<String> onboardingHeader=[
+    'Learn the secret techniques',
+    'Learn the secret techniques',
+    'Learn the secret techniques',
+    'Learn the secret techniques',
+  ];
+
+  static final List<String> onboardingDesc = [
+    'Our programs have been tested\nby professional instructors & athletes.',
+    'Our programs have been tested\nby professional instructors & athletes.',
+    'Our programs have been tested\nby professional instructors & athletes.',
+    'Our programs have been tested\nby professional instructors & athletes.',
+  ];
 }
