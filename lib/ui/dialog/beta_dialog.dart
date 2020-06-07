@@ -3,10 +3,10 @@ import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:flutter_app/util/ui_constants.dart';
 
-class AboutUsDialog extends StatelessWidget {
+class BetaDialog extends StatelessWidget {
   final Log log = new Log('AboutUsDialog');
 
-  AboutUsDialog();
+  BetaDialog();
 
   @override
   Widget build(BuildContext context) {

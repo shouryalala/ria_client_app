@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_app/core/model/assistant.dart';
 import 'package:flutter_app/core/model/request.dart';
 import 'package:flutter_app/core/model/visit.dart';
+import 'package:flutter_app/ui/dialog/beta_dialog.dart';
 import 'package:flutter_app/ui/dialog/form_dialog.dart';
 import 'package:flutter_app/ui/elements/number_counter_text.dart';
 import 'package:flutter_app/ui/pages/home/cancelled_visit_layout.dart';
@@ -104,20 +103,33 @@ class _DashboardState extends State<Dashboard> {
                   fontWeight: FontWeight.w700,
                   fontSize: 30.0)),
           actions: <Widget>[
-            Container(
-              margin: EdgeInsets.only(right: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Text('beta',
-                      style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14.0)),
-                  Icon(Icons.info_outline, color: Colors.black54)
-                ],
-              ),
+            GestureDetector(
+                child: Container(
+                  margin: EdgeInsets.only(right: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Text('beta',
+                          style: TextStyle(
+                              color: UiConstants.primaryColor,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16.0)),
+                      Icon(
+                          Icons.info_outline,
+                          color: UiConstants.primaryColor,
+                          size: 20,
+                      )
+                    ],
+                  ),
+                ),
+              onTap: () {
+                  HapticFeedback.vibrate();
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) => BetaDialog()
+                );
+              },
             )
           ],
         ),

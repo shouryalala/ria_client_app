@@ -326,7 +326,8 @@ class BaseUtil extends ChangeNotifier{
     //45000 = 12:30pm
     int product = (enTime/60).truncate();
     int hours = (product/60).truncate();
-    int minutes = (product%60);
+    int mins = (product%60);
+    String minutes = mins.toString().padLeft(2, '0');
     String ap = (hours < 12) ? "am" : "pm";
     hours = (hours <= 12)?hours:hours-12;
     return '$hours:$minutes $ap';

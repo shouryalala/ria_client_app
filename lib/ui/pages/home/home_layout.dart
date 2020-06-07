@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_app/core/model/request.dart';
 import 'package:flutter_app/core/ops/db_ops.dart';
 import 'package:flutter_app/core/ops/http_ops.dart';
+import 'package:flutter_app/ui/dialog/beta_dialog.dart';
 import 'package:flutter_app/ui/elements/home_time_widget.dart';
 import 'package:flutter_app/ui/elements/mutli_select_chip.dart';
 import 'package:flutter_app/ui/elements/time_picker_model.dart';
@@ -247,7 +248,10 @@ class _CostConfirmModalSheetState extends State<CostConfirmModalSheet> with Sing
                         child: Icon(Icons.info_outline, color: Colors.black54),
                         onTap: () {
                           HapticFeedback.vibrate();
-                          log.debug('Clicked');
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) => BetaDialog()
+                          );
                         },
                       ),
                     ],
