@@ -33,15 +33,7 @@ class _UpdateAddressScreenState extends State<UpdateAddressScreen> {
     localDbProvider = Provider.of<LocalDBModel>(context);
     return new Scaffold(
         key: _scaffoldKey,
-        appBar: AppBar(
-          elevation: 2.0,
-          backgroundColor: Colors.white70,
-          title: Text('${Constants.APP_NAME}',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 30.0)),
-        ),
+        appBar: BaseUtil.getAppBar(),
         body: Stack(
           children: <Widget>[
             new Positioned.fill(

@@ -42,7 +42,7 @@ class App extends StatelessWidget{
         ],
         child: MaterialApp(
           title:'${Constants.APP_NAME}',
-          color: UiConstants.secondaryColor,
+          color: UiConstants.primaryColor,
           theme: ThemeData(
               primaryColor: UiConstants.primaryColor
           ),

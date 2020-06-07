@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/util/ui_constants.dart';
 
 class MultiSelectChip extends StatefulWidget {
   final List<String> rList;
@@ -20,6 +21,11 @@ class _MultiSelectChipState extends State<MultiSelectChip> {
       choices.add(Container(
         padding: const EdgeInsets.all(3.0),
         child: ChoiceChip(
+//          selectedColor: UiConstants.chipColor,
+//          elevation: 1.0,
+//          labelStyle: TextStyle(
+//            color: UiConstants.accentColor
+//          ),
           label: Text(item),
         selected: selectedChoices.contains(item),
         onSelected: (selected) {

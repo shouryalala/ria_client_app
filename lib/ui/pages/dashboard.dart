@@ -19,6 +19,7 @@ import 'package:flutter_app/util/calendar_util.dart';
 import 'package:flutter_app/util/connection_util.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/logger.dart';
+import 'package:flutter_app/util/ui_constants.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 
@@ -163,7 +164,7 @@ class _DashboardState extends State<Dashboard> {
                     context: context,
                     builder: (BuildContext context) => FormDialog(
                         title: "Tell us what you think",
-                        description: "We'd really appreciate it",
+                        description: "We'd love to hear from you",
                         buttonText: "Submit",
                         dialogAction: (String fdbk) {
                           if(_isOffline) baseProvider.showNoInternetAlert(context);
@@ -173,7 +174,7 @@ class _DashboardState extends State<Dashboard> {
                               reqProvider.submitFeedback((baseProvider.firebaseUser == null || baseProvider.firebaseUser.uid == null)?'UNKNOWN':
                               baseProvider.firebaseUser.uid, fdbk).then((flag) {
                                 if(flag) {
-                                  baseProvider.showPositiveAlert('Thank You', 'You help us get better!', _scaffoldKey.currentContext);
+                                  baseProvider.showPositiveAlert('Thank You', 'We appreciate your feedback!', _scaffoldKey.currentContext);
                                 }
                               });
                               Navigator.of(context).pop();
@@ -200,7 +201,7 @@ class _DashboardState extends State<Dashboard> {
                                   color: Colors.black,
                                   fontWeight: FontWeight.w700,
                                   fontSize: 24.0)),
-                          Text('lorem ipsum',
+                          Text('More details',
                               style: TextStyle(color: Colors.redAccent)),
                         ],
                       ),
@@ -326,12 +327,12 @@ class _DashboardState extends State<Dashboard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text('Total Mins',
-                      style: TextStyle(color: Colors.blueAccent)),
+                      style: TextStyle(color: Colors.indigoAccent)),
                   minuteTileText
                 ],
               ),
               Material(
-                  color: Colors.blue,
+                  color: Colors.indigoAccent,
                   borderRadius: BorderRadius.circular(24.0),
                   child: Center(
                       child: Padding(

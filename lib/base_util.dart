@@ -14,6 +14,7 @@ import 'package:flutter_app/util/connection_util.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/locator.dart';
 import 'package:flutter_app/util/logger.dart';
+import 'package:flutter_app/util/ui_constants.dart';
 
 import 'core/model/user.dart';
 import 'core/model/user_stats.dart';
@@ -377,8 +378,12 @@ class BaseUtil extends ChangeNotifier{
       title: title,
       message: message,
       duration: Duration(seconds: 3),
-      backgroundColor: Colors.greenAccent,
-      boxShadows: [BoxShadow(color: Colors.greenAccent, offset: Offset(0.0, 2.0), blurRadius: 3.0,)],
+      backgroundGradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: [Colors.lightBlueAccent, UiConstants.primaryColor]),
+//      backgroundColor: Colors.lightBlueAccent,
+      boxShadows: [BoxShadow(color: UiConstants.positiveAlertColor, offset: Offset(0.0, 2.0), blurRadius: 3.0,)],
     )..show(context);
   }
 
@@ -396,9 +401,24 @@ class BaseUtil extends ChangeNotifier{
       title: title,
       message: message,
       duration: Duration(seconds: seconds??3),
-      backgroundColor: Colors.blueGrey,
-      boxShadows: [BoxShadow(color: Colors.blueGrey, offset: Offset(0.0, 2.0), blurRadius: 3.0,)],
+      backgroundColor: UiConstants.negativeAlertColor,
+      boxShadows: [BoxShadow(color: UiConstants.negativeAlertColor, offset: Offset(0.0, 2.0), blurRadius: 3.0,)],
     )..show(context);
+  }
+
+  static Widget getAppBar() {
+    return AppBar(
+      elevation: 2.0,
+      backgroundColor: Colors.white70,
+      iconTheme: IconThemeData(
+        color: Colors.black, //change your color here
+      ),
+      title: Text('${Constants.APP_NAME}',
+          style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.w700,
+              fontSize: 30.0)),
+    );
   }
 
   bool isSignedIn() => (firebaseUser != null && firebaseUser.uid != null);

@@ -8,6 +8,7 @@ import 'package:flutter_app/ui/pages/onboarding/screens/page2.dart';
 import 'package:flutter_app/ui/pages/onboarding/screens/page3.dart';
 import 'package:flutter_app/ui/pages/onboarding/screens/page4.dart';
 import 'package:flutter_app/util/logger.dart';
+import 'package:flutter_app/util/ui_constants.dart';
 import 'package:provider/provider.dart';
 
 class _OnboardingMainPageState extends State<OnboardingMainPage> {
@@ -123,8 +124,10 @@ class _OnboardingMainPageState extends State<OnboardingMainPage> {
                           decoration: BoxDecoration(
                             gradient: new LinearGradient(
                                 colors: [
-                                    Colors.green[400],
-                                    Colors.green[600],
+                                    UiConstants.primaryColor,
+                                    UiConstants.darkPrimaryColor,
+//                                    Colors.green[400],
+//                                    Colors.green[600],
 //                                  Colors.orange[600],
 //                                  Colors.orange[900],
                                 ],
@@ -157,13 +160,13 @@ class _OnboardingMainPageState extends State<OnboardingMainPage> {
                           height: 50.0,
                           decoration: BoxDecoration(
                             borderRadius: new BorderRadius.circular(30.0),
-                            border: Border.all(color: Colors.green, width: 1.0),
+                            border: Border.all(color: UiConstants.primaryColor, width: 1.0),
                             color: Colors.transparent,
                           ),
                           child: new Material(
                             child: MaterialButton(
                               child: Text('SKIP',
-                                style: Theme.of(context).textTheme.button.copyWith(color: Colors.green),
+                                style: Theme.of(context).textTheme.button.copyWith(color: UiConstants.primaryColor),
                               ),
                               onPressed: (){
                                 log.debug("Setting Onboarding flag to true.");

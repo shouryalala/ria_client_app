@@ -42,15 +42,7 @@ class _OptionsList extends State<ProfileOptions> {
     reqProvider = Provider.of<DBModel>(context);
     _optionsList = _loadOptionsList();
     return new Scaffold(
-        appBar: AppBar(
-          elevation: 2.0,
-          backgroundColor: Colors.white70,
-          title: Text('${Constants.APP_NAME}',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 30.0)),
-        ),
+        appBar: BaseUtil.getAppBar(),
         body: ListView.builder(
           padding: const EdgeInsets.all(16.0),
           itemBuilder: /*1*/ (context, i) {

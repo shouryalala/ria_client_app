@@ -96,7 +96,7 @@ class _HomeLayoutState extends State<HomeLayout> {
                         ),
                         SizedBox(height: 24.0,),
                         Material(
-                          color: UiConstants.secondaryColor,
+                          color: UiConstants.primaryColor,
                           borderRadius: new BorderRadius.circular(10.0),
                           elevation: 3,
                           child: MaterialButton(
@@ -123,15 +123,6 @@ class _HomeLayoutState extends State<HomeLayout> {
                           ),
 
                         ),
-//                        RaisedButton(
-//                          shape: RoundedRectangleBorder(
-//                              borderRadius: BorderRadius.circular(5.0)),
-//                          elevation: 4.0,
-//                          onPressed: () {
-//
-//                          },
-//                          child: Text("Request!"),
-//                        ),
                       ],
                     ),
                   ),
@@ -139,192 +130,7 @@ class _HomeLayoutState extends State<HomeLayout> {
               ],
             )
         );
-    //);
   }
-
-  Widget buildTimeButton() {
-    return null;
-
-
-
-    /*return RaisedButton(
-        shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(5.0)
-    ),
-      elevation: 4.0,
-      onPressed: () async{
-          _selectedTime = await showTimePicker(
-            context: context,
-            initialTime: TimeOfDay.now(),
-          );
-          log.debug(_selectedTime.toString());
-          setState(() {
-            int timeFlag = baseProvider.validateRequestTime(_selectedTime);
-            if(timeFlag == Constants.TIME_ERROR_OUTSIDE_WINDOW || timeFlag == Constants.TIME_ERROR_NOT_SELECTED) {
-              log.debug('Request check:: Invalid Time');
-              baseProvider.showNegativeAlert('Action Required', '${Constants.APP_NAME} is available from ${Constants.dayStartTime.hour}:${Constants.dayStartTime.minute.toString().padLeft(2, '0')} AM '
-                'to ${Constants.dayEndTime.hour-12}:${Constants.dayEndTime.minute.toString().padLeft(2, '0')} PM', context);
-              _selectedTime=TimeOfDay.now();
-            }
-            else if(timeFlag == Constants.TIME_ERROR_SERVICE_OFF) {
-              log.debug('Request check:: Invalid Time');
-              //No need to notify unless they initiate request
-            }
-          });
-      },
-      child: Container(
-        alignment: Alignment.center,
-        height: 50.0,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Container(
-                  child: Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.access_time,
-                        size: 18.0,
-                        color: Colors.teal,
-                      ),
-                      Text(_displayTime(_selectedTime),
-                        style: TextStyle(
-                            color: Colors.teal,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18.0),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-            Text(
-              "  Change",
-              style: TextStyle(
-                  color: Colors.teal,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18.0),
-            ),
-          ],
-        ),
-      ),
-      color: Colors.white,
-    );*/
-  }
-
-
-  Widget buildTimeButton2() {
-    return RaisedButton(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5.0)
-      ),
-      elevation: 4.0,
-      onPressed: () {
-        DatePicker.showPicker(context,
-            theme: DatePickerTheme(
-              containerHeight: 210.0,
-            ),
-            showTitleActions: true,
-            onConfirm: (time) {
-              print('confirm $time');
-              setState(() {
-                _time = '${time.hour} : ' + '${time.minute}'.padLeft(2,"0");
-                reqTime = time;
-              });
-            },
-            pickerModel:CustomPicker(currentTime: DateTime.now(), locale: LocaleType.en));
-        setState(() {});
-      },
-      child: Container(
-        alignment: Alignment.center,
-        height: 50.0,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Container(
-                  child: Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.access_time,
-                        size: 18.0,
-                        color: Colors.teal,
-                      ),
-                      Text((_time == null)?new CalendarUtil().getRoundedTime():_time,
-                        style: TextStyle(
-                            color: Colors.teal,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18.0),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-            Text(
-              "  Change",
-              style: TextStyle(
-                  color: Colors.teal,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18.0),
-            ),
-          ],
-        ),
-      ),
-      color: Colors.white,
-    );
-  }
-
-//  Widget buildLoginButton() {
-//    if(baseProvider.firebaseUser == null || baseProvider.myUser == null || baseProvider.myUser.hasIncompleteDetails()) {
-//      String btnText = "LOGIN";
-//      int pageNo = MobileInputScreen.index; //mobile no page
-//      if(baseProvider.firebaseUser != null ) {
-//        //user logged in but has incomplete details
-//        btnText = "Confirm Details";
-//        pageNo = NameInputScreen.index; //name input page
-//      }
-//      Align loginBtn =
-//      Align(
-//        alignment: Alignment.topRight,
-//        child: Container(
-//          width: 100.0,
-//          height: 40.0,
-//          decoration: BoxDecoration(
-//            borderRadius: new BorderRadius.circular(30.0),
-//            border: Border.all(color: UiConstants.primaryColor, width: 1.0),
-//            color: Colors.transparent,
-//          ),
-//          child: new Material(
-//            child: MaterialButton(
-//              child: Text(btnText,
-//                style: Theme
-//                    .of(context)
-//                    .textTheme
-//                    .button
-//                    .copyWith(color: UiConstants.primaryColor),
-//              ),
-//              onPressed: () {
-//                if(widget.onLoginRequest != null) {
-//                  log.debug("onLoginRequest callback for pageNo: " + pageNo.toString());
-//                  widget.onLoginRequest(pageNo);
-//                }
-//              },
-//              highlightColor: Colors.white30,
-//              splashColor: Colors.white30,
-//            ),
-//            color: Colors.transparent,
-//            borderRadius: new BorderRadius.circular(30.0),
-//          ),
-//        ),
-//      );
-//      return loginBtn;
-//    }
-//    //user already logged in and all important user details already available
-//    return new Container(width: 0, height: 0,);
-//  }
 }
 
 class CostConfirmModalSheet extends StatefulWidget {
@@ -458,7 +264,7 @@ class _CostConfirmModalSheetState extends State<CostConfirmModalSheet> with Sing
             ),
             SizedBox(height: 30,),
             Material(
-              color: UiConstants.secondaryColor,
+              color: UiConstants.primaryColor,
               borderRadius: new BorderRadius.circular(10.0),
               elevation: 3,
               child: MaterialButton(

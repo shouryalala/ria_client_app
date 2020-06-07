@@ -104,7 +104,7 @@ class _CancelledVisitLayoutState extends State<CancelledVisitLayout> {
               //child: RaisedButton(onPressed: () {},child: Text("Filter"),color: Colors.black,textColor: Colors.white,)
               child:Material(
                 child: MaterialButton(
-                  color: UiConstants.secondaryColor,
+                  color: UiConstants.primaryColor,
                   elevation: 1,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25),

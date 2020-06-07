@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/logger.dart';
+import 'package:flutter_app/util/ui_constants.dart';
 import 'package:provider/provider.dart';
 
 import '../../base_util.dart';
@@ -98,11 +99,11 @@ class HomeTimeWidgetState extends State<HomeTimeWidget> {
                         Icon(
                           Icons.access_time,
                           size: 18.0,
-                          color: Colors.teal,
+                          color: UiConstants.primaryColor,
                         ),
                         Text(_displayTime(_selectedTime),
                           style: TextStyle(
-                              color: Colors.teal,
+                              color: UiConstants.primaryColor,
                               fontWeight: FontWeight.bold,
                               fontSize: 18.0),
                         ),
@@ -114,7 +115,7 @@ class HomeTimeWidgetState extends State<HomeTimeWidget> {
               Text(
                 "  Change",
                 style: TextStyle(
-                    color: Colors.teal,
+                    color: UiConstants.primaryColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 18.0),
               ),
