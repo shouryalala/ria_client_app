@@ -38,6 +38,8 @@ class BaseUtil extends ChangeNotifier{
   bool isRerouteRequestInitiated = false;
   static bool _setupTimeElapsed = false;
   static bool isDeviceOffline = false;
+  bool isLoginNextInProgress = false;
+  bool isUpdateAddressInProgress = false;
 
   BaseUtil() {
     //init(); //init called during onboarding

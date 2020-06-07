@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/ui/dialog/availability_dialog.dart';
 import 'package:flutter_app/util/logger.dart';
+import 'package:flutter_app/util/ui_constants.dart';
 
 class MobileInputScreen extends StatefulWidget {
   static const int index = 0; //pager index
@@ -74,7 +75,7 @@ class MobileInputScreenState extends State<MobileInputScreen> {
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               borderRadius: new BorderRadius.circular(30.0),
-              border: Border.all(color: Colors.green, width: 1.5),
+              border: Border.all(color: UiConstants.primaryColor, width: 1.5),
               color: Colors.transparent,
             ),
             child:Tooltip(
@@ -84,7 +85,7 @@ class MobileInputScreenState extends State<MobileInputScreen> {
                 child: Text(
                   'We are currently servicing only select societies',
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.button.copyWith(color: Colors.green),
+                  style: Theme.of(context).textTheme.button.copyWith(color: UiConstants.primaryColor),
                 ),
                 onPressed: (){
                   showDialog(context: context,

@@ -14,6 +14,7 @@ import 'package:flutter_app/ui/pages/login/screens/otp_input_screen.dart';
 import 'package:flutter_app/util/constants.dart';
 import 'package:flutter_app/util/logger.dart';
 import 'package:flutter_app/util/ui_constants.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
 import '../../../base_util.dart';
@@ -85,12 +86,18 @@ class _LoginControllerState extends State<LoginController> {
           "User mobile number format verified. Sending otp and verifying");
       //move to otp screen
       //_currentPage = OtpInputScreen.index;
+      baseProvider.isLoginNextInProgress = false;
       _controller.animateToPage(OtpInputScreen.index,
           duration: Duration(milliseconds: 300), curve: Curves.easeIn);
+      setState(() {});
     };
 
     final PhoneVerificationCompleted verifiedSuccess = (AuthCredential user) async{
       log.debug("Verified automagically!");
+      if(!baseProvider.isLoginNextInProgress) {
+        baseProvider.isLoginNextInProgress = true;
+        setState(() {});
+      }
       if(_currentPage == OtpInputScreen.index){
       //  UiConstants.offerSnacks(context, "Mobile verified!");
 //        otpInScreen.onOtpReceived();
@@ -98,13 +105,15 @@ class _LoginControllerState extends State<LoginController> {
       }
       log.debug("Now verifying user");
       bool flag = await baseProvider.authenticateUser(user);//.then((flag) {
-        if (flag) {
-          log.debug("User signed in successfully");
-          onSignInSuccess();
-        } else {
-          log.error("User auto sign in didnt work");
-        }
-//      });
+      if (flag) {
+        log.debug("User signed in successfully");
+        onSignInSuccess();
+      } else {
+        log.error("User auto sign in didnt work");
+        baseProvider.isLoginNextInProgress = false;
+        baseProvider.showNegativeAlert('Sign In Failed', 'Please check your network or number and try again', context);
+        setState(() {});
+      }
     };
 
     final PhoneVerificationFailed veriFailed = (AuthException exception) {
@@ -113,6 +122,9 @@ class _LoginControllerState extends State<LoginController> {
         log.error("Quota for otps exceeded");
       }
       log.error("Verification process failed:  ${exception.message}");
+      baseProvider.showNegativeAlert('Sign In Failed', 'Please check your network or number and try again', context);
+      baseProvider.isLoginNextInProgress = false;
+      setState(() {});
     };
 
     await FirebaseAuth.instance.verifyPhoneNumber(
@@ -131,15 +143,7 @@ class _LoginControllerState extends State<LoginController> {
     localDbProvider = Provider.of<LocalDBModel>(context);
     fcmProvider = Provider.of<FcmListener>(context);
     return Scaffold(
-      appBar: AppBar(
-        elevation: 2.0,
-        backgroundColor: Colors.white70,
-        title: Text('${Constants.APP_NAME}',
-            style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w700,
-                fontSize: 30.0)),
-      ),
+      appBar: BaseUtil.getAppBar(),
 //      shape: RoundedRectangleBorder(
 //        borderRadius: BorderRadius.circular(10.0),
 //      ),
@@ -190,14 +194,14 @@ class _LoginControllerState extends State<LoginController> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
-                  (_currentPage == OtpInputScreen.index ||
+                  (//_currentPage == OtpInputScreen.index ||
                       _currentPage == AddressInputScreen.index)?
                   Container(
                     width: 150.0,
                     height: 50.0,
                     decoration: BoxDecoration(
                       borderRadius: new BorderRadius.circular(30.0),
-                      border: Border.all(color: Colors.green, width: 1.0),
+                      border: Border.all(color: UiConstants.primaryColor, width: 1.0),
                       color: Colors.transparent,
                     ),
                     child: new Material(
@@ -207,7 +211,7 @@ class _LoginControllerState extends State<LoginController> {
                           style: Theme.of(context)
                               .textTheme
                               .button
-                              .copyWith(color: Colors.white),
+                              .copyWith(color: UiConstants.primaryColor),
                         ),
                         onPressed: () {
                           _currentPage--;
@@ -228,8 +232,8 @@ class _LoginControllerState extends State<LoginController> {
                     height: 50.0,
                     decoration: BoxDecoration(
                       gradient: new LinearGradient(colors: [
-                        Colors.green[400],
-                        Colors.green[600],
+                        UiConstants.primaryColor,
+                        UiConstants.darkPrimaryColor,
 //                                  Colors.orange[600],
 //                                  Colors.orange[900],
                       ],
@@ -240,16 +244,18 @@ class _LoginControllerState extends State<LoginController> {
                     ),
                     child: new Material(
                       child: MaterialButton(
-                        child: Text(
+                        child: (!baseProvider.isLoginNextInProgress)?Text(
                           'NEXT',
                           style: Theme.of(context)
                               .textTheme
                               .button
                               .copyWith(color: Colors.white),
+                        ):SpinKitThreeBounce(
+                        color: UiConstants.spinnerColor2,
+                        size: 18.0,
                         ),
                         onPressed: () {
-                          processScreenInput(_currentPage);
-                          //_controller.animateToPage(page + 1, duration: Duration(milliseconds: 300), curve: Curves.easeIn);
+                          if(!baseProvider.isLoginNextInProgress)processScreenInput(_currentPage);
                         },
                         highlightColor: Colors.white30,
                         splashColor: Colors.white30,
@@ -257,6 +263,7 @@ class _LoginControllerState extends State<LoginController> {
                       color: Colors.transparent,
                       borderRadius: new BorderRadius.circular(30.0),
                     ),
+
                   ),
                 ],
               ),
@@ -281,6 +288,8 @@ class _LoginControllerState extends State<LoginController> {
             this.userMobile = _mobileScreenKey.currentState.getMobile();
             this.verificationId = '+91' + this.userMobile;
             verifyPhone();
+            baseProvider.isLoginNextInProgress = true;
+            setState(() {});
           }
 //          if (formatMobileNumber(id) != null) {
 //            this.userMobile = formatMobileNumber(id);
@@ -296,6 +305,8 @@ class _LoginControllerState extends State<LoginController> {
         {
           String otp = _otpScreenKey.currentState.otp; //otpInScreen.getOtp();
           if (otp != null && otp.isNotEmpty && otp.length == 6) {
+            baseProvider.isLoginNextInProgress = true;
+            setState(() {});
             bool flag = await baseProvider.authenticateUser(baseProvider.generateAuthCredential(verificationId, otp));
                 //.then((flag) {
               if (flag) {
@@ -304,10 +315,12 @@ class _LoginControllerState extends State<LoginController> {
                 onSignInSuccess();
               } else {
                 baseProvider.showNegativeAlert('Invalid Otp', 'Please enter a valid otp', context);
+                baseProvider.isLoginNextInProgress = true;
+                setState(() {});
               }
 //            });
           } else {
-            //TODO set otp error
+            baseProvider.showNegativeAlert('Enter OTP', 'Please enter a valid one time password', context);
           }
           break;
         }
@@ -412,6 +425,10 @@ class _LoginControllerState extends State<LoginController> {
     User user = await dbProvider.getUser(baseProvider.firebaseUser.uid);//.then((user) {
     //user variable is pre cast into User object
     //dbProvider.logDeviceId(fUser.uid); //TODO do someday
+    if(baseProvider.isLoginNextInProgress == true) {
+      baseProvider.isLoginNextInProgress = false;
+      setState(() {});
+    }
     if (user == null || (user != null && user.hasIncompleteDetails())) {
       log.debug("No existing user details found or found incomplete details for user. Moving to details page");
       baseProvider.myUser = user ?? User.newUser(baseProvider.firebaseUser.uid, this.userMobile);

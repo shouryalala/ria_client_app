@@ -294,12 +294,12 @@ class _DashboardState extends State<Dashboard> {
                             fontWeight: FontWeight.w700,
                             fontSize: 30.0)),
                     Text(description,
-                        style: TextStyle(color: Colors.blueAccent),
+                        style: TextStyle(color: Colors.indigoAccent),
                     ),
                   ],
                 ),
                 Material(
-                    color: Colors.blueAccent,
+                    color: Colors.indigoAccent,
                     borderRadius: BorderRadius.circular(24.0),
                     child: Center(
                         child: Padding(
@@ -318,7 +318,8 @@ class _DashboardState extends State<Dashboard> {
 
   Widget _buildStatsTile() {
     minuteTileText = MagicMinutes(
-      value: baseProvider.userStats.totalMins,
+      value: (baseProvider.userStats == null ||
+          baseProvider.userStats.totalMins == null)?0:baseProvider.userStats.totalMins,
       animate: _animateMinuteTile,
       textStyle: TextStyle(
           color: Colors.black,
