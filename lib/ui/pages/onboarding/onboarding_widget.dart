@@ -21,18 +21,19 @@ class _OnboardingMainPageState extends State<OnboardingMainPage> {
     Page4(),
   ];
   int page = 0;
+  Timer _timer;
 
   @override
   void initState() {
     super.initState();
-    Timer.periodic(Duration(seconds: 4), (Timer timer) {
+    _timer = Timer.periodic(Duration(seconds: 4), (Timer timer) {
       if (page < 3) {
         page++;
       } else {
         page = 0;
       }
 
-      _controller.animateToPage(
+      if(_controller.positions.isNotEmpty)_controller.animateToPage(
         page,
         duration: Duration(milliseconds: 350),
         curve: Curves.easeIn,
@@ -44,6 +45,7 @@ class _OnboardingMainPageState extends State<OnboardingMainPage> {
   @override
   void dispose() {
     super.dispose();
+    _timer.cancel();
     _controller.dispose();
   }
 

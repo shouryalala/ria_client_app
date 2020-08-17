@@ -93,67 +93,7 @@ class _UpdateAddressScreenState extends State<UpdateAddressScreen> {
                   ),
 
                 )),
-//                child: new Column(
-//                  children: <Widget>[
-//                    Row(
-//                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//                      children: <Widget>[
 //
-////                        new Container(
-////                          width: 150.0,
-////                          height: 50.0,
-////                          decoration: BoxDecoration(
-////                            gradient: new LinearGradient(
-////                                colors: [
-////                                  Colors.green[400],
-////                                  Colors.green[600],
-//////                                  Colors.orange[600],
-//////                                  Colors.orange[900],
-////                                ],
-////                                begin: Alignment(0.5, -1.0),
-////                                end: Alignment(0.5, 1.0)
-////                            ),
-////                            borderRadius: new BorderRadius.circular(30.0),
-////                          ),
-////                          child: new Material(
-////                            child: MaterialButton(
-////                              child: Text('UPDATE',
-////                                style: Theme.of(context).textTheme.button.copyWith(color: Colors.white),
-////                              ),
-////                              onPressed: () async{
-////                                if(_addressScreenKey.currentState.formKey.currentState.validate()) {
-////                                  Society selSociety = _addressScreenKey.currentState.selected_society;
-////                                  String selFlatNo = _addressScreenKey.currentState.flat_no;
-////                                  int selBhk = _addressScreenKey.currentState.bhk;
-////                                  if(selSociety != null && selFlatNo != null && selBhk != 0) {  //added safegaurd
-////                                    baseProvider.myUser.flat_no = selFlatNo;
-////                                    baseProvider.myUser.society_id = selSociety.sId;
-////                                    baseProvider.myUser.sector = selSociety.sector;
-////                                    baseProvider.myUser.bhk = selBhk;
-////                                    //if nothing was invalid:
-////                                    bool flag = await dbProvider.updateUser(baseProvider.myUser);
-////                                    Navigator.pop(context);
-////                                    if(flag){
-////                                      await localDbProvider.saveUser(baseProvider.myUser);
-////                                      baseProvider.showPositiveAlert('Complete', 'Your address has been updated', context);
-////                                    }
-////                                    else{
-////                                      baseProvider.showNegativeAlert('Failed', 'Your address couldnt be updated. Please try again in sometime', context);
-////                                    }
-////                                  }
-////                                }
-////                              },
-////                              highlightColor: Colors.orange.withOpacity(0.5),
-////                              splashColor: Colors.orange.withOpacity(0.5),
-////                            ),
-////                            color: Colors.transparent,
-////                            borderRadius: new BorderRadius.circular(30.0),
-////                          ),
-////                        ),
-//                      ],
-//                    ),
-//                  ],
-//                ),
               ),
             ),
           ],

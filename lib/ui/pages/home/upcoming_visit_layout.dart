@@ -94,7 +94,7 @@ class _UpcomingVisitLayoutState extends State<UpcomingVisitLayout> {
                 child: MaterialButton(
                   child:Padding(
                     padding: EdgeInsets.all(2),
-                    child: Text('Cancel',
+                    child: Text('Reschedule',
                       style: TextStyle(color: Colors.redAccent),
                     ),
                   ),
@@ -104,7 +104,7 @@ class _UpcomingVisitLayoutState extends State<UpcomingVisitLayout> {
                         builder: (BuildContext context) => ConfirmActionDialog(
                           title: 'Are you sure?',
                           description: 'The assistant\'s schedule will be affected',
-                          buttonText: 'Yes Cancel',
+                          buttonText: 'Yes Reschedule',
                           cancelBtnText: 'Back',
                           confirmAction: () async{
                             log.debug("User cancelled visit");
@@ -133,7 +133,7 @@ class _UpcomingVisitLayoutState extends State<UpcomingVisitLayout> {
                   ),
                   child:Padding(
                     padding: EdgeInsets.all(20),
-                    child:    Text('Call',
+                    child:    Text('Track',
                       style: TextStyle(
                           color: Colors.black
                       ),
@@ -204,7 +204,20 @@ class _UpcomingVisitLayoutState extends State<UpcomingVisitLayout> {
                   children: <Widget>[
                     _buildLabel(widget.upAssistant.name),
                     SizedBox(height: 11),
-                    Text(widget.upAssistant.age.toString(), style: TextStyle(height: 0.8))
+                    Row(
+                      children: <Widget>[
+                        Icon(
+                          Icons.star,
+                          color: Colors.grey[800],
+                          size: 16,
+                        ),
+                        Text(
+                          widget.upAssistant.rating.toString().substring(0,3),
+                          style: TextStyle(height: 1)
+                        ),
+                      ],
+                    ),
+                    //Text(widget.upAssistant.age.toString(), style: TextStyle(height: 0.8))
                   ],
                 ),
               ),

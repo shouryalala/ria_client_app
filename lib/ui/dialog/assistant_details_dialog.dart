@@ -107,50 +107,82 @@ class _AssistantDetailsDialogState extends State<AssistantDetailsDialog> {
             children: <Widget>[
               Text(
                 widget.assistant.name,
-                style: TextStyle(
-                  fontSize: 42.0,
-                  fontWeight: FontWeight.w400,
-                ),
+                style: Theme.of(context).textTheme.display1.copyWith(color: Colors.grey[800]),
+                textAlign: TextAlign.center,
               ),
               SizedBox(height: 16.0),
               Text(
-                '${widget.assistant.rating}',
+                widget.assistant.rating.toString().substring(0,4),
                   style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 64.0)
               ),
               _buildRatingWidget(widget.assistant.rating),
               SizedBox(height: 16.0),
-              Container(
-                child: Container(
-                  padding: const EdgeInsets.all(3.0),
-                  child: ChoiceChip(
-                    label: Text('Cleaning'),  //TODO fix this!!
-                    selected: true,
-                    onSelected: (selected) {
-
-                    },
-                  ),
-                )
-              ),
+//              Container(
+//                child: Container(
+//                  padding: const EdgeInsets.all(3.0),
+//                  child: ChoiceChip(
+//                    label: Text('Cleaning'),  //TODO fix this!!
+//                    selected: true,
+//                    onSelected: (selected) {
+//
+//                    },
+//                  ),
+//                )
+//              ),
               SizedBox(height: 16.0),
               Text(
                 'Age: ${widget.assistant.age}',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.w400
-                ),
+                style: Theme.of(context).textTheme.headline.copyWith(color: Colors.grey[800])
               ),
               (widget.assistant.comp_visits > 2)?
               SizedBox(height: 16.0):SizedBox(height:2),
               (widget.assistant.comp_visits > 2)?Text(
-                'Total ${Constants.APP_NAME} visits: ${widget.assistant.comp_visits}',
+                'Total completed visits: ${widget.assistant.comp_visits}',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.w400
-                ),
+                style: Theme.of(context).textTheme.headline.copyWith(color: Colors.grey[800]),
               ):Container(),
               SizedBox(height: 16.0),
+              SizedBox(
+                  width: double.infinity,
+                  child: RaisedButton(
+                    shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0)),
+                    elevation: 1.0,
+                    child: Text(
+                      'Reviews',
+                      style: Theme.of(context)
+                          .textTheme
+                          .button
+                          .copyWith(color: Colors.grey[800]),
+                      textAlign: TextAlign.center,
+                    ),
+                    onPressed: () {
+                    },
+                  )),
+              SizedBox(
+                height: 5,
+              ),
+              SizedBox(
+                  width: double.infinity,
+                  child: RaisedButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5.0)),
+                    elevation: 1.0,
+                    child: Text(
+                      'Daily Temperature',
+                      style: Theme.of(context)
+                          .textTheme
+                          .button
+                          .copyWith(color: Colors.grey[800]),
+                      textAlign: TextAlign.center,
+                    ),
+                    onPressed: () {
+                    },
+                  )),
+              SizedBox(
+                height: 8,
+              ),
               Align(
                 alignment: Alignment.bottomRight,
                 child: FlatButton(

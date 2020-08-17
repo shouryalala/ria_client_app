@@ -51,10 +51,14 @@ class Page4 extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                 ),
-                Text(Assets.onboardingDesc[3],
-                  style: Theme.of(context).textTheme.body1.copyWith(color: Colors.grey[800]),
-                  textAlign: TextAlign.center,
-                )
+                Padding(
+                  //padding: const EdgeInsets.all(18.0),
+                    padding: const EdgeInsets.fromLTRB(20.0, 0, 20.0, 0.0),
+                    child:Text(Assets.onboardingDesc[3],
+                      style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.grey[800]),
+                      textAlign: TextAlign.center,
+                    )
+                ),
               ],
             ),
           )

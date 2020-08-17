@@ -1,3 +1,5 @@
+import 'package:flutter_app/util/constants.dart';
+
 class Assets {
   static final String pose1 = 'images/cleaner.png';
   static final String pose2 = 'images/cleaner.png';
@@ -19,16 +21,16 @@ class Assets {
   static final String logoMediumSize = 'images/logo_full_size.png';
 
   static final List<String> onboardingHeader=[
-    'Learn the secret techniques',
-    'Learn the secret techniques',
-    'Learn the secret techniques',
-    'Learn the secret techniques',
+    'Simple.Useful.Assured',
+    'More Power. Less Concern',
+    'Safety is our priority',
+    'Empower your choice',
   ];
 
   static final List<String> onboardingDesc = [
-    'Our programs have been tested\nby professional instructors & athletes.',
-    'Our programs have been tested\nby professional instructors & athletes.',
-    'Our programs have been tested\nby professional instructors & athletes.',
-    'Our programs have been tested\nby professional instructors & athletes.',
+    '${Constants.APP_NAME} attends to all your daily household needs. Anytime. On time.',
+    'Request anytime during the day. Review their profiles, track their location, visits and schedules.',
+    'We ensure PPE provisions, daily temperature checks and Aarogya Setu monitoring to keep you safe.',
+    'Your ratings, reviews and the assistant\'s performance determine our partnership with every assistant.',
   ];
 }

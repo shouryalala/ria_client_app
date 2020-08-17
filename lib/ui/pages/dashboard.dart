@@ -42,7 +42,7 @@ class _DashboardState extends State<Dashboard> {
   FcmHandler handler;
   CalendarUtil cUtil = new CalendarUtil();
   int homeState = Constants.VISIT_STATUS_NONE;
-  bool _isOffline = true;
+  bool _isOffline = false;
   MagicMinutes minuteTileText;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _animateMinuteTile = false;
@@ -59,9 +59,8 @@ class _DashboardState extends State<Dashboard> {
   void connectionChanged(dynamic hasConnection) {
     log.debug("Internet connection change: " + hasConnection.toString());
     BaseUtil.isDeviceOffline = !hasConnection;
-    setState(() {
-      _isOffline = !hasConnection;
-    });
+    _isOffline = !hasConnection;
+    setState(() {});
   }
 
   _initListeners() {

@@ -51,18 +51,12 @@ class LogoFadeIn extends State<SplashScreen> {
     final fcmProvider = Provider.of<FcmListener>(context);
     await onboardProvider.init();
     await fcmProvider.setupFcm();
+    _timer3.cancel();
     if(!onboardProvider.isUserOnboarded) {
       log.debug("New user. Moving to Onboarding..");
       Navigator.of(context).pop();
       Navigator.of(context).pushReplacementNamed('/onboarding');
     }
-//    else if(onboardProvider.homeState == Constants.VISIT_STATUS_COMPLETED
-//        && onboardProvider.currentVisit != null && onboardProvider.currentAssistant != null){
-//        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => RateVisitLayout(
-//            rateVisit: onboardProvider.currentVisit,
-//            rateAssistant: onboardProvider.currentAssistant,
-//            actionComplete: () {})));
-//    }
     else {
       log.debug("Existing User. Moving to Home..");
       Navigator.of(context).pop();

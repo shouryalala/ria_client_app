@@ -79,7 +79,8 @@ class DBModel extends ChangeNotifier {
       String id = user.uid;
       Stream<DocumentSnapshot> stream = _api.getUserActivityDocumentStream(id);
       stream.listen((snapshot) {
-        if(userStatusUpdated != null)
+        if(userStatusUpdated != null && snapshot != null
+            && snapshot.data != null && snapshot.data.length>0)
             userStatusUpdated(UserState.fromMap(snapshot.data));
       });
       return true;
